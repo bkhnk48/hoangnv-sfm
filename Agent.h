@@ -5,6 +5,7 @@
 #include <deque>
 #include <vector>
 #include "Wall.h"
+#include "AGV.h"
 
 struct Waypoint {
 	Point3f position;
@@ -27,6 +28,7 @@ private:
 	Vector3f drivingForce(const Point3f position_target);		// Computes f_i
 	Vector3f agentInteractForce(std::vector<Agent *> agents);	// Computes f_ij
 	Vector3f wallInteractForce(std::vector<Wall *> walls);		// Computes f_iw
+	Vector3f agvInteractForce(std::vector<AGV *> agvs);		// Computes f_iw
 
 public:
 	Agent();
@@ -48,7 +50,7 @@ public:
 	float getOrientation();
 	Point3f getAheadVector() const;
 
-	void move(std::vector<Agent *> agents, std::vector<Wall *> walls, float stepTime);
+	void move(std::vector<Agent *> agents, std::vector<Wall *> walls, std::vector<AGV *> agvs, float stepTime);
 };
 
 #endif
