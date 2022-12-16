@@ -89,6 +89,72 @@ Point3f AGV::getAheadVector() const
     return (velocity + position);
 }
 
+Point3f AGV::getNearestPoint(Point3f position_i) const
+{
+    vector<Vector3f> edges;
+    float x, y, w, h;
+    x = position.x;
+    y = position.y;
+    w = dimension.x;
+    h = dimension.y;
+    edges.push_back(Vector3f(x - w / 2, y + h / 2, 0.0F));
+    edges.push_back(Vector3f(x + w / 2, y + h / 2, 0.0F));
+    edges.push_back(Vector3f(x + w / 2, y - h / 2, 0.0F));
+    edges.push_back(Vector3f(x - w / 2, y - h / 2, 0.0F));
+    Vector3f relativeEnd, relativePos, relativeEndScal, relativePosScal;
+    float dotProduct;
+    vector<Point3f> nearestPoint;
+    Point3f point;
+    for (int i = 0; i < edges.size(); i++)
+    {
+        if (i < edges.size() - 1)
+        {
+            relativeEnd = edges[i] - edges[i + 1];
+        }
+        else
+        {
+            relativeEnd = edges[i] - edges[0];
+        }
+
+        relativePos = position_i - edges[i];
+
+        relativeEndScal = relativeEnd;
+        relativeEndScal.normalize();
+
+        relativePosScal = relativePos * (1.0F / relativeEnd.length());
+
+        dotProduct = relativeEndScal.dot(relativePosScal);
+
+        if (dotProduct < 0.0)
+            nearestPoint.push_back(edges[i]);
+        else if (dotProduct > 1.0)
+        {
+            if (i < edges.size() - 1)
+            {
+                nearestPoint.push_back(edges[i + 1]);
+            }
+            else
+            {
+                nearestPoint.push_back(edges[0]);
+            }
+        }
+        else
+            nearestPoint.push_back((relativeEnd * dotProduct) + edges[i]);
+    }
+
+    point = nearestPoint[0];
+
+    for (int i = 0; i < nearestPoint.size(); i++)
+    {
+        if (position_i.distance(nearestPoint[i]) < position_i.distance(point))
+        {
+            point = nearestPoint[i];
+        }
+    }
+
+    return point;
+}
+
 void AGV::move(float stepTime)
 {
     // Compute New Position

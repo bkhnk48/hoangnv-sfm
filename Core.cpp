@@ -361,7 +361,7 @@ void createAGVs() {
 	AGV *agv = new AGV;
 	agv->setPosition(randomFloat(-6.3F, -2.0), randomFloat(-12.3F, -6.0));
 	agv->setPath(randomFloat(3.0, 5.0), randomFloat(15.0, 18.0), 2.0);
-	agv->setVelocity(0,1.5F);
+	agv->setVelocity(0,1.0F);
 	socialForce->addAGV(agv);
 }
 
@@ -579,8 +579,10 @@ void update()
 	prevTime = currTime;
 
 	if (animate)
+	{
 		socialForce->moveCrowd(static_cast<float>(frameTime) / 1000); // Perform calculations and move agents
-	socialForce->moveAGV(static_cast<float>(frameTime) / 1000);
+		socialForce->moveAGV(static_cast<float>(frameTime) / 1000);
+	}
 	computeFPS();
 	glutPostRedisplay();
 	glutIdleFunc(update); // Continuously execute 'update()'

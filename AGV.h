@@ -42,6 +42,7 @@ public:
     Vector3f getVelocity() const { return velocity; }
     float getOrientation();
     Point3f getAheadVector() const;
+    Point3f getNearestPoint(Point3f position_i) const;
 
     void move(float stepTime);
 };
