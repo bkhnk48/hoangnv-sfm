@@ -5,3 +5,5 @@
 out.dSYM
 !mKF
 !Makefile
+example.cpp
+a.out
