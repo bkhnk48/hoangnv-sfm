@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <array>
 
 class Utility
 {
