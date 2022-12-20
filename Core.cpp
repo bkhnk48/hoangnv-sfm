@@ -27,8 +27,10 @@ float perLowSpeed = 0.3;
 void init();
 void createWalls();
 void createAgents();
+void createAGVs();
 void display();
 void drawAgents();
+void drawAGVs();
 void drawCylinder(float x, float y, float radius = 0.2, int slices = 15, float height = 0.5);
 void drawWalls();
 void showInformation();
@@ -98,6 +100,7 @@ void init()
 	socialForce = new SocialForce;
 	createWalls();
 	createAgents();
+	createAGVs();
 }
 
 void createWalls()
@@ -354,6 +357,14 @@ void createAgents()
 	}
 }
 
+void createAGVs() {
+	AGV *agv = new AGV;
+	agv->setPosition(randomFloat(-6.3F, -2.0), randomFloat(-12.3F, -6.0));
+	agv->setPath(randomFloat(3.0, 5.0), randomFloat(15.0, 18.0), 2.0);
+	agv->setVelocity(0,1.0F);
+	socialForce->addAGV(agv);
+}
+
 void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear the colour and depth buffer
@@ -368,6 +379,7 @@ void display()
 	glScalef(1.0, 1.0, 1.0);
 
 	drawAgents();
+	drawAGVs();
 	drawWalls();
 	glPopMatrix();
 
@@ -385,6 +397,29 @@ void drawAgents()
 		// Draw Agents
 		glColor3f(agent->getColour().x, agent->getColour().y, agent->getColour().z);
 		drawCylinder(agent->getPosition().x, agent->getPosition().y, agent->getRadius(), 15, 0.0);
+	}
+}
+
+void drawAGVs()
+{
+	vector<AGV *> agvs = socialForce->getAGVs();
+
+	for (AGV *agv : agvs)
+	{
+		// Draw AGVs
+		glColor3f(agv->getColour().x, agv->getColour().y, agv->getColour().z);
+		// drawCylinder(agv->getPosition().x, agv->getPosition().y, agv->getRadius(), 15, 0.0);
+		float x, y, w, h;
+		x = agv->getPosition().x;
+		y = agv->getPosition().y;
+		w = agv->getDimension().x;
+		h = agv->getDimension().y;
+		glBegin(GL_QUADS);
+		glVertex3f(x - w / 2, y + h / 2, 0);
+		glVertex3f(x - w / 2, y - h / 2, 0);
+		glVertex3f(x + w / 2, y - h / 2, 0);
+		glVertex3f(x + w / 2, y + h / 2, 0);
+		glEnd();
 	}
 }
 
@@ -544,8 +579,10 @@ void update()
 	prevTime = currTime;
 
 	if (animate)
+	{
 		socialForce->moveCrowd(static_cast<float>(frameTime) / 1000); // Perform calculations and move agents
-
+		socialForce->moveAGV(static_cast<float>(frameTime) / 1000);
+	}
 	computeFPS();
 	glutPostRedisplay();
 	glutIdleFunc(update); // Continuously execute 'update()'

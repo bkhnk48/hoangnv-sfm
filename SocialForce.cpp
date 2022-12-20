@@ -14,6 +14,10 @@ void SocialForce::addWall(Wall *wall) {
 	walls.push_back(wall);
 }
 
+void SocialForce::addAGV(AGV *agv) {
+	agvs.push_back(agv);
+}
+
 void SocialForce::removeAgent() {
 	int lastIdx;
 
@@ -39,7 +43,25 @@ void SocialForce::removeWalls() {
 	walls.clear();
 }
 
+void SocialForce::removeAGV()
+{
+	int lastIdx;
+	if (!agvs.empty())
+	{
+		lastIdx = agvs.size() - 1; // Assign index of last element
+
+		delete agvs[lastIdx];
+		agvs.pop_back();
+	}
+}
+
 void SocialForce::moveCrowd(float stepTime) {
 	for (unsigned int idx = 0; idx < crowd.size(); idx++)
-		crowd[idx]->move(crowd, walls, stepTime);
+		crowd[idx]->move(crowd, walls, agvs, stepTime);
+}
+
+void SocialForce::moveAGV(float stepTime)
+{
+	for (unsigned int idx = 0; idx < agvs.size(); idx++)
+		agvs[idx]->move(stepTime);
 }
