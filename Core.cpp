@@ -406,9 +406,32 @@ void createAgents()
 void createAGVs()
 {
 	AGV *agv = new AGV;
-	agv->setPosition(randomFloat(-6.3F, -2.0), randomFloat(-12.3F, -6.0));
-	agv->setPath(randomFloat(3.0, 5.0), randomFloat(15.0, 18.0), 2.0);
-	agv->setVelocity(0, 1.0F);
+	int option = inputData[7];
+	switch (option)
+	{
+	case 0:
+		agv->setPosition(-15.0F, -2.0F);
+		agv->setVelocity(0.6F, 0);
+		break;
+	case 1:
+		agv->setPosition(15.0F, 2.0F);
+		agv->setVelocity(-0.6F, 0);
+		break;
+	case 2:
+		agv->setPosition(-2.0F, 10.0F);
+		agv->setVelocity(0, -0.6F);
+		break;
+	case 3:
+		agv->setPosition(2.0F, -10.0F);
+		agv->setVelocity(0, 0.6F);
+		break;
+	default:
+		agv->setPosition(-15.0F, -2.0F);
+		agv->setVelocity(0.6F, 0);
+		break;
+	}
+	agv->setAcceleration(inputData[8]);
+	agv->setDistance((float)inputData[9]);
 	socialForce->addAGV(agv);
 }
 
@@ -455,7 +478,6 @@ void drawAGVs()
 	{
 		// Draw AGVs
 		glColor3f(agv->getColour().x, agv->getColour().y, agv->getColour().z);
-		// drawCylinder(agv->getPosition().x, agv->getPosition().y, agv->getRadius(), 15, 0.0);
 		float x, y, w, h;
 		x = agv->getPosition().x;
 		y = agv->getPosition().y;
