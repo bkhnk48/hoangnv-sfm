@@ -9,7 +9,7 @@ class Utility
 public:
     Utility();
     virtual ~Utility();
-    static constexpr const float MEAN = 1.4;
+    static constexpr const float MEAN = 1.2;
     static float randomFloat(float lowerBound, float upperBound);
     static std::vector<double> readInput(const char *fileName);
     static std::array<int, 12> getNumPedesInFlow(int totalPedestrian);
@@ -18,6 +18,7 @@ public:
     static std::string convertTime(int milliseconds);
     static std::vector<float> getPedesDestination(int direction, int side, float walkwayWidth);
     static std::vector<float> getPedesSource(int direction, float totalLength, float subLength, float caravanWidth);
+    static std::vector<float> getPedesColor(float maxSpeed, float minSpeed, float desiredSpeed);
 };
 
 #endif

@@ -1,10 +1,10 @@
 # Number of pedestrians
-80
+120
 # T-Distribution' degree of freedom
 15
 # Walkway width
 6
 # Crowd: total length, head/tail length, width
-121 2 5
+100 10 5
 # Run mode (0/1)
 1

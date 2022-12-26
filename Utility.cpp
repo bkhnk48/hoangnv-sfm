@@ -103,13 +103,13 @@ std::vector<double> Utility::getPedesVelocity(int numPedes, double n_dist)
         // std::cout << std::fixed << std::setw(11) << ++counter << ": "
         //           << std::setw(14) << std::setprecision(3) << elem.first << std::endl;
         double velocity = std * elem.first * 0.1 + Utility::MEAN;
-        if (velocity > 2)
+        if (velocity > 1.8)
         {
-            velocity = 2.2;
+            velocity = 2;
         }
-        else if (velocity < 0.8)
+        else if (velocity < 0.6)
         {
-            velocity = 0.6;
+            velocity = 0.4;
         }
 
         v.push_back(velocity);
@@ -387,4 +387,26 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength, flo
         break;
     }
     return v;
+}
+
+std::vector<float> Utility::getPedesColor(float maxSpeed, float minSpeed, float desiredSpeed)
+{
+    std::vector<float> v;
+    float oneThirdVeloRange = (maxSpeed - minSpeed) / 3;
+
+    if (desiredSpeed >= Utility::MEAN)
+    {
+        v.insert(v.end(), {0.0, 128.0, 0.0}); // Green
+        return v;
+    }
+    else if (desiredSpeed < Utility::MEAN && desiredSpeed >= minSpeed + oneThirdVeloRange)
+    {
+        v.insert(v.end(), {0.0, 0.0, 0.0}); // Black
+        return v;
+    }
+    else
+    {
+        v.insert(v.end(), {216.0, 32.0, 42.0}); // Red
+        return v;
+    }
 }

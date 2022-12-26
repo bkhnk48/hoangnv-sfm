@@ -24,10 +24,6 @@ private:
 	std::deque<Waypoint> path;
 	Vector3f velocity;
 
-	Vector3f drivingForce(const Point3f position_target);		// Computes f_i
-	Vector3f agentInteractForce(std::vector<Agent *> agents);	// Computes f_ij
-	Vector3f wallInteractForce(std::vector<Wall *> walls);		// Computes f_iw
-
 public:
 	Agent();
 	~Agent();
