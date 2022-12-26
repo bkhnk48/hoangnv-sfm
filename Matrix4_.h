@@ -17,191 +17,189 @@
 #ifndef MATRIX4__H
 #define MATRIX4__H
 
-#include "VmUtil.h"
 #include "Matrix3_.h"
-#include "Vector4.h"
 #include "Point4.h"
+#include "Vector4.h"
+#include "VmUtil.h"
 
 VM_BEGIN_NS
 
 /**
  * A  4 x 4 matrix.
- * @version specification 1.1, implementation $Revision: 1.3 $, $Date: 1999/10/06 02:52:46 $
+ * @version specification 1.1, implementation $Revision: 1.3 $, $Date:
+ * 1999/10/06 02:52:46 $
  * @author Kenji hiranabe
  */
-template<class T>
-class Matrix4 {
+template <class T> class Matrix4 {
 protected:
-    static T abs(T t) { return VmUtil<T>::abs(t); }
-/*
- * $Log: Matrix4_.h,v $
- * Revision 1.3  1999/10/06  02:52:46  hiranabe
- * Java3D 1.2 and namespace
- *
- * Revision 1.2  1999/05/26  00:59:37  hiranabe
- * support Visual C++
- *
- * Revision 1.1  1999/03/04  11:07:09  hiranabe
- * Initial revision
- *
- * Revision 1.1  1999/03/04  11:07:09  hiranabe
- * Initial revision
- *
- */
+  static T abs(T t) { return VmUtil<T>::abs(t); }
+  /*
+   * $Log: Matrix4_.h,v $
+   * Revision 1.3  1999/10/06  02:52:46  hiranabe
+   * Java3D 1.2 and namespace
+   *
+   * Revision 1.2  1999/05/26  00:59:37  hiranabe
+   * support Visual C++
+   *
+   * Revision 1.1  1999/03/04  11:07:09  hiranabe
+   * Initial revision
+   *
+   * Revision 1.1  1999/03/04  11:07:09  hiranabe
+   * Initial revision
+   *
+   */
 public:
-    /**
-     * the type for values
-     */
-    typedef T value_type;
-    /**
-     * the type for index
-     */
-    typedef size_t size_type;
-    /**
-     * dimension
-     */
-    enum { DIMENSION = 4 };
-    /**
-     * the type for tuple
-     */
-    typedef Tuple4<T> tuple_type;
-    /**
-     * the type for vector
-     */
-    typedef Vector4<T> vector_type;
-    /**
-     * the type for point
-     */
-    typedef Point4<T> point_type;
+  /**
+   * the type for values
+   */
+  typedef T value_type;
+  /**
+   * the type for index
+   */
+  typedef size_t size_type;
+  /**
+   * dimension
+   */
+  enum { DIMENSION = 4 };
+  /**
+   * the type for tuple
+   */
+  typedef Tuple4<T> tuple_type;
+  /**
+   * the type for vector
+   */
+  typedef Vector4<T> vector_type;
+  /**
+   * the type for point
+   */
+  typedef Point4<T> point_type;
 
-    /**
-      * The first element of the first row.
-      */
-    T m00;
+  /**
+   * The first element of the first row.
+   */
+  T m00;
 
-    /**
-      * The second element of the first row.
-      */
-    T m01;
+  /**
+   * The second element of the first row.
+   */
+  T m01;
 
-    /**
-      * third element of the first row.
-      */
-    T m02;
+  /**
+   * third element of the first row.
+   */
+  T m02;
 
-    /**
-      * The fourth element of the first row.
-      */
-    T m03;
+  /**
+   * The fourth element of the first row.
+   */
+  T m03;
 
-    /**
-      * The first element of the second row.
-      */
-    T m10;
+  /**
+   * The first element of the second row.
+   */
+  T m10;
 
-    /**
-      * The second element of the second row.
-      */
-    T m11;
+  /**
+   * The second element of the second row.
+   */
+  T m11;
 
-    /**
-      * The third element of the second row.
-      */
-    T m12;
+  /**
+   * The third element of the second row.
+   */
+  T m12;
 
-    /**
-      * The fourth element of the second row.
-      */
-    T m13;
+  /**
+   * The fourth element of the second row.
+   */
+  T m13;
 
-    /**
-      * The first element of the third row.
-      */
-    T m20;
+  /**
+   * The first element of the third row.
+   */
+  T m20;
 
-    /**
-      * The second element of the third row.
-      */
-    T m21;
+  /**
+   * The second element of the third row.
+   */
+  T m21;
 
-    /**
-      * The third element of the third row.
-      */
-    T m22;
+  /**
+   * The third element of the third row.
+   */
+  T m22;
 
-    /**
-      * The fourth element of the third row.
-      */
-    T m23;
+  /**
+   * The fourth element of the third row.
+   */
+  T m23;
 
-    /**
-      * The first element of the fourth row.
-      */
-    T m30;
+  /**
+   * The first element of the fourth row.
+   */
+  T m30;
 
-    /**
-      * The second element of the fourth row.
-      */
-    T m31;
+  /**
+   * The second element of the fourth row.
+   */
+  T m31;
 
-    /**
-      * The third element of the fourth row.
-      */
-    T m32;
+  /**
+   * The third element of the fourth row.
+   */
+  T m32;
 
-    /**
-      * The fourth element of the fourth row.
-      */
-    T m33;
+  /**
+   * The fourth element of the fourth row.
+   */
+  T m33;
 
-    /**
-      * Constructs and initializes a Matrix4 from the specified 16 values.
-      * @param m00 the [0][0] element
-      * @param m01 the [0][1] element
-      * @param m02 the [0][2] element
-      * @param m03 the [0][3] element
-      * @param m10 the [1][0] element
-      * @param m11 the [1][1] element
-      * @param m12 the [1][2] element
-      * @param m13 the [1][3] element
-      * @param m20 the [2][0] element
-      * @param m21 the [2][1] element
-      * @param m22 the [2][2] element
-      * @param m23 the [2][3] element
-      * @param m30 the [3][0] element
-      * @param m31 the [3][1] element
-      * @param m32 the [3][2] element
-      * @param m33 the [3][3] element
-      */
-    Matrix4(T m00, T m01, T m02, T m03, 
-            T m10, T m11, T m12, T m13,
-            T m20, T m21, T m22, T m23,
-            T m30, T m31, T m32, T m33);
+  /**
+   * Constructs and initializes a Matrix4 from the specified 16 values.
+   * @param m00 the [0][0] element
+   * @param m01 the [0][1] element
+   * @param m02 the [0][2] element
+   * @param m03 the [0][3] element
+   * @param m10 the [1][0] element
+   * @param m11 the [1][1] element
+   * @param m12 the [1][2] element
+   * @param m13 the [1][3] element
+   * @param m20 the [2][0] element
+   * @param m21 the [2][1] element
+   * @param m22 the [2][2] element
+   * @param m23 the [2][3] element
+   * @param m30 the [3][0] element
+   * @param m31 the [3][1] element
+   * @param m32 the [3][2] element
+   * @param m33 the [3][3] element
+   */
+  Matrix4(T m00, T m01, T m02, T m03, T m10, T m11, T m12, T m13, T m20, T m21,
+          T m22, T m23, T m30, T m31, T m32, T m33);
 
-    /**
-      * Constructs and initializes a Matrix4 from the specified 16
-      * element array.  this.m00 =v[0], this.m01=v[1], etc.
-      * @param  v the array of length 16 containing in order
-      */
-    Matrix4(const T v[]);
+  /**
+   * Constructs and initializes a Matrix4 from the specified 16
+   * element array.  this.m00 =v[0], this.m01=v[1], etc.
+   * @param  v the array of length 16 containing in order
+   */
+  Matrix4(const T v[]);
 
-    /**
-      * Constructs and initializes a Matrix4 from the specified 4x4
-      * element array.  this.m00 =m[0][0], this.m01=m[0][1], etc.
-      * @param  m the array of 4 x 4 containing in order
-      */
-    Matrix4(const T m[][4]);
+  /**
+   * Constructs and initializes a Matrix4 from the specified 4x4
+   * element array.  this.m00 =m[0][0], this.m01=m[0][1], etc.
+   * @param  m the array of 4 x 4 containing in order
+   */
+  Matrix4(const T m[][4]);
 
-    /**
-      * Constructs and initializes a Matrix4 from the quaternion,
-      * translation, and scale values; the scale is applied only to the
-      * rotational components of the matrix (upper 3x3) and not to the
-      * translational components.
-      * @param q1  The quaternion value representing the rotational component
-      * @param t1  The translational component of the matrix
-      * @param s  The scale value applied to the rotational components
-      */
-    Matrix4(const Quat4<T>& q1, const Vector3<T>& t1, T s);
+  /**
+   * Constructs and initializes a Matrix4 from the quaternion,
+   * translation, and scale values; the scale is applied only to the
+   * rotational components of the matrix (upper 3x3) and not to the
+   * translational components.
+   * @param q1  The quaternion value representing the rotational component
+   * @param t1  The translational component of the matrix
+   * @param s  The scale value applied to the rotational components
+   */
+  Matrix4(const Quat4<T> &q1, const Vector3<T> &t1, T s);
 
 #if 0
     /**
@@ -245,125 +243,124 @@ public:
     }
 #endif
 
-    /**
-      * Constructs and initializes a Matrix4 from the rotation matrix,
-      * translation, and scale values; the scale is applied only to the
-      * rotational components of the matrix (upper 3x3) and not to the
-      * translational components.
-      * @param m1  The rotation matrix representing the rotational components
-      * @param t1  The translational components of the matrix
-      * @param s  The scale value applied to the rotational components
-      */
-    Matrix4(const Matrix3<T>& m1, const Vector3<T>& t1, T s);
+  /**
+   * Constructs and initializes a Matrix4 from the rotation matrix,
+   * translation, and scale values; the scale is applied only to the
+   * rotational components of the matrix (upper 3x3) and not to the
+   * translational components.
+   * @param m1  The rotation matrix representing the rotational components
+   * @param t1  The translational components of the matrix
+   * @param s  The scale value applied to the rotational components
+   */
+  Matrix4(const Matrix3<T> &m1, const Vector3<T> &t1, T s);
 
-    /**
-      * Constructs and initializes a Matrix4 to all zeros.
-      */
-    Matrix4();
+  /**
+   * Constructs and initializes a Matrix4 to all zeros.
+   */
+  Matrix4();
 
-    /**
-      * Sets 16 values	
-      * @param m00 the [0][0] element
-      * @param m01 the [0][1] element
-      * @param m02 the [0][2] element
-      * @param m03 the [0][3] element
-      * @param m10 the [1][0] element
-      * @param m11 the [1][1] element
-      * @param m12 the [1][2] element
-      * @param m13 the [1][3] element
-      * @param m20 the [2][0] element
-      * @param m21 the [2][1] element
-      * @param m22 the [2][2] element
-      * @param m23 the [2][3] element
-      * @param m30 the [3][0] element
-      * @param m31 the [3][1] element
-      * @param m32 the [3][2] element
-      * @param m33 the [3][3] element
-      */
-    void set(T m00, T m01, T m02, T m03, 
-             T m10, T m11, T m12, T m13,
-             T m20, T m21, T m22, T m23,
-             T m30, T m31, T m32, T m33);
+  /**
+   * Sets 16 values
+   * @param m00 the [0][0] element
+   * @param m01 the [0][1] element
+   * @param m02 the [0][2] element
+   * @param m03 the [0][3] element
+   * @param m10 the [1][0] element
+   * @param m11 the [1][1] element
+   * @param m12 the [1][2] element
+   * @param m13 the [1][3] element
+   * @param m20 the [2][0] element
+   * @param m21 the [2][1] element
+   * @param m22 the [2][2] element
+   * @param m23 the [2][3] element
+   * @param m30 the [3][0] element
+   * @param m31 the [3][1] element
+   * @param m32 the [3][2] element
+   * @param m33 the [3][3] element
+   */
+  void set(T m00, T m01, T m02, T m03, T m10, T m11, T m12, T m13, T m20, T m21,
+           T m22, T m23, T m30, T m31, T m32, T m33);
 
-    /**
-      * Sets the values in this Matrix4 equal to the row-major array parameter
-      * (ie, the first four elements of the array will be copied into the first
-      * row of this matrix, etc.).
-      */
-    void set(const T m[]);
+  /**
+   * Sets the values in this Matrix4 equal to the row-major array parameter
+   * (ie, the first four elements of the array will be copied into the first
+   * row of this matrix, etc.).
+   */
+  void set(const T m[]);
 
-    /**
-      * Sets the values in this Matrix4 equal to the row-major array parameter
-      * (ie, the first four elements of the array will be copied into the first
-      * row of this matrix, etc.).
-      */
-    void set(const T m[][4]);
+  /**
+   * Sets the values in this Matrix4 equal to the row-major array parameter
+   * (ie, the first four elements of the array will be copied into the first
+   * row of this matrix, etc.).
+   */
+  void set(const T m[][4]);
 
-    /**
-      * Sets the value of this matrix to a copy of the
-      * passed matrix m1.
-      * @param m1 the matrix to be copied
-      */
-    void set(const Matrix4<T>& m1);
+  /**
+   * Sets the value of this matrix to a copy of the
+   * passed matrix m1.
+   * @param m1 the matrix to be copied
+   */
+  void set(const Matrix4<T> &m1);
 
-    /**
-      * Sets the rotational component (upper 3x3) of this matrix to the matrix
-      * values in the T precision Matrix3d argument; the other elements of
-      * this matrix are initialized as if this were an identity matrix
-      * (ie, affine matrix with no translational component).
-      * @param m1 the 3x3 matrix
-      */
-    void set(const Matrix3<T>& m1);
+  /**
+   * Sets the rotational component (upper 3x3) of this matrix to the matrix
+   * values in the T precision Matrix3d argument; the other elements of
+   * this matrix are initialized as if this were an identity matrix
+   * (ie, affine matrix with no translational component).
+   * @param m1 the 3x3 matrix
+   */
+  void set(const Matrix3<T> &m1);
 
-    /**
-      * Sets the value of this matrix to the matrix conversion of the
-      * (T precision) quaternion argument. 
-      * @param q1 the quaternion to be converted 
-      */
-    void set(const Quat4<T>& q1);
+  /**
+   * Sets the value of this matrix to the matrix conversion of the
+   * (T precision) quaternion argument.
+   * @param q1 the quaternion to be converted
+   */
+  void set(const Quat4<T> &q1);
 
-    /**
-      * Sets the value of this matrix to the matrix conversion of the
-      * T precision axis and angle argument. 
-      * @param a1 the axis and angle to be converted 
-      */
-    void set(const AxisAngle4<T>& a1);
+  /**
+   * Sets the value of this matrix to the matrix conversion of the
+   * T precision axis and angle argument.
+   * @param a1 the axis and angle to be converted
+   */
+  void set(const AxisAngle4<T> &a1);
 
-    /**
-     * Sets this Matrix4 to identity.
-     */
-    void setIdentity();
+  /**
+   * Sets this Matrix4 to identity.
+   */
+  void setIdentity();
 
-    /**
-     * Sets the specified element of this matrix4d to the value provided.
-     * @param row  the row number to be modified (zero indexed)
-     * @param column  the column number to be modified (zero indexed)
-     * @param value the new value
-     */
-    void setElement(size_t row, size_t column, T value);
+  /**
+   * Sets the specified element of this matrix4d to the value provided.
+   * @param row  the row number to be modified (zero indexed)
+   * @param column  the column number to be modified (zero indexed)
+   * @param value the new value
+   */
+  void setElement(size_t row, size_t column, T value);
 
-    /**
-     * Retrieves the value at the specified row and column of this matrix.
-     * @param row  the row number to be retrieved (zero indexed)
-     * @param column  the column number to be retrieved (zero indexed)
-     * @return the value at the indexed element
-     */
-    T getElement(size_t row, size_t column) const;
+  /**
+   * Retrieves the value at the specified row and column of this matrix.
+   * @param row  the row number to be retrieved (zero indexed)
+   * @param column  the column number to be retrieved (zero indexed)
+   * @return the value at the indexed element
+   */
+  T getElement(size_t row, size_t column) const;
 
-    /**
-     * Retrieves the lvalue at the specified row and column of this matrix.
-     * @param row  the row number to be retrieved (zero indexed)
-     * @param column  the column number to be retrieved (zero indexed)
-     * @return the lvalue at the indexed element
-     */
-    T& getElementReference(size_type row, size_type column);
+  /**
+   * Retrieves the lvalue at the specified row and column of this matrix.
+   * @param row  the row number to be retrieved (zero indexed)
+   * @param column  the column number to be retrieved (zero indexed)
+   * @return the lvalue at the indexed element
+   */
+  T &getElementReference(size_type row, size_type column);
 
-    /**
-      * Performs an SVD normalization of this matrix in order to acquire the
-      * normalized rotational component; the values are placed into the Matrix3d parameter.
-      * @param m1 matrix into which the rotational component is placed
-      */
-    void get(Matrix3<T>* m1) const;
+  /**
+   * Performs an SVD normalization of this matrix in order to acquire the
+   * normalized rotational component; the values are placed into the Matrix3d
+   * parameter.
+   * @param m1 matrix into which the rotational component is placed
+   */
+  void get(Matrix3<T> *m1) const;
 
 #if 0
     /**
@@ -376,22 +373,23 @@ public:
     }
 #endif
 
-    /**
-      * Performs an SVD normalization of this matrix to calculate the rotation
-      * as a 3x3 matrix, the translation, and the scale. None of the matrix values are modified.
-      * @param m1 The normalized matrix representing the rotation
-      * @param t1 The translation component
-      * @return The scale component of this transform
-      */
-    T get(Matrix3<T>* m1, Vector3<T>* t1) const;
+  /**
+   * Performs an SVD normalization of this matrix to calculate the rotation
+   * as a 3x3 matrix, the translation, and the scale. None of the matrix values
+   * are modified.
+   * @param m1 The normalized matrix representing the rotation
+   * @param t1 The translation component
+   * @return The scale component of this transform
+   */
+  T get(Matrix3<T> *m1, Vector3<T> *t1) const;
 
-    /**
-      * Performs an SVD normalization of this matrix in order to acquire the
-      * normalized rotational component; the values are placed into
-      * the Quat4f parameter.
-      * @param q1 quaternion into which the rotation component is placed
-      */
-    void get(Quat4<T>* q1) const;
+  /**
+   * Performs an SVD normalization of this matrix in order to acquire the
+   * normalized rotational component; the values are placed into
+   * the Quat4f parameter.
+   * @param q1 quaternion into which the rotation component is placed
+   */
+  void get(Quat4<T> *q1) const;
 
 #if 0
     /**
@@ -429,36 +427,37 @@ public:
     }
 #endif
 
-    /**
-      * Retrieves the translational components of this matrix.
-      * @param trans the vector that will receive the translational component
-      */
-    void get(Vector3<T>* trans) const {
-        assert(trans != 0);
-        trans->x = m03;
-        trans->y = m13;
-        trans->z = m23;
-    }
+  /**
+   * Retrieves the translational components of this matrix.
+   * @param trans the vector that will receive the translational component
+   */
+  void get(Vector3<T> *trans) const {
+    assert(trans != 0);
+    trans->x = m03;
+    trans->y = m13;
+    trans->z = m23;
+  }
 
+  /**
+   * Gets the upper 3x3 values of this matrix and places them into the matrix
+   * m1.
+   * @param m1 The matrix that will hold the values
+   */
+  void getRotationScale(Matrix3<T> *m1) const;
 
-    /**
-      * Gets the upper 3x3 values of this matrix and places them into the matrix m1.
-      * @param m1 The matrix that will hold the values
-      */
-    void getRotationScale(Matrix3<T>* m1) const;
+  /**
+   * Performs an SVD normalization of this matrix to calculate and return the
+   * uniform scale factor. This matrix is not modified.
+   * @return the scale factor of this matrix
+   */
+  T getScale() const;
 
-    /**
-      * Performs an SVD normalization of this matrix to calculate and return the
-      * uniform scale factor. This matrix is not modified.
-      * @return the scale factor of this matrix
-      */
-    T getScale() const;
-
-    /**
-      * Replaces the upper 3x3 matrix values of this matrix with the values in the matrix m1.
-      * @param m1 The matrix that will be the new upper 3x3
-      */
-    void setRotationScale(const Matrix3<T>& m1);
+  /**
+   * Replaces the upper 3x3 matrix values of this matrix with the values in the
+   * matrix m1.
+   * @param m1 The matrix that will be the new upper 3x3
+   */
+  void setRotationScale(const Matrix3<T> &m1);
 
 #if 0
     /**
@@ -472,160 +471,160 @@ public:
     }
 #endif
 
-    /**
-      * Sets the scale component of the current matrix by factoring out the
-      * current scale (by doing an SVD) from the rotational component and
-      * multiplying by the new scale.
-      * note: this method doesn't change m44.
-      * @param scale the new scale amount
-      */
-    void setScale(T scale);
+  /**
+   * Sets the scale component of the current matrix by factoring out the
+   * current scale (by doing an SVD) from the rotational component and
+   * multiplying by the new scale.
+   * note: this method doesn't change m44.
+   * @param scale the new scale amount
+   */
+  void setScale(T scale);
 
-    /**
-     * Sets the specified row of this matrix4d to the four values provided.
-     * @param row  the row number to be modified (zero indexed)
-     * @param x the first column element
-     * @param y the second column element
-     * @param z the third column element
-     * @param w the fourth column element
-     */
-    void setRow(size_t row, T x, T y, T z, T w);
+  /**
+   * Sets the specified row of this matrix4d to the four values provided.
+   * @param row  the row number to be modified (zero indexed)
+   * @param x the first column element
+   * @param y the second column element
+   * @param z the third column element
+   * @param w the fourth column element
+   */
+  void setRow(size_t row, T x, T y, T z, T w);
 
-    /**
-     * Sets the specified row of this matrix4d to the Vector provided.
-     * @param row the row number to be modified (zero indexed)
-     * @param v the replacement row
-     */
-    void setRow(size_t row, const Vector4<T>& v);
+  /**
+   * Sets the specified row of this matrix4d to the Vector provided.
+   * @param row the row number to be modified (zero indexed)
+   * @param v the replacement row
+   */
+  void setRow(size_t row, const Vector4<T> &v);
 
-    /**
-      * Sets the specified row of this matrix4d to the four values provided.
-      * @param row the row number to be modified (zero indexed)
-      * @param v the replacement row
-      */
-    void setRow(size_t row, const T v[]);
+  /**
+   * Sets the specified row of this matrix4d to the four values provided.
+   * @param row the row number to be modified (zero indexed)
+   * @param v the replacement row
+   */
+  void setRow(size_t row, const T v[]);
 
-    /**
-     * Copies the matrix values in the specified row into the
-     * vector parameter.
-     * @param row the matrix row
-     * @param v The vector into which the matrix row values will be copied
-     */
-    void getRow(size_t row, Vector4<T>* v) const;
+  /**
+   * Copies the matrix values in the specified row into the
+   * vector parameter.
+   * @param row the matrix row
+   * @param v The vector into which the matrix row values will be copied
+   */
+  void getRow(size_t row, Vector4<T> *v) const;
 
-    /**
-      * Copies the matrix values in the specified row into the
-      * array parameter.
-      * @param row the matrix row
-      * @param v The array into which the matrix row values will be copied
-      */
-    void getRow(size_t row, T v[]) const;
+  /**
+   * Copies the matrix values in the specified row into the
+   * array parameter.
+   * @param row the matrix row
+   * @param v The array into which the matrix row values will be copied
+   */
+  void getRow(size_t row, T v[]) const;
 
-    /**
-      * Sets the specified column of this matrix4d to the four values provided.
-      * @param  column the column number to be modified (zero indexed)
-      * @param x the first row element
-      * @param y the second row element
-      * @param z the third row element
-      * @param w the fourth row element
-      */
-    void setColumn(size_t column, T x, T y, T z, T w);
+  /**
+   * Sets the specified column of this matrix4d to the four values provided.
+   * @param  column the column number to be modified (zero indexed)
+   * @param x the first row element
+   * @param y the second row element
+   * @param z the third row element
+   * @param w the fourth row element
+   */
+  void setColumn(size_t column, T x, T y, T z, T w);
 
-    /**
-      * Sets the specified column of this matrix4d to the vector provided.
-      * @param column the column number to be modified (zero indexed)
-      * @param v the replacement column
-      */
-    void setColumn(size_t column, const Vector4<T>& v);
+  /**
+   * Sets the specified column of this matrix4d to the vector provided.
+   * @param column the column number to be modified (zero indexed)
+   * @param v the replacement column
+   */
+  void setColumn(size_t column, const Vector4<T> &v);
 
-    /**
-      * Sets the specified column of this matrix4d to the four values provided. 
-      * @param column  the column number to be modified (zero indexed) 
-      * @param v       the replacement column 
-      */
-    void setColumn(size_t column,  const T v[]);
+  /**
+   * Sets the specified column of this matrix4d to the four values provided.
+   * @param column  the column number to be modified (zero indexed)
+   * @param v       the replacement column
+   */
+  void setColumn(size_t column, const T v[]);
 
-    /**
-     * Copies the matrix values in the specified column into the
-     * vector parameter.
-     * @param column the matrix column
-     * @param v The vector into which the matrix column values will be copied
-     */
-    void getColumn(size_t column, Vector4<T>* v) const;
+  /**
+   * Copies the matrix values in the specified column into the
+   * vector parameter.
+   * @param column the matrix column
+   * @param v The vector into which the matrix column values will be copied
+   */
+  void getColumn(size_t column, Vector4<T> *v) const;
 
-    /**
-      * Copies the matrix values in the specified column into the
-      * array parameter.
-      * @param column the matrix column
-      * @param v The array into which the matrix column values will be copied
-      */
-    void getColumn(size_t column, T v[]) const;
+  /**
+   * Copies the matrix values in the specified column into the
+   * array parameter.
+   * @param column the matrix column
+   * @param v The array into which the matrix column values will be copied
+   */
+  void getColumn(size_t column, T v[]) const;
 
-    /**
-      * Adds a scalar to each component of this matrix.
-      * @param scalar The scalar adder.
-      */
-    void add(T scalar);
+  /**
+   * Adds a scalar to each component of this matrix.
+   * @param scalar The scalar adder.
+   */
+  void add(T scalar);
 
-    /**
-      * Substracts a scalar from each component of this matrix.
-      * @param scalar The scalar adder.
-      */
-    void sub(T scalar);
+  /**
+   * Substracts a scalar from each component of this matrix.
+   * @param scalar The scalar adder.
+   */
+  void sub(T scalar);
 
-    /**
-      * Adds a scalar to each component of the matrix m1 and places
-      * the result into this. Matrix m1 is not modified.
-      * @param scalar The scalar adder.
-      * @parm m1 The original matrix values.
-      */
-    void add(T scalar, const Matrix4& m1) {
-        set(m1);
-        add(scalar);
-    }
+  /**
+   * Adds a scalar to each component of the matrix m1 and places
+   * the result into this. Matrix m1 is not modified.
+   * @param scalar The scalar adder.
+   * @parm m1 The original matrix values.
+   */
+  void add(T scalar, const Matrix4 &m1) {
+    set(m1);
+    add(scalar);
+  }
 
-    /**
-     * Sets the value of this matrix to the matrix sum of matrices m1 and m2. 
-     * @param m1 the first matrix 
-     * @param m2 the second matrix 
-     */
-    void add(const Matrix4& m1, const Matrix4& m2);
+  /**
+   * Sets the value of this matrix to the matrix sum of matrices m1 and m2.
+   * @param m1 the first matrix
+   * @param m2 the second matrix
+   */
+  void add(const Matrix4 &m1, const Matrix4 &m2);
 
-    /**
-     * Sets the value of this matrix to sum of itself and matrix m1. 
-     * @param m1 the other matrix 
-     */
-    void add(const Matrix4& m1);
+  /**
+   * Sets the value of this matrix to sum of itself and matrix m1.
+   * @param m1 the other matrix
+   */
+  void add(const Matrix4 &m1);
 
-    /**
-      * Sets the value of this matrix to the matrix difference
-      * of matrices m1 and m2. 
-      * @param m1 the first matrix 
-      * @param m2 the second matrix 
-      */
-    void sub(const Matrix4& m1, const Matrix4& m2);
+  /**
+   * Sets the value of this matrix to the matrix difference
+   * of matrices m1 and m2.
+   * @param m1 the first matrix
+   * @param m2 the second matrix
+   */
+  void sub(const Matrix4 &m1, const Matrix4 &m2);
 
-    /**
-     * Sets the value of this matrix to the matrix difference of itself
-     * and matrix m1 (this = this - m1). 
-     * @param m1 the other matrix 
-     */
-    void sub(const Matrix4& m1);
+  /**
+   * Sets the value of this matrix to the matrix difference of itself
+   * and matrix m1 (this = this - m1).
+   * @param m1 the other matrix
+   */
+  void sub(const Matrix4 &m1);
 
-    /**
-      * Sets the value of this matrix to its transpose. 
-      */
-    void transpose();
+  /**
+   * Sets the value of this matrix to its transpose.
+   */
+  void transpose();
 
-    /**
-     * Sets the value of this matrix to the transpose of the argument matrix
-     * @param m1 the matrix to be transposed 
-     */
-    void transpose(const Matrix4& m1) {
-        // alias-safe
-        set(m1);
-        transpose();
-    }
+  /**
+   * Sets the value of this matrix to the transpose of the argument matrix
+   * @param m1 the matrix to be transposed
+   */
+  void transpose(const Matrix4 &m1) {
+    // alias-safe
+    set(m1);
+    transpose();
+  }
 
 #if 0
     /**
@@ -662,13 +661,13 @@ public:
 #endif
 
   /**
-    * Sets the value of this matrix from the rotation expressed by the
-    * quaternion q1, the translation t1, and the scale s.
-    * @param q1  the rotation expressed as a quaternion
-    * @param t1  the translation
-    * @param s  the scale value
-    */
-    void set(const Quat4<T>& q1, const Vector3<T>& t1, T s);
+   * Sets the value of this matrix from the rotation expressed by the
+   * quaternion q1, the translation t1, and the scale s.
+   * @param q1  the rotation expressed as a quaternion
+   * @param t1  the translation
+   * @param s  the scale value
+   */
+  void set(const Quat4<T> &q1, const Vector3<T> &t1, T s);
 
 #if 0
   /**
@@ -714,72 +713,72 @@ public:
     }
 #endif
 
-    /**
-     * Sets the value of this matrix to the matrix inverse
-     * of the passed matrix m1. 
-     * @param m1 the matrix to be inverted 
-     */
-    void invert(const Matrix4<T>& m1);
+  /**
+   * Sets the value of this matrix to the matrix inverse
+   * of the passed matrix m1.
+   * @param m1 the matrix to be inverted
+   */
+  void invert(const Matrix4<T> &m1);
 
-    /**
-     * Sets the value of this matrix to its inverse.
-     */
-    void invert();
+  /**
+   * Sets the value of this matrix to its inverse.
+   */
+  void invert();
 
-    /**
-     * Computes the determinant of this matrix. 
-     * @return the determinant of the matrix 
-     */
-    T determinant() const;
+  /**
+   * Computes the determinant of this matrix.
+   * @return the determinant of the matrix
+   */
+  T determinant() const;
 
-    /**
-     * Sets the value of this matrix to a scale matrix with the
-     * passed scale amount. 
-     * @param scale the scale factor for the matrix 
-     */
-    void set(T scale);
+  /**
+   * Sets the value of this matrix to a scale matrix with the
+   * passed scale amount.
+   * @param scale the scale factor for the matrix
+   */
+  void set(T scale);
 
-    /**
-      * Modifies the translational components of this matrix to the values of
-      * the Vector3d argument; the other values of this matrix are not modified.
-      * @param trans the translational component
-      */
-    void setTranslation(const Vector3<T>& trans) {
-        m03 = trans.x;
-        m13 = trans.y;  
-        m23 = trans.z;
-    }
+  /**
+   * Modifies the translational components of this matrix to the values of
+   * the Vector3d argument; the other values of this matrix are not modified.
+   * @param trans the translational component
+   */
+  void setTranslation(const Vector3<T> &trans) {
+    m03 = trans.x;
+    m13 = trans.y;
+    m23 = trans.z;
+  }
 
-    /**
-     * Sets the value of this matrix to a translate matrix by the
-     * passed translation value.
-     * @param v1 the translation amount
-     */
-    void set(const Vector3<T>& v1) {
-        setIdentity();
-        setTranslation(v1);
-    }
+  /**
+   * Sets the value of this matrix to a translate matrix by the
+   * passed translation value.
+   * @param v1 the translation amount
+   */
+  void set(const Vector3<T> &v1) {
+    setIdentity();
+    setTranslation(v1);
+  }
 
-    /**
-     * Sets the value of this matrix to a scale and translation matrix;
-     * scale is not applied to the translation and all of the matrix
-     * values are modified.
-     * @param scale the scale factor for the matrix
-     * @param v1 the translation amount
-     */
-    void set(T scale, const Vector3<T>& v1) {
-        set(scale);
-        setTranslation(v1);
-    }
+  /**
+   * Sets the value of this matrix to a scale and translation matrix;
+   * scale is not applied to the translation and all of the matrix
+   * values are modified.
+   * @param scale the scale factor for the matrix
+   * @param v1 the translation amount
+   */
+  void set(T scale, const Vector3<T> &v1) {
+    set(scale);
+    setTranslation(v1);
+  }
 
-    /**
-     * Sets the value of this matrix to a scale and translation matrix;
-     * the translation is scaled by the scale factor and all of the
-     * matrix values are modified.
-     * @param v1 the translation amount
-     * @param scale the scale factor for the matrix
-     */
-    void set(const Vector3<T>& v1, T scale);
+  /**
+   * Sets the value of this matrix to a scale and translation matrix;
+   * the translation is scaled by the scale factor and all of the
+   * matrix values are modified.
+   * @param v1 the translation amount
+   * @param scale the scale factor for the matrix
+   */
+  void set(const Vector3<T> &v1, T scale);
 
 #if 0
     /**
@@ -798,144 +797,138 @@ public:
     }
 #endif
 
-    /**
-      * Sets the value of this matrix from the rotation expressed by the
-      * rotation matrix m1, the translation t1, and the scale s. The translation
-      * is not modified by the scale.
-      * @param m1 The rotation component
-      * @param t1 The translation component
-      * @param scale The scale component
-      */
-    void set(const Matrix3<T>& m1, const Vector3<T>& t1, T scale);
+  /**
+   * Sets the value of this matrix from the rotation expressed by the
+   * rotation matrix m1, the translation t1, and the scale s. The translation
+   * is not modified by the scale.
+   * @param m1 The rotation component
+   * @param t1 The translation component
+   * @param scale The scale component
+   */
+  void set(const Matrix3<T> &m1, const Vector3<T> &t1, T scale);
 
-    /**
-     * Sets the value of this matrix to a rotation matrix about the x axis
-     * by the passed angle. 
-     * @param angle the angle to rotate about the X axis in radians 
-     */
-    void rotX(T angle);
+  /**
+   * Sets the value of this matrix to a rotation matrix about the x axis
+   * by the passed angle.
+   * @param angle the angle to rotate about the X axis in radians
+   */
+  void rotX(T angle);
 
-    /**
-     * Sets the value of this matrix to a rotation matrix about the y axis
-     * by the passed angle. 
-     * @param angle the angle to rotate about the Y axis in radians 
-     */
-    void rotY(T angle);
+  /**
+   * Sets the value of this matrix to a rotation matrix about the y axis
+   * by the passed angle.
+   * @param angle the angle to rotate about the Y axis in radians
+   */
+  void rotY(T angle);
 
-    /**
-     * Sets the value of this matrix to a rotation matrix about the z axis
-     * by the passed angle. 
-     * @param angle the angle to rotate about the Z axis in radians 
-     */
-    void rotZ(T angle);
+  /**
+   * Sets the value of this matrix to a rotation matrix about the z axis
+   * by the passed angle.
+   * @param angle the angle to rotate about the Z axis in radians
+   */
+  void rotZ(T angle);
 
-    /**
-      * Multiplies each element of this matrix by a scalar.
-      * @param scalar The scalar multiplier.
-      */
-     void mul(T scalar);
+  /**
+   * Multiplies each element of this matrix by a scalar.
+   * @param scalar The scalar multiplier.
+   */
+  void mul(T scalar);
 
-    /**
-      * Multiplies each element of matrix m1 by a scalar and places the result
-      * into this. Matrix m1 is not modified.
-      * @param scalar The scalar multiplier.
-      * @param m1 The original matrix.
-      */
-     void mul(T scalar, const Matrix4& m1) {
-         set(m1);
-         mul(scalar);
-     }
+  /**
+   * Multiplies each element of matrix m1 by a scalar and places the result
+   * into this. Matrix m1 is not modified.
+   * @param scalar The scalar multiplier.
+   * @param m1 The original matrix.
+   */
+  void mul(T scalar, const Matrix4 &m1) {
+    set(m1);
+    mul(scalar);
+  }
 
-    /**
-     * Sets the value of this matrix to the result of multiplying itself
-     * with matrix m1. 
-     * @param m1 the other matrix 
-     */
-    void mul(const Matrix4& m1) {
-        mul(*this, m1);
-    }
+  /**
+   * Sets the value of this matrix to the result of multiplying itself
+   * with matrix m1.
+   * @param m1 the other matrix
+   */
+  void mul(const Matrix4 &m1) { mul(*this, m1); }
 
-    /**
-     * Sets the value of this matrix to the result of multiplying
-     * the two argument matrices together. 
-     * @param m1 the first matrix 
-     * @param m2 the second matrix 
-     */
-    void mul(const Matrix4& m1, const Matrix4& m2);
+  /**
+   * Sets the value of this matrix to the result of multiplying
+   * the two argument matrices together.
+   * @param m1 the first matrix
+   * @param m2 the second matrix
+   */
+  void mul(const Matrix4 &m1, const Matrix4 &m2);
 
-    /**
-      * Multiplies the transpose of matrix m1 times the transpose of matrix m2,
-      * and places the result into this.
-      * @param m1 The matrix on the left hand side of the multiplication
-      * @param m2 The matrix on the right hand side of the multiplication
-      */
-    void mulTransposeBoth(const Matrix4& m1, const Matrix4& m2) {
-        mul(m2, m1);
-        transpose();
-    }
+  /**
+   * Multiplies the transpose of matrix m1 times the transpose of matrix m2,
+   * and places the result into this.
+   * @param m1 The matrix on the left hand side of the multiplication
+   * @param m2 The matrix on the right hand side of the multiplication
+   */
+  void mulTransposeBoth(const Matrix4 &m1, const Matrix4 &m2) {
+    mul(m2, m1);
+    transpose();
+  }
 
-    /**
-      * Multiplies matrix m1 times the transpose of matrix m2, and places the
-      * result into this.
-      * @param m1 The matrix on the left hand side of the multiplication
-      * @param m2 The matrix on the right hand side of the multiplication
-      */
-    void mulTransposeRight(const Matrix4& m1, const Matrix4& m2);
-    
-    /**
-      * Multiplies the transpose of matrix m1 times matrix m2, and places the
-      * result into this.
-      * @param m1 The matrix on the left hand side of the multiplication
-      * @param m2 The matrix on the right hand side of the multiplication
-      */
-    void mulTransposeLeft(const Matrix4& m1, const Matrix4& m2);
+  /**
+   * Multiplies matrix m1 times the transpose of matrix m2, and places the
+   * result into this.
+   * @param m1 The matrix on the left hand side of the multiplication
+   * @param m2 The matrix on the right hand side of the multiplication
+   */
+  void mulTransposeRight(const Matrix4 &m1, const Matrix4 &m2);
 
-    /**
-     * Returns true if all of the data members of Matrix4 m1 are
-     * equal to the corresponding data members in this Matrix4. 
-     * @param m1 The matrix with which the comparison is made. 
-     * @return true or false 
-     */
-    bool equals(const Matrix4& m1) const;
+  /**
+   * Multiplies the transpose of matrix m1 times matrix m2, and places the
+   * result into this.
+   * @param m1 The matrix on the left hand side of the multiplication
+   * @param m2 The matrix on the right hand side of the multiplication
+   */
+  void mulTransposeLeft(const Matrix4 &m1, const Matrix4 &m2);
 
-    /**
-      * Returns true if the L-infinite distance between this matrix and matrix
-      * m1 is less than or equal to the epsilon parameter, otherwise returns
-      * false. The L-infinite distance is equal to MAX[i=0,1,2,3 ; j=0,1,2,3 ;
-      * abs(this.m(i,j) - m1.m(i,j)]
-      * @param m1 The matrix to be compared to this matrix
-      * @param epsilon the threshold value
-      */
-    bool epsilonEquals(const Matrix4& m1, T epsilon) const;
+  /**
+   * Returns true if all of the data members of Matrix4 m1 are
+   * equal to the corresponding data members in this Matrix4.
+   * @param m1 The matrix with which the comparison is made.
+   * @return true or false
+   */
+  bool equals(const Matrix4 &m1) const;
 
-    /**
-     * Returns a hash number based on the data values in this
-     * object.  Two different Matrix4 objects with identical data values
-     * (ie, returns true for equals(Matrix4) ) will return the same hash
-     * number.  Two objects with different data members may return the
-     * same hash value, although this is not likely.
-     * @return the integer hash value 
-     */
-    size_t hashCode() const {
-        return VmUtil<T>::hashCode(sizeof *this, this);
-    }
+  /**
+   * Returns true if the L-infinite distance between this matrix and matrix
+   * m1 is less than or equal to the epsilon parameter, otherwise returns
+   * false. The L-infinite distance is equal to MAX[i=0,1,2,3 ; j=0,1,2,3 ;
+   * abs(this.m(i,j) - m1.m(i,j)]
+   * @param m1 The matrix to be compared to this matrix
+   * @param epsilon the threshold value
+   */
+  bool epsilonEquals(const Matrix4 &m1, T epsilon) const;
 
-    /**
-     * Transform the vector vec using this Matrix4 and place the
-     * result into vecOut.
-     * @param vec the T precision vector to be transformed
-     * @param vecOut the vector into which the transformed values are placed
-     */
-    void transform(const Tuple4<T>& vec, Tuple4<T>* vecOut) const;
+  /**
+   * Returns a hash number based on the data values in this
+   * object.  Two different Matrix4 objects with identical data values
+   * (ie, returns true for equals(Matrix4) ) will return the same hash
+   * number.  Two objects with different data members may return the
+   * same hash value, although this is not likely.
+   * @return the integer hash value
+   */
+  size_t hashCode() const { return VmUtil<T>::hashCode(sizeof *this, this); }
 
-    /**
-     * Transform the vector vec using this Matrix4 and place the
-     * result back into vec.
-     * @param vec the T precision vector to be transformed
-     */
-    void transform(Tuple4<T>* vec) const {
-        transform(*vec, vec);
-    }
+  /**
+   * Transform the vector vec using this Matrix4 and place the
+   * result into vecOut.
+   * @param vec the T precision vector to be transformed
+   * @param vecOut the vector into which the transformed values are placed
+   */
+  void transform(const Tuple4<T> &vec, Tuple4<T> *vecOut) const;
+
+  /**
+   * Transform the vector vec using this Matrix4 and place the
+   * result back into vec.
+   * @param vec the T precision vector to be transformed
+   */
+  void transform(Tuple4<T> *vec) const { transform(*vec, vec); }
 
 #if 0
     /**
@@ -965,26 +958,25 @@ public:
     }
 #endif
 
-    /**
-      * Transforms the point parameter with this Matrix4 and places the result
-      * into pointOut. The fourth element of the point input paramter is assumed
-      * to be one.
-      * @param point the input point to be transformed.
-      * @param pointOut the transformed point
-      */
-    void transform(const Point3<T>& point, Point3<T>* pointOut) const;
+  /**
+   * Transforms the point parameter with this Matrix4 and places the result
+   * into pointOut. The fourth element of the point input paramter is assumed
+   * to be one.
+   * @param point the input point to be transformed.
+   * @param pointOut the transformed point
+   */
+  void transform(const Point3<T> &point, Point3<T> *pointOut) const;
 
-
-    /**
-     * Transforms the point parameter with this Matrix4 and
-     * places the result back into point.  The fourth element of the
-     * point input paramter is assumed to be one.
-     * @param point the input point to be transformed.
-     */
-    void transform(Point3<T>* point) const {
-        assert(point != 0);
-        transform(*point, point);
-    }
+  /**
+   * Transforms the point parameter with this Matrix4 and
+   * places the result back into point.  The fourth element of the
+   * point input paramter is assumed to be one.
+   * @param point the input point to be transformed.
+   */
+  void transform(Point3<T> *point) const {
+    assert(point != 0);
+    transform(*point, point);
+  }
 
 #if 0
     /**
@@ -1013,23 +1005,23 @@ public:
     }
 #endif
 
-    /**
-     * Transforms the normal parameter by this Matrix4 and places the value
-     * into normalOut.  The fourth element of the normal is assumed to be zero.
-     * @param normal the input normal to be transformed.
-     * @param normalOut the transformed normal
-     */
-    void transform(const Vector3<T>& normal, Vector3<T>* normalOut) const;
+  /**
+   * Transforms the normal parameter by this Matrix4 and places the value
+   * into normalOut.  The fourth element of the normal is assumed to be zero.
+   * @param normal the input normal to be transformed.
+   * @param normalOut the transformed normal
+   */
+  void transform(const Vector3<T> &normal, Vector3<T> *normalOut) const;
 
-    /**
-     * Transforms the normal parameter by this transform and places the value
-     * back into normal.  The fourth element of the normal is assumed to be zero.
-     * @param normal the input normal to be transformed.
-     */
-    void transform(Vector3<T>* normal) const {
-        assert(normal != 0);
-        transform(*normal, normal);
-    }
+  /**
+   * Transforms the normal parameter by this transform and places the value
+   * back into normal.  The fourth element of the normal is assumed to be zero.
+   * @param normal the input normal to be transformed.
+   */
+  void transform(Vector3<T> *normal) const {
+    assert(normal != 0);
+    transform(*normal, normal);
+  }
 
 #if 0
     /**
@@ -1056,17 +1048,17 @@ public:
     }
 #endif
 
-    /**
-      * Sets the rotational component (upper 3x3) of this matrix to the matrix
-      * values in the T precision Matrix3d argument; the other elements of
-      * this matrix are unchanged; a singular value decomposition is performed
-      * on this object's upper 3x3 matrix to factor out the scale, then this
-      * object's upper 3x3 matrix components are replaced by the passed rotation
-      * components, and then the scale is reapplied to the rotational
-      * components.
-      * @param m1 T precision 3x3 matrix
-      */
-    void setRotation(const Matrix3<T>& m1);
+  /**
+   * Sets the rotational component (upper 3x3) of this matrix to the matrix
+   * values in the T precision Matrix3d argument; the other elements of
+   * this matrix are unchanged; a singular value decomposition is performed
+   * on this object's upper 3x3 matrix to factor out the scale, then this
+   * object's upper 3x3 matrix components are replaced by the passed rotation
+   * components, and then the scale is reapplied to the rotational
+   * components.
+   * @param m1 T precision 3x3 matrix
+   */
+  void setRotation(const Matrix3<T> &m1);
 
 #if 0
     /**
@@ -1121,67 +1113,68 @@ public:
     }
 #endif
 
-    /**
-      * Sets the rotational component (upper 3x3) of this matrix to the matrix
-      * equivalent values of the quaternion argument; the other elements of this
-      * matrix are unchanged; a singular value decomposition is performed on
-      * this object's upper 3x3 matrix to factor out the scale, then this
-      * object's upper 3x3 matrix components are replaced by the matrix
-      * equivalent of the quaternion, and then the scale is reapplied to the
-      * rotational components.
-      * @param q1 the quaternion that specifies the rotation
-      */
-    void setRotation(const Quat4<T>& q1);
+  /**
+   * Sets the rotational component (upper 3x3) of this matrix to the matrix
+   * equivalent values of the quaternion argument; the other elements of this
+   * matrix are unchanged; a singular value decomposition is performed on
+   * this object's upper 3x3 matrix to factor out the scale, then this
+   * object's upper 3x3 matrix components are replaced by the matrix
+   * equivalent of the quaternion, and then the scale is reapplied to the
+   * rotational components.
+   * @param q1 the quaternion that specifies the rotation
+   */
+  void setRotation(const Quat4<T> &q1);
 
-    /**
-      * Sets the rotational component (upper 3x3) of this matrix to the matrix
-      * equivalent values of the axis-angle argument; the other elements of this
-      * matrix are unchanged; a singular value decomposition is performed on
-      * this object's upper 3x3 matrix to factor out the scale, then this
-      * object's upper 3x3 matrix components are replaced by the matrix
-      * equivalent of the axis-angle, and then the scale is reapplied to the
-      * rotational components.
-      * @param a1 the axis-angle to be converted (x, y, z, angle)
-      */
-    void setRotation(const AxisAngle4<T>& a1);
+  /**
+   * Sets the rotational component (upper 3x3) of this matrix to the matrix
+   * equivalent values of the axis-angle argument; the other elements of this
+   * matrix are unchanged; a singular value decomposition is performed on
+   * this object's upper 3x3 matrix to factor out the scale, then this
+   * object's upper 3x3 matrix components are replaced by the matrix
+   * equivalent of the axis-angle, and then the scale is reapplied to the
+   * rotational components.
+   * @param a1 the axis-angle to be converted (x, y, z, angle)
+   */
+  void setRotation(const AxisAngle4<T> &a1);
 
-    /**
-      * Sets this matrix to all zeros.
-      */
-    void setZero();
+  /**
+   * Sets this matrix to all zeros.
+   */
+  void setZero();
 
-    /**
-      * Negates the value of this matrix: this = -this.
-      */
-    void negate();
+  /**
+   * Negates the value of this matrix: this = -this.
+   */
+  void negate();
 
-    /**
-      * Sets the value of this matrix equal to the negation of of the Matrix4
-      * parameter.
-      * @param m1 The source matrix
-      */
-    void negate(const Matrix4& m1) {
-        set(m1);
-        negate();
-    }
+  /**
+   * Sets the value of this matrix equal to the negation of of the Matrix4
+   * parameter.
+   * @param m1 The source matrix
+   */
+  void negate(const Matrix4 &m1) {
+    set(m1);
+    negate();
+  }
 
-    /**
-     * Returns a string that contains the values of this Matrix4.
-     * @return the String representation
-     */
+  /**
+   * Returns a string that contains the values of this Matrix4.
+   * @return the String representation
+   */
 #ifdef VM_INCLUDE_TOSTRING
 VM_STRING_STD::string toString() const;
 #endif
 
 protected:
-    /**
-      * Performs SVD on this matrix and gets scale and rotation.
-      * Rotation is placed into rot3, and rot4.
-      * @param rot3 the rotation factor(Matrix3d). if null, ignored
-      * @param rot4 the rotation factor(Matrix4) only upper 3x3 elements are changed. if null, ignored
-      * @return scale factor
-      */
-    T SVD(Matrix3<T>* rot3, Matrix4* rot4) const;
+  /**
+   * Performs SVD on this matrix and gets scale and rotation.
+   * Rotation is placed into rot3, and rot4.
+   * @param rot3 the rotation factor(Matrix3d). if null, ignored
+   * @param rot4 the rotation factor(Matrix4) only upper 3x3 elements are
+   * changed. if null, ignored
+   * @return scale factor
+   */
+  T SVD(Matrix3<T> *rot3, Matrix4 *rot4) const;
 
 #if 0
     /**
@@ -1215,35 +1208,35 @@ protected:
     }
 #endif
 
-    /**
-      * Multiplies 3x3 upper elements of this matrix by a scalar.
-      * The other elements are unchanged.
-      */
-    void mulRotationScale(T scale);
+  /**
+   * Multiplies 3x3 upper elements of this matrix by a scalar.
+   * The other elements are unchanged.
+   */
+  void mulRotationScale(T scale);
 
-    /**
-      * Sets only 3x3 upper elements of this matrix to that of m1.
-      * The other elements are unchanged.
-      */
-    void setRotationScale(const Matrix4& m1);
+  /**
+   * Sets only 3x3 upper elements of this matrix to that of m1.
+   * The other elements are unchanged.
+   */
+  void setRotationScale(const Matrix4 &m1);
 
-    /**
-     * Sets this matrix from the 4 values of quaternion.
-     * @param x q.x
-     * @param y q.y
-     * @param z q.z
-     * @param w q.w
-     */
-    void setFromQuat(T x, T y, T z, T w);
+  /**
+   * Sets this matrix from the 4 values of quaternion.
+   * @param x q.x
+   * @param y q.y
+   * @param z q.z
+   * @param w q.w
+   */
+  void setFromQuat(T x, T y, T z, T w);
 
-    /**
-     * Sets this matrix from the 4 values of axisAngle.
-     * @param x a.x
-     * @param y a.y
-     * @param z a.z
-     * @param angle a.angle
-     */
-    void setFromAxisAngle(T x, T y, T z, T angle);
+  /**
+   * Sets this matrix from the 4 values of axisAngle.
+   * @param x a.x
+   * @param y a.y
+   * @param z a.z
+   * @param angle a.angle
+   */
+  void setFromAxisAngle(T x, T y, T z, T angle);
 
 #if 0
     /**
@@ -1259,11 +1252,9 @@ protected:
 #endif
 
 public:
-    // copy constructor and operator = is made by complier
+  // copy constructor and operator = is made by complier
 
-    bool operator==(const Matrix4& m1) const {
-        return equals(m1);
-    }
+  bool operator==(const Matrix4 &m1) const { return equals(m1); }
 #ifdef VM_INCLUDE_SUBSCRIPTION_OPERATOR
     T operator()(size_t row, size_t col) const {
         return getElement(row, col);
@@ -1272,83 +1263,72 @@ public:
         return getElementReference(row, col);
     }
 #endif
-    Matrix4& operator+=(const Matrix4& m1) {
-        add(m1);
-        return *this;
-    }
-    Matrix4& operator-=(const Matrix4& m1) {
-        sub(m1);
-        return *this;
-    }
-    Matrix4& operator*=(const Matrix4& m1) {
-        mul(m1);
-        return *this;
-    }
-    Matrix4& operator*=(T s) {
-        mul(s);
-        return *this;
-    }
-    Matrix4 operator+(const Matrix4& m1) const {
-        return (Matrix4(*this)).operator+=(m1);
-    }
-    Matrix4 operator-(const Matrix4& m1) const {
-        return (Matrix4(*this)).operator-=(m1);
-    }
-    Matrix4 operator*(const Matrix4& m1) const {
-        return (Matrix4(*this)).operator*=(m1);
-    }
-    Matrix4 operator*(T s) const {
-        return (Matrix4(*this)).operator*=(s);
-    }
-
+  Matrix4 &operator+=(const Matrix4 &m1) {
+    add(m1);
+    return *this;
+  }
+  Matrix4 &operator-=(const Matrix4 &m1) {
+    sub(m1);
+    return *this;
+  }
+  Matrix4 &operator*=(const Matrix4 &m1) {
+    mul(m1);
+    return *this;
+  }
+  Matrix4 &operator*=(T s) {
+    mul(s);
+    return *this;
+  }
+  Matrix4 operator+(const Matrix4 &m1) const {
+    return (Matrix4(*this)).operator+=(m1);
+  }
+  Matrix4 operator-(const Matrix4 &m1) const {
+    return (Matrix4(*this)).operator-=(m1);
+  }
+  Matrix4 operator*(const Matrix4 &m1) const {
+    return (Matrix4(*this)).operator*=(m1);
+  }
+  Matrix4 operator*(T s) const { return (Matrix4(*this)).operator*=(s); }
 };
 
-template <class T>
-inline
-Matrix4<T> operator*(T s, const Matrix4<T>& m) {
-    return (Matrix4<T>(m)).operator*=(s);
+template <class T> inline Matrix4<T> operator*(T s, const Matrix4<T> &m) {
+  return (Matrix4<T>(m)).operator*=(s);
 }
 
 template <class T>
-inline
-Matrix4<T> operator*(const Matrix4<T>& m1, const Matrix4<T>& m2) {
-    return (Matrix4<T>(m1)).operator*=(m2);
+inline Matrix4<T> operator*(const Matrix4<T> &m1, const Matrix4<T> &m2) {
+  return (Matrix4<T>(m1)).operator*=(m2);
 }
 
 template <class T>
-inline
-Tuple4<T> operator*(const Matrix4<T>& m, const Tuple4<T>& t) {
-    Tuple4<T> out;
-    m.transform(t,&out); 
-    return out;
+inline Tuple4<T> operator*(const Matrix4<T> &m, const Tuple4<T> &t) {
+  Tuple4<T> out;
+  m.transform(t, &out);
+  return out;
 }
 
 template <class T>
-inline
-Vector4<T> operator*(const Matrix4<T>& m, const Vector4<T>& t) {
-    return operator*(m, (const Tuple3<T>&)t);
+inline Vector4<T> operator*(const Matrix4<T> &m, const Vector4<T> &t) {
+  return operator*(m, (const Tuple3<T> &)t);
 }
 
 template <class T>
-inline
-Point4<T> operator*(const Matrix4<T>& m, const Point4<T>& t) {
-    return operator*(m, (const Tuple3<T>&)t);
+inline Point4<T> operator*(const Matrix4<T> &m, const Point4<T> &t) {
+  return operator*(m, (const Tuple3<T> &)t);
 }
 
 template <class T>
-inline
-Vector3<T> operator*(const Matrix4<T>& m, const Vector3<T>& t) {
-    Vector3<T> out;
-    m.transform(t,&out); 
-    return out;
+inline Vector3<T> operator*(const Matrix4<T> &m, const Vector3<T> &t) {
+  Vector3<T> out;
+  m.transform(t, &out);
+  return out;
 }
 
 template <class T>
-inline
-Point3<T> operator*(const Matrix4<T>& m, const Point3<T>& t) {
-    Point3<T> out;
-    m.transform(t,&out); 
-    return out;
+inline Point3<T> operator*(const Matrix4<T> &m, const Point3<T> &t) {
+  Point3<T> out;
+  m.transform(t, &out);
+  return out;
 }
 
 VM_END_NS
@@ -1364,6 +1344,5 @@ typedef Matrix4<double> Matrix4d;
 typedef Matrix4<float> Matrix4f;
 
 VM_END_NS
-
 
 #endif /* MATRIX4__H */
