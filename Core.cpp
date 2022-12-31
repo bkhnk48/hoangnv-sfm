@@ -186,15 +186,18 @@ void createAgents()
 	// test
 
 	// setFlowFeature(agent, numOfPeople[0], randomFloat(-20.3F, -6.0), randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0), randomFloat(-5.0, -3.0));
-	// for (int temp = 0; temp < 1; temp++)
+	// for (int temp = 0; temp < 3; temp++)
 	// {
 	// 	agent = new Agent;
 	// 	// agent->setPosition(randomFloat(-20.3F, -6.0), randomFloat(-2.0, 2.0));
-	// 	agent->setPosition(randomFloat(-3.0, -2.0), randomFloat(4.0, 5.0));
-	// 	agent->setPath(randomFloat(-20.3F, -6.0), randomFloat(-2.0, 2.0), 1.0);
+	// 	agent->setPosition(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0));
+	// 	float x = randomFloat(-20.3F, -6.0);
+	// 	float y = randomFloat(-2.0, 2.0);
+	// 	agent->setPath(x, y, 1.0);
+	// 	agent->setDestination(x, y);
 	// 	// agent->setPath(randomFloat(22.0, 25.0), randomFloat(-3.0, -2.0), 1.0);
-	// 	agent->setDesiredSpeed(1.3);
-	// 	std::vector<float> color = Utility::getPedesColor(displayMode, maxSpeed, minSpeed, agent->getDesiredSpeed());
+	// 	agent->setDesiredSpeed(1);
+	// 	std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
 	// 	agent->setColour(color[0], color[1], color[2]);
 	// 	socialForce->addAgent(agent);
 	// }
@@ -208,7 +211,6 @@ void createAgents()
 		// From Left to Right
 		case 0:
 		{
-
 			// setFlowFeature(agent, numOfPeople[idx], randomFloat(-20.3F, -6.0), randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0), randomFloat(-5.0, -3.0));
 			for (int temp = 0; temp < numOfPeople[idx]; temp++)
 			{
@@ -217,6 +219,7 @@ void createAgents()
 				agent->setPosition(position[0], position[1]);
 				vector<float> desList = Utility::getPedesDestination(0, 0, (float)inputData[2]);
 				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
 				agent->setDesiredSpeed(velocityList[pedesCount]);
 				pedesCount = pedesCount + 1;
 				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
@@ -235,6 +238,7 @@ void createAgents()
 				agent->setPosition(position[0], position[1]);
 				vector<float> desList = Utility::getPedesDestination(0, 1, (float)inputData[2]);
 				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
 				agent->setDesiredSpeed(velocityList[pedesCount]);
 				pedesCount = pedesCount + 1;
 				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
@@ -253,6 +257,7 @@ void createAgents()
 				agent->setPosition(position[0], position[1]);
 				vector<float> desList = Utility::getPedesDestination(0, 2, (float)inputData[2]);
 				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
 				agent->setDesiredSpeed(velocityList[pedesCount]);
 				pedesCount = pedesCount + 1;
 				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
@@ -272,6 +277,7 @@ void createAgents()
 				agent->setPosition(position[0], position[1]);
 				vector<float> desList = Utility::getPedesDestination(1, 0, (float)inputData[2]);
 				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
 				agent->setDesiredSpeed(velocityList[pedesCount]);
 				pedesCount = pedesCount + 1;
 				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
@@ -290,6 +296,7 @@ void createAgents()
 				agent->setPosition(position[0], position[1]);
 				vector<float> desList = Utility::getPedesDestination(1, 1, (float)inputData[2]);
 				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
 				agent->setDesiredSpeed(velocityList[pedesCount]);
 				pedesCount = pedesCount + 1;
 				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
@@ -308,6 +315,7 @@ void createAgents()
 				agent->setPosition(position[0], position[1]);
 				vector<float> desList = Utility::getPedesDestination(1, 2, (float)inputData[2]);
 				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
 				agent->setDesiredSpeed(velocityList[pedesCount]);
 				pedesCount = pedesCount + 1;
 				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
@@ -316,7 +324,6 @@ void createAgents()
 			}
 			break;
 		}
-
 		// From Top to Bottom
 		case 6:
 		{
@@ -328,6 +335,7 @@ void createAgents()
 				agent->setPosition(position[0], position[1]);
 				vector<float> desList = Utility::getPedesDestination(2, 0, (float)inputData[2]);
 				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
 				agent->setDesiredSpeed(velocityList[pedesCount]);
 				pedesCount = pedesCount + 1;
 				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
@@ -346,6 +354,7 @@ void createAgents()
 				agent->setPosition(position[0], position[1]);
 				vector<float> desList = Utility::getPedesDestination(2, 1, (float)inputData[2]);
 				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
 				agent->setDesiredSpeed(velocityList[pedesCount]);
 				pedesCount = pedesCount + 1;
 				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
@@ -364,6 +373,7 @@ void createAgents()
 				agent->setPosition(position[0], position[1]);
 				vector<float> desList = Utility::getPedesDestination(2, 2, (float)inputData[2]);
 				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
 				agent->setDesiredSpeed(velocityList[pedesCount]);
 				pedesCount = pedesCount + 1;
 				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
@@ -372,7 +382,6 @@ void createAgents()
 			}
 			break;
 		}
-
 		// From Bottom to Top
 		case 9:
 		{
@@ -384,6 +393,7 @@ void createAgents()
 				agent->setPosition(position[0], position[1]);
 				vector<float> desList = Utility::getPedesDestination(3, 0, (float)inputData[2]);
 				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
 				agent->setDesiredSpeed(velocityList[pedesCount]);
 				pedesCount = pedesCount + 1;
 				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
@@ -402,6 +412,7 @@ void createAgents()
 				agent->setPosition(position[0], position[1]);
 				vector<float> desList = Utility::getPedesDestination(3, 1, (float)inputData[2]);
 				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
 				agent->setDesiredSpeed(velocityList[pedesCount]);
 				pedesCount = pedesCount + 1;
 				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
@@ -420,6 +431,7 @@ void createAgents()
 				agent->setPosition(position[0], position[1]);
 				vector<float> desList = Utility::getPedesDestination(3, 2, (float)inputData[2]);
 				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
 				agent->setDesiredSpeed(velocityList[pedesCount]);
 				pedesCount = pedesCount + 1;
 				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
@@ -629,13 +641,18 @@ void update()
 	for (Agent *agent : agents)
 	{
 		Point3f src = agent->getPosition();
-		Point3f des = agent->getPath();
-		float distance = src.distance(des);
-		if (distance > 1)
+		Point3f des = agent->getDestination();
+
+		if (agent->getVelocity().length() < Utility::LOWER_SPEED_LIMIT + 0.2 && agent->getMinDistanceToWalls(socialForce->getWalls(), src, agent->getRadius()) < 0.2 && !agent->hadInterDes)
 		{
-			break;
+			agent->hadInterDes = true;
+			Point3f intermediateDes = Utility::getIntermediateDes(src, (float)inputData[2], (float)inputData[2]);
+			agent->setPath(intermediateDes.x, intermediateDes.y, 1.0);
+			agent->setPath(des.x, des.y, 1.0);
 		}
-		else
+
+		float distance = src.distance(des);
+		if (distance <= 1 || isnan(distance))
 		{
 			count = count + 1;
 		}

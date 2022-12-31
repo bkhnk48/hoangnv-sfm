@@ -105,11 +105,11 @@ std::vector<double> Utility::getPedesVelocity(int numPedes, double n_dist)
         double velocity = std * elem.first * 0.1 + Utility::MEAN;
         if (velocity > 1.8)
         {
-            velocity = 2;
+            velocity = Utility::UPPER_SPEED_LIMIT;
         }
         else if (velocity < 0.6)
         {
-            velocity = 0.4;
+            velocity = Utility::LOWER_SPEED_LIMIT;
         }
 
         v.push_back(velocity);
@@ -170,17 +170,17 @@ std::vector<float> Utility::getPedesDestination(int direction, int side, float w
         switch (side)
         {
         case 0:
-            v.insert(v.end(), {Utility::randomFloat(20.0, 25.0),
+            v.insert(v.end(), {Utility::randomFloat(Utility::WIDTH_LIMIT, Utility::WIDTH_LIMIT + 3),
                                Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3, walkwayWidth / 2), radius});
             return v;
             break;
         case 1:
-            v.insert(v.end(), {Utility::randomFloat(20.0, 25.0),
+            v.insert(v.end(), {Utility::randomFloat(Utility::WIDTH_LIMIT, Utility::WIDTH_LIMIT + 3),
                                Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3, walkwayWidth / 2 - walkwayWidth / 3), radius});
             return v;
             break;
         case 2:
-            v.insert(v.end(), {Utility::randomFloat(20.0, 25.0),
+            v.insert(v.end(), {Utility::randomFloat(Utility::WIDTH_LIMIT, Utility::WIDTH_LIMIT + 3),
                                Utility::randomFloat(-walkwayWidth / 2, -walkwayWidth / 2 + walkwayWidth / 3), radius});
             return v;
             break;
@@ -193,17 +193,17 @@ std::vector<float> Utility::getPedesDestination(int direction, int side, float w
         switch (side)
         {
         case 0:
-            v.insert(v.end(), {Utility::randomFloat(-25.0, -20.0),
+            v.insert(v.end(), {Utility::randomFloat(-Utility::WIDTH_LIMIT - 3, -Utility::WIDTH_LIMIT),
                                Utility::randomFloat(-walkwayWidth / 2, -walkwayWidth / 2 + walkwayWidth / 3), radius});
             return v;
             break;
         case 1:
-            v.insert(v.end(), {Utility::randomFloat(-25.0, -20.0),
+            v.insert(v.end(), {Utility::randomFloat(-Utility::WIDTH_LIMIT - 3, -Utility::WIDTH_LIMIT),
                                Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3, walkwayWidth / 2 - walkwayWidth / 3), radius});
             return v;
             break;
         case 2:
-            v.insert(v.end(), {Utility::randomFloat(-25.0, -20.0),
+            v.insert(v.end(), {Utility::randomFloat(-Utility::WIDTH_LIMIT - 3, -Utility::WIDTH_LIMIT),
                                Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3, walkwayWidth / 2), radius});
             return v;
             break;
@@ -217,17 +217,17 @@ std::vector<float> Utility::getPedesDestination(int direction, int side, float w
         {
         case 0:
             v.insert(v.end(), {Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3, walkwayWidth / 2),
-                               Utility::randomFloat(-16, -13), radius});
+                               Utility::randomFloat(-Utility::HEIGHT_LIMIT - 3, -Utility::HEIGHT_LIMIT), radius});
             return v;
             break;
         case 1:
             v.insert(v.end(), {Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3, walkwayWidth / 2 - walkwayWidth / 3),
-                               Utility::randomFloat(-16, -13), radius});
+                               Utility::randomFloat(-Utility::HEIGHT_LIMIT - 3, -Utility::HEIGHT_LIMIT), radius});
             return v;
             break;
         case 2:
             v.insert(v.end(), {Utility::randomFloat(-walkwayWidth / 2, -walkwayWidth / 2 + walkwayWidth / 3),
-                               Utility::randomFloat(-16, -13), radius});
+                               Utility::randomFloat(-Utility::HEIGHT_LIMIT - 3, -Utility::HEIGHT_LIMIT), radius});
             return v;
             break;
         default:
@@ -240,17 +240,17 @@ std::vector<float> Utility::getPedesDestination(int direction, int side, float w
         {
         case 0:
             v.insert(v.end(), {Utility::randomFloat(-walkwayWidth / 2, -walkwayWidth / 2 + walkwayWidth / 3),
-                               Utility::randomFloat(13, 16), radius});
+                               Utility::randomFloat(Utility::HEIGHT_LIMIT, Utility::HEIGHT_LIMIT + 3), radius});
             return v;
             break;
         case 1:
             v.insert(v.end(), {Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3, walkwayWidth / 2 - walkwayWidth / 3),
-                               Utility::randomFloat(13, 16), radius});
+                               Utility::randomFloat(Utility::HEIGHT_LIMIT, Utility::HEIGHT_LIMIT + 3), radius});
             return v;
             break;
         case 2:
             v.insert(v.end(), {Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3, walkwayWidth / 2),
-                               Utility::randomFloat(13, 16), radius});
+                               Utility::randomFloat(Utility::HEIGHT_LIMIT, Utility::HEIGHT_LIMIT + 3), radius});
             return v;
             break;
         default:
@@ -284,6 +284,12 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength, flo
     int sampled_value = choices[d(gen)];
     // cout << "sampled_value " << sampled_value << endl;
 
+    float horLandmark = Utility::WIDTH_LIMIT;
+    float verLandmark = Utility::HEIGHT_LIMIT;
+    if (totalLength > 40) {
+        horLandmark = totalLength / 2;
+        verLandmark = totalLength / 2;
+    }
     // Calculate coordinates from Head to Tail of each Caravan
     switch (direction)
     {
@@ -292,17 +298,17 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength, flo
         switch (sampled_value)
         {
         case 0:
-            v.insert(v.end(), {Utility::randomFloat(-20 + centerLength / 2, -20 + totalLength / 2),
+            v.insert(v.end(), {Utility::randomFloat(-horLandmark + centerLength / 2, -horLandmark + totalLength / 2),
                                Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
             return v;
             break;
         case 1:
-            v.insert(v.end(), {Utility::randomFloat(-20 - centerLength / 2, -20 + centerLength / 2),
+            v.insert(v.end(), {Utility::randomFloat(-horLandmark - centerLength / 2, -horLandmark + centerLength / 2),
                                Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
             return v;
             break;
         case 2:
-            v.insert(v.end(), {Utility::randomFloat(-20 - totalLength / 2, -20 - centerLength / 2),
+            v.insert(v.end(), {Utility::randomFloat(-horLandmark - totalLength / 2, -horLandmark - centerLength / 2),
                                Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
             return v;
             break;
@@ -316,17 +322,17 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength, flo
         switch (sampled_value)
         {
         case 0:
-            v.insert(v.end(), {Utility::randomFloat(20 - totalLength / 2, 20 - centerLength / 2),
+            v.insert(v.end(), {Utility::randomFloat(horLandmark - totalLength / 2, horLandmark - centerLength / 2),
                                Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
             return v;
             break;
         case 1:
-            v.insert(v.end(), {Utility::randomFloat(20 - centerLength / 2, 20 + centerLength / 2),
+            v.insert(v.end(), {Utility::randomFloat(horLandmark - centerLength / 2, horLandmark + centerLength / 2),
                                Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
             return v;
             break;
         case 2:
-            v.insert(v.end(), {Utility::randomFloat(20 + centerLength / 2, 20 + totalLength / 2),
+            v.insert(v.end(), {Utility::randomFloat(horLandmark + centerLength / 2, horLandmark + totalLength / 2),
                                Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
             return v;
             break;
@@ -341,17 +347,17 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength, flo
         {
         case 0:
             v.insert(v.end(), {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                               Utility::randomFloat(15 - totalLength / 2, 15 - centerLength / 2)});
+                               Utility::randomFloat(verLandmark - totalLength / 2, verLandmark - centerLength / 2)});
             return v;
             break;
         case 1:
             v.insert(v.end(), {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                               Utility::randomFloat(15 - centerLength / 2, 15 + centerLength / 2)});
+                               Utility::randomFloat(verLandmark - centerLength / 2, verLandmark + centerLength / 2)});
             return v;
             break;
         case 2:
             v.insert(v.end(), {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                               Utility::randomFloat(15 + centerLength / 2, 15 + totalLength / 2)});
+                               Utility::randomFloat(verLandmark + centerLength / 2, verLandmark + totalLength / 2)});
             return v;
             break;
         default:
@@ -365,17 +371,17 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength, flo
         {
         case 0:
             v.insert(v.end(), {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                               Utility::randomFloat(-15 + centerLength / 2, -15 + totalLength / 2)});
+                               Utility::randomFloat(-verLandmark + centerLength / 2, -verLandmark + totalLength / 2)});
             return v;
             break;
         case 1:
             v.insert(v.end(), {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                               Utility::randomFloat(-15 - centerLength / 2, -15 + centerLength / 2)});
+                               Utility::randomFloat(-verLandmark - centerLength / 2, -verLandmark + centerLength / 2)});
             return v;
             break;
         case 2:
             v.insert(v.end(), {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                               Utility::randomFloat(-15 - totalLength / 2, -15 - centerLength / 2)});
+                               Utility::randomFloat(-verLandmark - totalLength / 2, -verLandmark - centerLength / 2)});
             return v;
             break;
         default:
@@ -615,4 +621,24 @@ std::vector<Point3f> Utility::getRouteAGV(int src, int turningDirection, float w
         break;
     }
     return v;
+}
+
+Point3f Utility::getIntermediateDes(Point3f position, float verWalkwayWidth, float horWalkwayWidth)
+{
+    if (position.x > 0 && position.y > 0)
+    {
+        return Point3f(verWalkwayWidth / 3, horWalkwayWidth / 3, 0.0);
+    }
+    else if (position.x < 0 && position.y > 0)
+    {
+        return Point3f(-verWalkwayWidth / 3, horWalkwayWidth / 3, 0.0);
+    }
+    else if (position.x < 0 && position.y < 0)
+    {
+        return Point3f(-verWalkwayWidth / 3, -horWalkwayWidth / 3, 0.0);
+    }
+    else
+    {
+        return Point3f(verWalkwayWidth / 3, -horWalkwayWidth / 3, 0.0);
+    }
 }
