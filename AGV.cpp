@@ -9,7 +9,7 @@ AGV::AGV()
 {
   id = ++agvIdx;
 
-  dimension = Vector3f(1.0F, 1.0F, 0.0);
+  dimension = Vector3f(0.5F, 1.5F, 0.0);
   distance = 0;
 
   colour.set(0.0, 0.0, 0.0);
@@ -65,7 +65,7 @@ Point3f AGV::getPath()
   }
 
   // Move Front Point to Back if Within Radius
-  if (distanceCurr.lengthSquared() == 0)
+  if (distanceCurr.lengthSquared() < 0.5F)
   {
     path.push_back(path.front());
     path.pop_front();
@@ -84,15 +84,28 @@ Point3f AGV::getAheadVector() const { return (velocity + position); }
 Point3f AGV::getNearestPoint(Point3f position_i) const
 {
   vector<Vector3f> edges;
-  float x, y, w, h;
-  x = position.x;
-  y = position.y;
-  w = dimension.x;
-  h = dimension.y;
-  edges.push_back(Vector3f(x - w / 2, y + h / 2, 0.0F));
-  edges.push_back(Vector3f(x + w / 2, y + h / 2, 0.0F));
-  edges.push_back(Vector3f(x + w / 2, y - h / 2, 0.0F));
-  edges.push_back(Vector3f(x - w / 2, y - h / 2, 0.0F));
+  float w, l;
+  Vector3f top, bottom, a, b, d1, d2, d3, d4, e_ij;
+  w = getDimension().x;
+  l = getDimension().y;
+  e_ij = path.front().position - getPosition();
+  e_ij.normalize();
+  top = getPosition() + e_ij * l * 0.5F;
+  bottom = getPosition() - e_ij * l * 0.5F;
+
+  a = Vector3f(e_ij.y, -e_ij.x, 0.0F);
+  a.normalize();
+  b = Vector3f(-e_ij.y, e_ij.x, 0.0F);
+  b.normalize();
+
+  d1 = top + a * w * 0.5F;
+  d2 = top + b * w * 0.5F;
+  d3 = bottom + b * w * 0.5F;
+  d4 = bottom + a * w * 0.5F;
+  edges.push_back(Vector3f(d1.x, d1.y, 0.0F));
+  edges.push_back(Vector3f(d2.x, d2.y, 0.0F));
+  edges.push_back(Vector3f(d3.x, d3.y, 0.0F));
+  edges.push_back(Vector3f(d4.x, d4.y, 0.0F));
   Vector3f relativeEnd, relativePos, relativeEndScal, relativePosScal;
   float dotProduct;
   vector<Point3f> nearestPoint;
@@ -134,6 +147,8 @@ Point3f AGV::getNearestPoint(Point3f position_i) const
       nearestPoint.push_back((relativeEnd * dotProduct) + edges[i]);
   }
 
+  nearestPoint.push_back(position);
+
   point = nearestPoint[0];
 
   for (int i = 0; i < nearestPoint.size(); i++)
@@ -171,15 +186,16 @@ void AGV::move(float stepTime, vector<Point3f> position_list)
 
   if (checkNearAgent(position_list))
   {
-    if (instantaneous_velocity.x > 0 && instantaneous_velocity.y > 0)
-    {
-      position = position + instantaneous_velocity * stepTime;
-      instantaneous_velocity = instantaneous_velocity - vector_acceleration * stepTime;
-    }
-    else
-    {
-      position = position;
-    }
+    // if (instantaneous_velocity.length() > Vector3f(vector_acceleration * stepTime).length())
+    // {
+    //   position = position + instantaneous_velocity * stepTime;
+    //   instantaneous_velocity = instantaneous_velocity - vector_acceleration * stepTime;
+    // }
+    // else
+    // {
+    // }
+    instantaneous_velocity.set(0, 0, 0);
+    position = position;
   }
   else
   {
@@ -190,8 +206,8 @@ void AGV::move(float stepTime, vector<Point3f> position_list)
     }
     else
     {
+      instantaneous_velocity = velocity;
       position = position + velocity * stepTime;
     }
   }
-  cout << "HELLO";
 }

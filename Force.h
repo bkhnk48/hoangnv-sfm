@@ -161,8 +161,8 @@ public:
             distance_ij = agv->getNearestPoint(position) - position;
 
             // Skip Computation if Agents i and j are Too Far Away
-            if (distance_ij.lengthSquared() > (2.0 * 2.0))
-                continue;
+            // if (distance_ij.lengthSquared() > (2.0 * 2.0))
+            //     continue;
 
             // Compute Direction of Agent j from i
             // Formula: e_ij = (position_j - position_i) / ||position_j - position_i||

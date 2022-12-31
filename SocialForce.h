@@ -6,7 +6,8 @@
 #include "Wall.h"
 #include <vector>
 
-class SocialForce {
+class SocialForce
+{
 private:
   std::vector<Agent *> crowd;
   std::vector<Wall *> walls;

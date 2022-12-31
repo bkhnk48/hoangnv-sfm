@@ -5,6 +5,7 @@ SocialForce::~SocialForce()
 {
   removeCrowd();
   removeWalls();
+  removeAGV();
 }
 
 void SocialForce::addAgent(Agent *agent) { crowd.push_back(agent); }

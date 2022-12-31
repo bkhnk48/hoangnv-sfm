@@ -470,29 +470,15 @@ void createAgents()
 void createAGVs()
 {
   AGV *agv = new AGV;
-  int option = inputData[7];
-  switch (option)
-  {
-  case 0:
-    agv->setPosition(-15.0F, -2.0F);
-    break;
-  case 1:
-    agv->setPosition(15.0F, 2.0F);
-    break;
-  case 2:
-    agv->setPosition(-2.0F, 10.0F);
-    break;
-  case 3:
-    agv->setPosition(2.0F, -10.0F);
-    break;
-  default:
-    agv->setPosition(-15.0F, -2.0F);
-    break;
-  }
+  vector<Point3f> route = Utility::getRouteAGV(inputData[7], inputData[8], inputData[2]);
+  agv->setPosition(route[0].x, route[0].y);
   agv->setTangentialVelocity(0.6F);
-  agv->setAcceleration(inputData[8]);
-  agv->setDistance((float)inputData[9]);
-  agv->setPath(8.0F, 8.0F);
+  agv->setAcceleration(inputData[9]);
+  agv->setDistance((float)inputData[10]);
+  for (int i = 1; i < route.size(); i++)
+  {
+    agv->setPath(route[i].x, route[i].y);
+  }
   socialForce->addAGV(agv);
 }
 
@@ -536,21 +522,36 @@ void drawAgents()
 void drawAGVs()
 {
   vector<AGV *> agvs = socialForce->getAGVs();
+  Vector3f e_ij;
 
   for (AGV *agv : agvs)
   {
     // Draw AGVs
     glColor3f(agv->getColour().x, agv->getColour().y, agv->getColour().z);
-    float x, y, w, h;
-    x = agv->getPosition().x;
-    y = agv->getPosition().y;
+    float w, l;
+    Vector3f top, bottom, a, b, d1, d2, d3, d4;
     w = agv->getDimension().x;
-    h = agv->getDimension().y;
+    l = agv->getDimension().y;
+    e_ij = agv->getPath() - agv->getPosition();
+    e_ij.normalize();
+    top = agv->getPosition() + e_ij * l * 0.5F;
+    bottom = agv->getPosition() - e_ij * l * 0.5F;
+
+    a = Vector3f(e_ij.y, -e_ij.x, 0.0F);
+    a.normalize();
+    b = Vector3f(-e_ij.y, e_ij.x, 0.0F);
+    b.normalize();
+
+    d1 = top + a * w * 0.5F;
+    d2 = top + b * w * 0.5F;
+    d3 = bottom + b * w * 0.5F;
+    d4 = bottom + a * w * 0.5F;
+
     glBegin(GL_QUADS);
-    glVertex3f(x - w / 2, y + h / 2, 0);
-    glVertex3f(x - w / 2, y - h / 2, 0);
-    glVertex3f(x + w / 2, y - h / 2, 0);
-    glVertex3f(x + w / 2, y + h / 2, 0);
+    glVertex3f(d1.x, d1.y, 0);
+    glVertex3f(d2.x, d2.y, 0);
+    glVertex3f(d3.x, d3.y, 0);
+    glVertex3f(d4.x, d4.y, 0);
     glEnd();
   }
 }
