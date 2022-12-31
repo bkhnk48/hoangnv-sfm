@@ -66,6 +66,8 @@ void SocialForce::moveAGV(float stepTime)
   vector<Point3f> position_list;
   for (Agent *agent : crowd)
   {
+    if (agent->getPosition().distance(Vector3f(0, 0, 0)) > 12.0F)
+      continue;
     position_list.push_back(agent->getPosition());
   }
 
