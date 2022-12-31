@@ -74,12 +74,13 @@ void update();
 
 void computeFPS();
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   inputData = Utility::readInput("input.txt");
 
   glutInit(&argc, argv); // Initialize GLUT
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA |
-                      GLUT_DEPTH); // Set display mode  Default mode used
+                      GLUT_DEPTH);         // Set display mode  Default mode used
   glutInitWindowSize(winWidth, winHeight); // Set window width and height
   glutInitWindowPosition(90, 90);          // Set window position
   glutCreateWindow(
@@ -87,7 +88,8 @@ int main(int argc, char **argv) {
                                               // display window
 
   animate = true;
-  if ((int)inputData[6] == 0) {
+  if ((int)inputData[6] == 0)
+  {
     glutHideWindow();
   }
 
@@ -103,7 +105,8 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-void init() {
+void init()
+{
   // General Light Intensity
   GLfloat gnrlAmbient[] = {
       0.8F, 0.8F, 0.8F,
@@ -149,7 +152,8 @@ void init() {
   createAGVs();
 }
 
-void createWalls() {
+void createWalls()
+{
   Wall *wall;
 
   float walkwayWidth = (float)inputData[2];
@@ -197,7 +201,8 @@ void createWalls() {
 // 	}
 // }
 
-void createAgents() {
+void createAgents()
+{
   Agent *agent;
 
   // setFlowFeature(agent, numOfPeople[0], randomFloat(-20.3F, -6.0),
@@ -220,15 +225,19 @@ void createAgents() {
 
   int pedesCount = 0;
 
-  for (int idx = 0; idx < 12; idx++) {
-    switch (idx % 12) {
+  for (int idx = 0; idx < 12; idx++)
+  {
+    switch (idx % 12)
+    {
     // From Left to Right
-    case 0: {
+    case 0:
+    {
 
       // setFlowFeature(agent, numOfPeople[idx], randomFloat(-20.3F, -6.0),
       // randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0), randomFloat(-5.0,
       // -3.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+      for (int temp = 0; temp < numOfPeople[idx]; temp++)
+      {
         agent = new Agent;
         vector<float> position = Utility::getPedesSource(
             0, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
@@ -242,11 +251,13 @@ void createAgents() {
       }
       break;
     }
-    case 1: {
+    case 1:
+    {
       // setFlowFeature(agent, numOfPeople[idx], randomFloat(-20.3F, -6.0),
       // randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0),
       // randomFloat(-3.0, 3.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+      for (int temp = 0; temp < numOfPeople[idx]; temp++)
+      {
         agent = new Agent;
         vector<float> position = Utility::getPedesSource(
             0, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
@@ -260,11 +271,13 @@ void createAgents() {
       }
       break;
     }
-    case 2: {
+    case 2:
+    {
       // setFlowFeature(agent, numOfPeople[idx], randomFloat(-20.3F, -6.0),
       // randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0),
       // randomFloat(3.0, 5.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+      for (int temp = 0; temp < numOfPeople[idx]; temp++)
+      {
         agent = new Agent;
         vector<float> position = Utility::getPedesSource(
             0, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
@@ -279,11 +292,13 @@ void createAgents() {
       break;
     }
       // From Right to Left
-    case 3: {
+    case 3:
+    {
       // setFlowFeature(agent, numOfPeople[idx], randomFloat(6.0, 20.3F),
       // randomFloat(-4.0, 4.0), randomFloat(-25.0, -22.0), randomFloat(-5.0,
       // -3.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+      for (int temp = 0; temp < numOfPeople[idx]; temp++)
+      {
         agent = new Agent;
         vector<float> position = Utility::getPedesSource(
             1, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
@@ -297,11 +312,13 @@ void createAgents() {
       }
       break;
     }
-    case 4: {
+    case 4:
+    {
       // setFlowFeature(agent, numOfPeople[idx], randomFloat(6.0, 20.3F),
       // randomFloat(-4.0, 4.0), randomFloat(-25.0, -22.0),
       // randomFloat(-3.0, 3.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+      for (int temp = 0; temp < numOfPeople[idx]; temp++)
+      {
         agent = new Agent;
         vector<float> position = Utility::getPedesSource(
             1, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
@@ -315,11 +332,13 @@ void createAgents() {
       }
       break;
     }
-    case 5: {
+    case 5:
+    {
       // setFlowFeature(agent, numOfPeople[idx], randomFloat(6.0, 20.3F),
       // randomFloat(-4.0, 4.0), randomFloat(-25.0, -22.0),
       // randomFloat(3.0, 5.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+      for (int temp = 0; temp < numOfPeople[idx]; temp++)
+      {
         agent = new Agent;
         vector<float> position = Utility::getPedesSource(
             1, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
@@ -335,11 +354,13 @@ void createAgents() {
     }
 
       // From Top to Bottom
-    case 6: {
+    case 6:
+    {
       // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0),
       // randomFloat(6.0, 12.3F), randomFloat(-5.0, -3.0), randomFloat(-18.0,
       // -15.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+      for (int temp = 0; temp < numOfPeople[idx]; temp++)
+      {
         agent = new Agent;
         vector<float> position = Utility::getPedesSource(
             2, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
@@ -353,11 +374,13 @@ void createAgents() {
       }
       break;
     }
-    case 7: {
+    case 7:
+    {
       // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0),
       // randomFloat(6.0, 12.3F), randomFloat(-3.0, 3.0), randomFloat(-18.0,
       // -15.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+      for (int temp = 0; temp < numOfPeople[idx]; temp++)
+      {
         agent = new Agent;
         vector<float> position = Utility::getPedesSource(
             2, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
@@ -371,11 +394,13 @@ void createAgents() {
       }
       break;
     }
-    case 8: {
+    case 8:
+    {
       // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0),
       // randomFloat(6.0, 12.3F), randomFloat(3.0, 5.0), randomFloat(-18.0,
       // -15.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+      for (int temp = 0; temp < numOfPeople[idx]; temp++)
+      {
         agent = new Agent;
         vector<float> position = Utility::getPedesSource(
             2, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
@@ -391,11 +416,13 @@ void createAgents() {
     }
 
       // From Bottom to Top
-    case 9: {
+    case 9:
+    {
       // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0),
       // randomFloat(-12.3F, -6.0), randomFloat(-5.0, -3.0),
       // randomFloat(15.0, 18.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+      for (int temp = 0; temp < numOfPeople[idx]; temp++)
+      {
         agent = new Agent;
         vector<float> position = Utility::getPedesSource(
             3, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
@@ -409,11 +436,13 @@ void createAgents() {
       }
       break;
     }
-    case 10: {
+    case 10:
+    {
       // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0),
       // randomFloat(-12.3F, -6.0), randomFloat(-3.0, 3.0),
       // randomFloat(15.0, 18.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+      for (int temp = 0; temp < numOfPeople[idx]; temp++)
+      {
         agent = new Agent;
         vector<float> position = Utility::getPedesSource(
             3, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
@@ -427,11 +456,13 @@ void createAgents() {
       }
       break;
     }
-    case 11: {
+    case 11:
+    {
       // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0),
       // randomFloat(-12.3F, -6.0), randomFloat(3.0, 5.0),
       // randomFloat(15.0, 18.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+      for (int temp = 0; temp < numOfPeople[idx]; temp++)
+      {
         agent = new Agent;
         vector<float> position = Utility::getPedesSource(
             3, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
@@ -451,40 +482,40 @@ void createAgents() {
   }
 }
 
-void createAGVs() {
+void createAGVs()
+{
   AGV *agv = new AGV;
   int option = inputData[7];
-  switch (option) {
+  switch (option)
+  {
   case 0:
     agv->setPosition(-15.0F, -2.0F);
-    agv->setVelocity(0.6F, 0);
     break;
   case 1:
     agv->setPosition(15.0F, 2.0F);
-    agv->setVelocity(-0.6F, 0);
     break;
   case 2:
     agv->setPosition(-2.0F, 10.0F);
-    agv->setVelocity(0, -0.6F);
     break;
   case 3:
     agv->setPosition(2.0F, -10.0F);
-    agv->setVelocity(0, 0.6F);
     break;
   default:
     agv->setPosition(-15.0F, -2.0F);
-    agv->setVelocity(0.6F, 0);
     break;
   }
+  agv->setTangentialVelocity(0.6F);
   agv->setAcceleration(inputData[8]);
   agv->setDistance((float)inputData[9]);
+  agv->setPath(8.0F, 8.0F);
   socialForce->addAGV(agv);
 }
 
-void display() {
+void display()
+{
   glClear(GL_COLOR_BUFFER_BIT |
           GL_DEPTH_BUFFER_BIT); // Clear the colour and depth buffer
-  glLoadIdentity(); // Initialize modelview matrix to identity matrix
+  glLoadIdentity();             // Initialize modelview matrix to identity matrix
 
   // Camera
   gluLookAt(0.0, 0.0, 18.0, // Position
@@ -504,10 +535,12 @@ void display() {
   glutSwapBuffers();
 }
 
-void drawAgents() {
+void drawAgents()
+{
   vector<Agent *> agents = socialForce->getCrowd();
 
-  for (Agent *agent : agents) {
+  for (Agent *agent : agents)
+  {
     // Draw Agents
     glColor3f(agent->getColour().x, agent->getColour().y, agent->getColour().z);
     drawCylinder(agent->getPosition().x, agent->getPosition().y,
@@ -515,10 +548,12 @@ void drawAgents() {
   }
 }
 
-void drawAGVs() {
+void drawAGVs()
+{
   vector<AGV *> agvs = socialForce->getAGVs();
 
-  for (AGV *agv : agvs) {
+  for (AGV *agv : agvs)
+  {
     // Draw AGVs
     glColor3f(agv->getColour().x, agv->getColour().y, agv->getColour().z);
     float x, y, w, h;
@@ -535,7 +570,8 @@ void drawAGVs() {
   }
 }
 
-void drawCylinder(float x, float y, float radius, int slices, float height) {
+void drawCylinder(float x, float y, float radius, int slices, float height)
+{
   float sliceAngle;
   Point3f current, next;
 
@@ -546,7 +582,8 @@ void drawCylinder(float x, float y, float radius, int slices, float height) {
   current.x = radius; // Set initial point
   current.y = 0;      // Set initial point
 
-  for (float angle = sliceAngle; angle <= 360; angle += sliceAngle) {
+  for (float angle = sliceAngle; angle <= 360; angle += sliceAngle)
+  {
     next.x = radius * cos(angle * PI / 180); // Compute next point
     next.y = radius * sin(angle * PI / 180); // Compute next point
 
@@ -577,12 +614,14 @@ void drawCylinder(float x, float y, float radius, int slices, float height) {
   glPopMatrix();
 }
 
-void drawWalls() {
+void drawWalls()
+{
   vector<Wall *> walls = socialForce->getWalls();
 
   glColor3f(0.2F, 0.2F, 0.2F);
   glPushMatrix();
-  for (Wall *wall : walls) {
+  for (Wall *wall : walls)
+  {
     glBegin(GL_LINES);
     glVertex2f(wall->getStartPoint().x, wall->getStartPoint().y);
     glVertex2f(wall->getEndPoint().x, wall->getEndPoint().y);
@@ -591,7 +630,8 @@ void drawWalls() {
   glPopMatrix();
 }
 
-void showInformation() {
+void showInformation()
+{
   Point3f margin;
   char totalAgentsStr[5] = "\0", fpsStr[8] = "\0", frctnStr[6] = "\0";
 
@@ -625,7 +665,8 @@ void showInformation() {
   drawText(margin.x + 1.7F, margin.y - 0.9F, s.c_str() /*fpsStr*/);
 }
 
-void drawText(float x, float y, const char text[]) {
+void drawText(float x, float y, const char text[])
+{
   glDisable(GL_LIGHTING); // Disable lighting for proper display of 'drawText()'
   glDisable(
       GL_DEPTH_TEST); // Disable depth test for proper display of 'drawText()'
@@ -644,7 +685,8 @@ void drawText(float x, float y, const char text[]) {
   glEnable(GL_LIGHTING);   // Prepare OpenGL to perform lighting calculations
 }
 
-void reshape(int width, int height) {
+void reshape(int width, int height)
+{
   glViewport(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height));
 
   glMatrixMode(GL_PROJECTION);
@@ -658,8 +700,10 @@ void reshape(int width, int height) {
   winHeight = height;
 }
 
-void normalKey(unsigned char key, int xMousePos, int yMousePos) {
-  switch (key) {
+void normalKey(unsigned char key, int xMousePos, int yMousePos)
+{
+  switch (key)
+  {
   case 'a': // Animate or inanimate scene
     animate = (!animate) ? true : false;
     break;
@@ -673,12 +717,14 @@ void normalKey(unsigned char key, int xMousePos, int yMousePos) {
   }
 }
 
-float randomFloat(float lowerBound, float upperBound) {
+float randomFloat(float lowerBound, float upperBound)
+{
   return (lowerBound +
           (static_cast<float>(rand()) / RAND_MAX) * (upperBound - lowerBound));
 }
 
-void update() {
+void update()
+{
   int currTime, frameTime; // Store time in milliseconds
   static int prevTime;     // Stores time in milliseconds
 
@@ -690,17 +736,22 @@ void update() {
   int count = 0;
 
   std::vector<Agent *> agents = socialForce->getCrowd();
-  for (Agent *agent : agents) {
+  for (Agent *agent : agents)
+  {
     Point3f src = agent->getPosition();
     Point3f des = agent->getPath();
     float distance = src.distance(des);
-    if (distance > 1) {
+    if (distance > 1)
+    {
       break;
-    } else {
+    }
+    else
+    {
       count = count + 1;
     }
   }
-  if (count == agents.size()) {
+  if (count == agents.size())
+  {
     std::cout << "Finish in: " << Utility::convertTime(currTime) << endl;
     delete socialForce;
     socialForce = 0;
@@ -708,7 +759,8 @@ void update() {
     exit(0); // Terminate program
   }
 
-  if (animate) {
+  if (animate)
+  {
     socialForce->moveCrowd(static_cast<float>(frameTime) /
                            1000); // Perform calculations and move agents
     socialForce->moveAGV(static_cast<float>(frameTime) / 1000);
@@ -718,7 +770,8 @@ void update() {
   glutIdleFunc(update); // Continuously execute 'update()'
 }
 
-void computeFPS() {
+void computeFPS()
+{
   static int frameCount = 0; // Stores number of frames
   int currTime, frameTime;   // Store time in milliseconds
   static int prevTime;       // Stores time in milliseconds
@@ -729,7 +782,8 @@ void computeFPS() {
       GLUT_ELAPSED_TIME); // Get time in milliseconds since 'glutInit()' called
   frameTime = currTime - prevTime;
 
-  if (frameTime > 1000) {
+  if (frameTime > 1000)
+  {
     fps = frameCount /
           (static_cast<float>(frameTime) / 1000); // Compute the number of FPS
     prevTime = currTime;

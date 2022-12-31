@@ -5,17 +5,24 @@
 #include <deque>
 #include <vector>
 
-class AGV {
+struct Pathpoint
+{
+  Point3f position;
+};
+
+class AGV
+{
 private:
   static int agvIdx;
 
   int id;
   double acceleration;
-  float distance;
+  float distance, tangential_velocity;
   Vector3f dimension;
   Color3f colour;
 
   Point3f position;
+  std::deque<Pathpoint> path;
   Vector3f velocity;
   Vector3f instantaneous_velocity;
 
@@ -28,7 +35,8 @@ public:
   void setDimension(Vector3f dimension);
   void setColour(float red, float green, float blue);
   void setPosition(float x, float y);
-  void setVelocity(float x, float y);
+  void setPath(float x, float y);
+  void setTangentialVelocity(float v);
 
   int getId() const { return id; }
   double getAcceleration() { return acceleration; }
@@ -36,6 +44,8 @@ public:
   Vector3f getDimension() const { return dimension; }
   Color3f getColour() const { return colour; }
   Point3f getPosition() const { return position; }
+  Point3f getPath();
+  float getTangentialVelocity() const { return tangential_velocity; }
   Vector3f getVelocity() const { return velocity; }
   float getOrientation();
   Point3f getAheadVector() const;
