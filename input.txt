@@ -1,11 +1,11 @@
 # Number of pedestrians
-80
+120
 # T-Distribution' degree of freedom
 15
 # Walkway width
 6
 # Crowd: total length, head/tail length, width
-121 2 5
+100 10 5
 # Run mode (0/1)
 1
 # AGV: 0 Left - Right, 1 Right - Left, 2 Top - Bottom, 3 Bottom - Top
@@ -14,3 +14,5 @@
 0.25
 # AGV: Distance with Agent that AGV will stop
 0.5
+# Direction of AGV: 0/1/2/3 - Go from Left/Bottom/Right/Top, 0/1/2 - Turn Right/Go straight/Turn Left
+0 0
