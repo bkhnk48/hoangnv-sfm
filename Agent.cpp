@@ -100,7 +100,7 @@ void Agent::move(vector<Agent *> agents, vector<Wall *> walls, vector<AGV *> agv
   Vector3f acceleration;
 
   // Compute Social Force
-  acceleration = AgentForce::drivingForce(getPath(), position, desiredSpeed, velocity) + AgentForce::agentInteractForce(agents, id, position, velocity) + AgentForce::wallInteractForce(walls, position, radius) + AgentForce::agvInteractForce(agvs, position, velocity);
+  acceleration = AgentForce::drivingForce(getPath(), position, desiredSpeed, velocity) + AgentForce::agentInteractForce(agents, id, position, velocity) + AgentForce::wallInteractForce(walls, position, radius) + AgentForce::agvInteractForce(agvs, position, velocity, radius);
 
   // Compute New Velocity
   velocity = velocity + acceleration * stepTime;

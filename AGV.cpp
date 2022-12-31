@@ -114,11 +114,11 @@ Point3f AGV::getNearestPoint(Point3f position_i) const
   {
     if (i < edges.size() - 1)
     {
-      relativeEnd = edges[i] - edges[i + 1];
+      relativeEnd = edges[i + 1] - edges[i];
     }
     else
     {
-      relativeEnd = edges[i] - edges[0];
+      relativeEnd = edges[0] - edges[i];
     }
 
     relativePos = position_i - edges[i];
@@ -186,16 +186,16 @@ void AGV::move(float stepTime, vector<Point3f> position_list)
 
   if (checkNearAgent(position_list))
   {
-    // if (instantaneous_velocity.length() > Vector3f(vector_acceleration * stepTime).length())
-    // {
-    //   position = position + instantaneous_velocity * stepTime;
-    //   instantaneous_velocity = instantaneous_velocity - vector_acceleration * stepTime;
-    // }
-    // else
-    // {
-    // }
-    instantaneous_velocity.set(0, 0, 0);
-    position = position;
+    if (instantaneous_velocity.length() > Vector3f(vector_acceleration * stepTime).length())
+    {
+      position = position + instantaneous_velocity * stepTime;
+      instantaneous_velocity = instantaneous_velocity - vector_acceleration * stepTime;
+    }
+    else
+    {
+      instantaneous_velocity.set(0, 0, 0);
+      position = position;
+    }
   }
   else
   {
