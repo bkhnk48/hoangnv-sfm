@@ -8,3 +8,5 @@
 100 10 5
 # Run mode (0/1)
 1
+# Direction of AGV: 0/1/2/3 - Go from Left/Bottom/Right/Top, 0/1/2 - Turn Right/Go straight/Turn Left
+0 0
