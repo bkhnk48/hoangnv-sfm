@@ -95,12 +95,12 @@ Point3f Agent::getAheadVector() const
   return (velocity + position);
 }
 
-void Agent::move(vector<Agent *> agents, vector<Wall *> walls, float stepTime)
+void Agent::move(vector<Agent *> agents, vector<Wall *> walls, vector<AGV *> agvs, float stepTime)
 {
   Vector3f acceleration;
 
   // Compute Social Force
-  acceleration = AgentForce::drivingForce(getPath(), position, desiredSpeed, velocity) + AgentForce::agentInteractForce(agents, id, position, velocity) + AgentForce::wallInteractForce(walls, position, radius);
+  acceleration = AgentForce::drivingForce(getPath(), position, desiredSpeed, velocity) + AgentForce::agentInteractForce(agents, id, position, velocity) + AgentForce::wallInteractForce(walls, position, radius) + AgentForce::agvInteractForce(agvs, position, velocity);
 
   // Compute New Velocity
   velocity = velocity + acceleration * stepTime;

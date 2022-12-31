@@ -467,6 +467,35 @@ void createAgents()
   }
 }
 
+void createAGVs()
+{
+  AGV *agv = new AGV;
+  int option = inputData[7];
+  switch (option)
+  {
+  case 0:
+    agv->setPosition(-15.0F, -2.0F);
+    break;
+  case 1:
+    agv->setPosition(15.0F, 2.0F);
+    break;
+  case 2:
+    agv->setPosition(-2.0F, 10.0F);
+    break;
+  case 3:
+    agv->setPosition(2.0F, -10.0F);
+    break;
+  default:
+    agv->setPosition(-15.0F, -2.0F);
+    break;
+  }
+  agv->setTangentialVelocity(0.6F);
+  agv->setAcceleration(inputData[8]);
+  agv->setDistance((float)inputData[9]);
+  agv->setPath(8.0F, 8.0F);
+  socialForce->addAGV(agv);
+}
+
 void display()
 {
   glClear(GL_COLOR_BUFFER_BIT |
@@ -716,8 +745,10 @@ void update()
   }
 
   if (animate)
+  {
     socialForce->moveCrowd(static_cast<float>(frameTime) / 1000); // Perform calculations and move agents
-
+    socialForce->moveAGV(static_cast<float>(frameTime) / 1000);
+  }
   computeFPS();
   glutPostRedisplay();
   glutIdleFunc(update); // Continuously execute 'update()'

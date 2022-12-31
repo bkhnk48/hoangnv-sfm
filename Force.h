@@ -1,6 +1,7 @@
 #include "vecmath.h"
 #include "Wall.h"
 #include "Agent.h"
+#include "AGV.h"
 
 class Force
 {
@@ -8,6 +9,7 @@ public:
     virtual Vector3f drivingForce(const Point3f position_target) = 0;     // Computes f_i
     virtual Vector3f agentInteractForce(std::vector<Agent *> agents) = 0; // Computes f_ij
     virtual Vector3f wallInteractForce(std::vector<Wall *> walls) = 0;    // Computes f_iw
+    virtual Vector3f agvInteractForce(std::vector<AGV *> agvs) = 0;
 };
 
 class AgentForce : virtual public Force
@@ -135,5 +137,80 @@ public:
         minVector_wi.normalize();
 
         return f_iw * minVector_wi;
+    }
+
+    static Vector3f agvInteractForce(vector<AGV *> agvs, Point3f position, Vector3f velocity)
+    {
+        // Constant Values Based on (Moussaid et al., 2009)
+        const float lambda = 2.0;  // Weight reflecting relative importance of velocity
+                                   // vector against position vector
+        const float gamma = 0.35F; // Speed interaction
+        const float n_prime = 3.0; // Angular interaction
+        const float n = 2.0;       // Angular intaraction
+        const float A = 10;        // Modal parameter A
+
+        Vector3f distance_ij, e_ij, D_ij, t_ij, n_ij, f_ij;
+        float B, theta, f_v, f_theta;
+        int K;
+
+        f_ij.set(0.0, 0.0, 0.0);
+
+        for (const AGV *agv : agvs)
+        {
+            // Compute Distance Between Agent j and i
+            distance_ij = agv->getNearestPoint(position) - position;
+
+            // Skip Computation if Agents i and j are Too Far Away
+            if (distance_ij.lengthSquared() > (2.0 * 2.0))
+                continue;
+
+            // Compute Direction of Agent j from i
+            // Formula: e_ij = (position_j - position_i) / ||position_j - position_i||
+            e_ij = distance_ij;
+            e_ij.normalize();
+
+            // Compute Interaction Vector Between Agent i and j
+            // Formula: D = lambda * (velocity_i - velocity_j) + e_ij
+            D_ij = lambda * (velocity - agv->getVelocity()) + e_ij;
+
+            // Compute Modal Parameter B
+            // Formula: B = gamma * ||D_ij||
+            B = gamma * D_ij.length();
+
+            // Compute Interaction Direction
+            // Formula: t_ij = D_ij / ||D_ij||
+            t_ij = D_ij;
+            t_ij.normalize();
+
+            // Compute Angle Between Interaction Direction (t_ij) and Vector Pointing
+            // from Agent i to j (e_ij)
+            theta = t_ij.angle(e_ij);
+
+            // Compute Sign of Angle 'theta'
+            // Formula: K = theta / |theta|
+            K = (theta == 0) ? 0 : static_cast<int>(theta / abs(theta));
+
+            // Compute Amount of Deceleration
+            // Formula: f_v = -A * exp(-distance_ij / B - ((n_prime * B * theta) *
+            // (n_prime * B * theta)))
+            f_v = -A * exp(-distance_ij.length() / B -
+                           ((n_prime * B * theta) * (n_prime * B * theta)));
+
+            // Compute Amount of Directional Changes
+            // Formula: f_theta = -A * K * exp(-distance_ij / B - ((n * B * theta) * (n
+            // * B * theta)))
+            f_theta =
+                -A * K *
+                exp(-distance_ij.length() / B - ((n * B * theta) * (n * B * theta)));
+
+            // Compute Normal Vector of Interaction Direction Oriented to the Left
+            n_ij.set(-t_ij.y, t_ij.x, 0.0);
+
+            // Compute Interaction Force
+            // Formula: f_ij = f_v * t_ij + f_theta * n_ij
+            f_ij += f_v * t_ij + f_theta * n_ij;
+        }
+
+        return f_ij * 2;
     }
 };

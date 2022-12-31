@@ -193,4 +193,5 @@ void AGV::move(float stepTime, vector<Point3f> position_list)
       position = position + velocity * stepTime;
     }
   }
+  cout << "HELLO";
 }

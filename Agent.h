@@ -5,6 +5,7 @@
 #include <deque>
 #include <vector>
 #include "Wall.h"
+#include "AGV.h"
 
 struct Waypoint
 {
@@ -46,7 +47,7 @@ public:
   float getOrientation();
   Point3f getAheadVector() const;
 
-  void move(std::vector<Agent *> agents, std::vector<Wall *> walls, float stepTime);
+  void move(std::vector<Agent *> agents, std::vector<Wall *> walls, std::vector<AGV *> agvs, float stepTime);
 };
 
 #endif

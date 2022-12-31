@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <bits/stdc++.h>
-#include <array>
 #include <iomanip>
 #include <string>
 #include <map>

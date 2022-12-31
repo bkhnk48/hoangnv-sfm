@@ -1,7 +1,8 @@
 #include "SocialForce.h"
 using namespace std;
 
-SocialForce::~SocialForce() {
+SocialForce::~SocialForce()
+{
   removeCrowd();
   removeWalls();
 }
@@ -12,10 +13,12 @@ void SocialForce::addWall(Wall *wall) { walls.push_back(wall); }
 
 void SocialForce::addAGV(AGV *agv) { agvs.push_back(agv); }
 
-void SocialForce::removeAgent() {
+void SocialForce::removeAgent()
+{
   int lastIdx;
 
-  if (!crowd.empty()) {
+  if (!crowd.empty())
+  {
     lastIdx = crowd.size() - 1; // Assign index of last element
 
     delete crowd[lastIdx];
@@ -23,23 +26,27 @@ void SocialForce::removeAgent() {
   }
 }
 
-void SocialForce::removeCrowd() {
+void SocialForce::removeCrowd()
+{
   for (unsigned int idx = 0; idx < crowd.size(); idx++)
     delete crowd[idx];
 
   crowd.clear();
 }
 
-void SocialForce::removeWalls() {
+void SocialForce::removeWalls()
+{
   for (unsigned int idx = 0; idx < walls.size(); idx++)
     delete walls[idx];
 
   walls.clear();
 }
 
-void SocialForce::removeAGV() {
+void SocialForce::removeAGV()
+{
   int lastIdx;
-  if (!agvs.empty()) {
+  if (!agvs.empty())
+  {
     lastIdx = agvs.size() - 1; // Assign index of last element
 
     delete agvs[lastIdx];
@@ -47,14 +54,17 @@ void SocialForce::removeAGV() {
   }
 }
 
-void SocialForce::moveCrowd(float stepTime) {
+void SocialForce::moveCrowd(float stepTime)
+{
   for (unsigned int idx = 0; idx < crowd.size(); idx++)
     crowd[idx]->move(crowd, walls, agvs, stepTime);
 }
 
-void SocialForce::moveAGV(float stepTime) {
+void SocialForce::moveAGV(float stepTime)
+{
   vector<Point3f> position_list;
-  for (Agent *agent : crowd) {
+  for (Agent *agent : crowd)
+  {
     position_list.push_back(agent->getPosition());
   }
 
