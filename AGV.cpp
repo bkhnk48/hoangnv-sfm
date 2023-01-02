@@ -152,26 +152,27 @@ bool AGV::checkNearAgent(vector <Point3f> position_list) {
 }
 
 void AGV::move(float stepTime, vector <Point3f> position_list) {
-    Vector3f vector_acceleration, e_i;
+    Vector3f vector_acceleration, e_ij;
 
-    e_i = getPath() - position;
-    e_i.normalize();
+    e_ij = getPath() - position;
+    e_ij.normalize();
 
-    velocity = e_i * tangential_velocity;
-    vector_acceleration = e_i * acceleration;
+    velocity = e_ij * tangential_velocity;
+    vector_acceleration = e_ij * acceleration;
+    vector_acceleration *= stepTime;
 
     if (checkNearAgent(position_list)) {
-        if (instantaneous_velocity.length() > Vector3f(vector_acceleration * stepTime).length()) {
+        if (abs(instantaneous_velocity.x) >= abs(vector_acceleration.x) &&
+            abs(instantaneous_velocity.y) >= abs(vector_acceleration.y)) {
             position = position + instantaneous_velocity * stepTime;
-            instantaneous_velocity = instantaneous_velocity - vector_acceleration * stepTime;
+            instantaneous_velocity = instantaneous_velocity - vector_acceleration;
         } else {
             instantaneous_velocity.set(0, 0, 0);
-            position = position;
         }
     } else {
         if (instantaneous_velocity.length() < velocity.length()) {
             position = position + instantaneous_velocity * stepTime;
-            instantaneous_velocity = instantaneous_velocity + vector_acceleration * stepTime;
+            instantaneous_velocity = instantaneous_velocity + vector_acceleration;
         } else {
             instantaneous_velocity = velocity;
             position = position + velocity * stepTime;
