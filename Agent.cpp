@@ -124,7 +124,6 @@ float Agent::getMinDistanceToWalls(vector<Wall *> walls, Point3f position, float
 	return sqrt(minDistanceSquared) - radius; // Distance between wall and agent i
 }
 
-void Agent::move(vector<Agent *> agents, vector<Wall *> walls, float stepTime)
 void Agent::move(vector<Agent *> agents, vector<Wall *> walls, vector<AGV *> agvs, float stepTime)
 {
   Vector3f acceleration;
