@@ -218,253 +218,265 @@ void createAgents()
 
   // test
 
-  // setFlowFeature(agent, numOfPeople[0], randomFloat(-20.3F, -6.0), randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0), randomFloat(-5.0, -3.0));
-  // for (int temp = 0; temp < 1; temp++)
-  // {
-  // 	agent = new Agent;
-  // 	// agent->setPosition(randomFloat(-20.3F, -6.0), randomFloat(-2.0, 2.0));
-  // 	agent->setPosition(randomFloat(-3.0, -2.0), randomFloat(4.0, 5.0));
-  // 	agent->setPath(randomFloat(-20.3F, -6.0), randomFloat(-2.0, 2.0), 1.0);
-  // 	// agent->setPath(randomFloat(22.0, 25.0), randomFloat(-3.0, -2.0), 1.0);
-  // 	agent->setDesiredSpeed(1.3);
-  // 	std::vector<float> color = Utility::getPedesColor(displayMode, maxSpeed, minSpeed, agent->getDesiredSpeed());
-  // 	agent->setColour(color[0], color[1], color[2]);
-  // 	socialForce->addAgent(agent);
-  // }
+	// setFlowFeature(agent, numOfPeople[0], randomFloat(-20.3F, -6.0), randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0), randomFloat(-5.0, -3.0));
+	// for (int temp = 0; temp < 3; temp++)
+	// {
+	// 	agent = new Agent;
+	// 	// agent->setPosition(randomFloat(-20.3F, -6.0), randomFloat(-2.0, 2.0));
+	// 	agent->setPosition(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0));
+	// 	float x = randomFloat(-20.3F, -6.0);
+	// 	float y = randomFloat(-2.0, 2.0);
+	// 	agent->setPath(x, y, 1.0);
+	// 	agent->setDestination(x, y);
+	// 	// agent->setPath(randomFloat(22.0, 25.0), randomFloat(-3.0, -2.0), 1.0);
+	// 	agent->setDesiredSpeed(1);
+	// 	std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+	// 	agent->setColour(color[0], color[1], color[2]);
+	// 	socialForce->addAgent(agent);
+	// }
 
   // test
 
-  for (int idx = 0; idx < 12; idx++)
-  {
-    switch (idx % 12)
-    {
-    // From Left to Right
-    case 0:
-    {
-
-      // setFlowFeature(agent, numOfPeople[idx], randomFloat(-20.3F, -6.0), randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0), randomFloat(-5.0, -3.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++)
-      {
-        agent = new Agent;
-        vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
-        agent->setPosition(position[0], position[1]);
-        vector<float> desList = Utility::getPedesDestination(0, 0, (float)inputData[2]);
-        agent->setPath(desList[0], desList[1], desList[2]);
-        agent->setDesiredSpeed(velocityList[pedesCount]);
-        pedesCount = pedesCount + 1;
-        std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-        agent->setColour(color[0], color[1], color[2]);
-        socialForce->addAgent(agent);
-      }
-      break;
-    }
-    case 1:
-    {
-      // setFlowFeature(agent, numOfPeople[idx], randomFloat(-20.3F, -6.0), randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0), randomFloat(-3.0, 3.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++)
-      {
-        agent = new Agent;
-        vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
-        agent->setPosition(position[0], position[1]);
-        vector<float> desList = Utility::getPedesDestination(0, 1, (float)inputData[2]);
-        agent->setPath(desList[0], desList[1], desList[2]);
-        agent->setDesiredSpeed(velocityList[pedesCount]);
-        pedesCount = pedesCount + 1;
-        std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-        agent->setColour(color[0], color[1], color[2]);
-        socialForce->addAgent(agent);
-      }
-      break;
-    }
-    case 2:
-    {
-      // setFlowFeature(agent, numOfPeople[idx], randomFloat(-20.3F, -6.0), randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0), randomFloat(3.0, 5.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++)
-      {
-        agent = new Agent;
-        vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
-        agent->setPosition(position[0], position[1]);
-        vector<float> desList = Utility::getPedesDestination(0, 2, (float)inputData[2]);
-        agent->setPath(desList[0], desList[1], desList[2]);
-        agent->setDesiredSpeed(velocityList[pedesCount]);
-        pedesCount = pedesCount + 1;
-        std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-        agent->setColour(color[0], color[1], color[2]);
-        socialForce->addAgent(agent);
-      }
-      break;
-    }
-    // From Right to Left
-    case 3:
-    {
-      // setFlowFeature(agent, numOfPeople[idx], randomFloat(6.0, 20.3F), randomFloat(-4.0, 4.0), randomFloat(-25.0, -22.0), randomFloat(-5.0, -3.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++)
-      {
-        agent = new Agent;
-        vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
-        agent->setPosition(position[0], position[1]);
-        vector<float> desList = Utility::getPedesDestination(1, 0, (float)inputData[2]);
-        agent->setPath(desList[0], desList[1], desList[2]);
-        agent->setDesiredSpeed(velocityList[pedesCount]);
-        pedesCount = pedesCount + 1;
-        std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-        agent->setColour(color[0], color[1], color[2]);
-        socialForce->addAgent(agent);
-      }
-      break;
-    }
-    case 4:
-    {
-      // setFlowFeature(agent, numOfPeople[idx], randomFloat(6.0, 20.3F), randomFloat(-4.0, 4.0), randomFloat(-25.0, -22.0), randomFloat(-3.0, 3.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++)
-      {
-        agent = new Agent;
-        vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
-        agent->setPosition(position[0], position[1]);
-        vector<float> desList = Utility::getPedesDestination(1, 1, (float)inputData[2]);
-        agent->setPath(desList[0], desList[1], desList[2]);
-        agent->setDesiredSpeed(velocityList[pedesCount]);
-        pedesCount = pedesCount + 1;
-        std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-        agent->setColour(color[0], color[1], color[2]);
-        socialForce->addAgent(agent);
-      }
-      break;
-    }
-    case 5:
-    {
-      // setFlowFeature(agent, numOfPeople[idx], randomFloat(6.0, 20.3F), randomFloat(-4.0, 4.0), randomFloat(-25.0, -22.0), randomFloat(3.0, 5.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++)
-      {
-        agent = new Agent;
-        vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
-        agent->setPosition(position[0], position[1]);
-        vector<float> desList = Utility::getPedesDestination(1, 2, (float)inputData[2]);
-        agent->setPath(desList[0], desList[1], desList[2]);
-        agent->setDesiredSpeed(velocityList[pedesCount]);
-        pedesCount = pedesCount + 1;
-        std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-        agent->setColour(color[0], color[1], color[2]);
-        socialForce->addAgent(agent);
-      }
-      break;
-    }
-
-    // From Top to Bottom
-    case 6:
-    {
-      // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(6.0, 12.3F), randomFloat(-5.0, -3.0), randomFloat(-18.0, -15.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++)
-      {
-        agent = new Agent;
-        vector<float> position = Utility::getPedesSource(2, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
-        agent->setPosition(position[0], position[1]);
-        vector<float> desList = Utility::getPedesDestination(2, 0, (float)inputData[2]);
-        agent->setPath(desList[0], desList[1], desList[2]);
-        agent->setDesiredSpeed(velocityList[pedesCount]);
-        pedesCount = pedesCount + 1;
-        std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-        agent->setColour(color[0], color[1], color[2]);
-        socialForce->addAgent(agent);
-      }
-      break;
-    }
-    case 7:
-    {
-      // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(6.0, 12.3F), randomFloat(-3.0, 3.0), randomFloat(-18.0, -15.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++)
-      {
-        agent = new Agent;
-        vector<float> position = Utility::getPedesSource(2, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
-        agent->setPosition(position[0], position[1]);
-        vector<float> desList = Utility::getPedesDestination(2, 1, (float)inputData[2]);
-        agent->setPath(desList[0], desList[1], desList[2]);
-        agent->setDesiredSpeed(velocityList[pedesCount]);
-        pedesCount = pedesCount + 1;
-        std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-        agent->setColour(color[0], color[1], color[2]);
-        socialForce->addAgent(agent);
-      }
-      break;
-    }
-    case 8:
-    {
-      // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(6.0, 12.3F), randomFloat(3.0, 5.0), randomFloat(-18.0, -15.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++)
-      {
-        agent = new Agent;
-        vector<float> position = Utility::getPedesSource(2, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
-        agent->setPosition(position[0], position[1]);
-        vector<float> desList = Utility::getPedesDestination(2, 2, (float)inputData[2]);
-        agent->setPath(desList[0], desList[1], desList[2]);
-        agent->setDesiredSpeed(velocityList[pedesCount]);
-        pedesCount = pedesCount + 1;
-        std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-        agent->setColour(color[0], color[1], color[2]);
-        socialForce->addAgent(agent);
-      }
-      break;
-    }
-
-    // From Bottom to Top
-    case 9:
-    {
-      // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(-12.3F, -6.0), randomFloat(-5.0, -3.0), randomFloat(15.0, 18.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++)
-      {
-        agent = new Agent;
-        vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
-        agent->setPosition(position[0], position[1]);
-        vector<float> desList = Utility::getPedesDestination(3, 0, (float)inputData[2]);
-        agent->setPath(desList[0], desList[1], desList[2]);
-        agent->setDesiredSpeed(velocityList[pedesCount]);
-        pedesCount = pedesCount + 1;
-        std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-        agent->setColour(color[0], color[1], color[2]);
-        socialForce->addAgent(agent);
-      }
-      break;
-    }
-    case 10:
-    {
-      // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(-12.3F, -6.0), randomFloat(-3.0, 3.0), randomFloat(15.0, 18.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++)
-      {
-        agent = new Agent;
-        vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
-        agent->setPosition(position[0], position[1]);
-        vector<float> desList = Utility::getPedesDestination(3, 1, (float)inputData[2]);
-        agent->setPath(desList[0], desList[1], desList[2]);
-        agent->setDesiredSpeed(velocityList[pedesCount]);
-        pedesCount = pedesCount + 1;
-        std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-        agent->setColour(color[0], color[1], color[2]);
-        socialForce->addAgent(agent);
-      }
-      break;
-    }
-    case 11:
-    {
-      // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(-12.3F, -6.0), randomFloat(3.0, 5.0), randomFloat(15.0, 18.0));
-      for (int temp = 0; temp < numOfPeople[idx]; temp++)
-      {
-        agent = new Agent;
-        vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
-        agent->setPosition(position[0], position[1]);
-        vector<float> desList = Utility::getPedesDestination(3, 2, (float)inputData[2]);
-        agent->setPath(desList[0], desList[1], desList[2]);
-        agent->setDesiredSpeed(velocityList[pedesCount]);
-        pedesCount = pedesCount + 1;
-        std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-        agent->setColour(color[0], color[1], color[2]);
-        socialForce->addAgent(agent);
-      }
-      break;
-    }
-    default:
-      break;
-    }
-  }
+	for (int idx = 0; idx < 12; idx++)
+	{
+		switch (idx % 12)
+		{
+		// From Left to Right
+		case 0:
+		{
+			// setFlowFeature(agent, numOfPeople[idx], randomFloat(-20.3F, -6.0), randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0), randomFloat(-5.0, -3.0));
+			for (int temp = 0; temp < numOfPeople[idx]; temp++)
+			{
+				agent = new Agent;
+				vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
+				agent->setPosition(position[0], position[1]);
+				vector<float> desList = Utility::getPedesDestination(0, 0, (float)inputData[2]);
+				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
+				agent->setDesiredSpeed(velocityList[pedesCount]);
+				pedesCount = pedesCount + 1;
+				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+				agent->setColour(color[0], color[1], color[2]);
+				socialForce->addAgent(agent);
+			}
+			break;
+		}
+		case 1:
+		{
+			// setFlowFeature(agent, numOfPeople[idx], randomFloat(-20.3F, -6.0), randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0), randomFloat(-3.0, 3.0));
+			for (int temp = 0; temp < numOfPeople[idx]; temp++)
+			{
+				agent = new Agent;
+				vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
+				agent->setPosition(position[0], position[1]);
+				vector<float> desList = Utility::getPedesDestination(0, 1, (float)inputData[2]);
+				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
+				agent->setDesiredSpeed(velocityList[pedesCount]);
+				pedesCount = pedesCount + 1;
+				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+				agent->setColour(color[0], color[1], color[2]);
+				socialForce->addAgent(agent);
+			}
+			break;
+		}
+		case 2:
+		{
+			// setFlowFeature(agent, numOfPeople[idx], randomFloat(-20.3F, -6.0), randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0), randomFloat(3.0, 5.0));
+			for (int temp = 0; temp < numOfPeople[idx]; temp++)
+			{
+				agent = new Agent;
+				vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
+				agent->setPosition(position[0], position[1]);
+				vector<float> desList = Utility::getPedesDestination(0, 2, (float)inputData[2]);
+				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
+				agent->setDesiredSpeed(velocityList[pedesCount]);
+				pedesCount = pedesCount + 1;
+				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+				agent->setColour(color[0], color[1], color[2]);
+				socialForce->addAgent(agent);
+			}
+			break;
+		}
+		// From Right to Left
+		case 3:
+		{
+			// setFlowFeature(agent, numOfPeople[idx], randomFloat(6.0, 20.3F), randomFloat(-4.0, 4.0), randomFloat(-25.0, -22.0), randomFloat(-5.0, -3.0));
+			for (int temp = 0; temp < numOfPeople[idx]; temp++)
+			{
+				agent = new Agent;
+				vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
+				agent->setPosition(position[0], position[1]);
+				vector<float> desList = Utility::getPedesDestination(1, 0, (float)inputData[2]);
+				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
+				agent->setDesiredSpeed(velocityList[pedesCount]);
+				pedesCount = pedesCount + 1;
+				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+				agent->setColour(color[0], color[1], color[2]);
+				socialForce->addAgent(agent);
+			}
+			break;
+		}
+		case 4:
+		{
+			// setFlowFeature(agent, numOfPeople[idx], randomFloat(6.0, 20.3F), randomFloat(-4.0, 4.0), randomFloat(-25.0, -22.0), randomFloat(-3.0, 3.0));
+			for (int temp = 0; temp < numOfPeople[idx]; temp++)
+			{
+				agent = new Agent;
+				vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
+				agent->setPosition(position[0], position[1]);
+				vector<float> desList = Utility::getPedesDestination(1, 1, (float)inputData[2]);
+				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
+				agent->setDesiredSpeed(velocityList[pedesCount]);
+				pedesCount = pedesCount + 1;
+				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+				agent->setColour(color[0], color[1], color[2]);
+				socialForce->addAgent(agent);
+			}
+			break;
+		}
+		case 5:
+		{
+			// setFlowFeature(agent, numOfPeople[idx], randomFloat(6.0, 20.3F), randomFloat(-4.0, 4.0), randomFloat(-25.0, -22.0), randomFloat(3.0, 5.0));
+			for (int temp = 0; temp < numOfPeople[idx]; temp++)
+			{
+				agent = new Agent;
+				vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
+				agent->setPosition(position[0], position[1]);
+				vector<float> desList = Utility::getPedesDestination(1, 2, (float)inputData[2]);
+				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
+				agent->setDesiredSpeed(velocityList[pedesCount]);
+				pedesCount = pedesCount + 1;
+				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+				agent->setColour(color[0], color[1], color[2]);
+				socialForce->addAgent(agent);
+			}
+			break;
+		}
+		// From Top to Bottom
+		case 6:
+		{
+			// setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(6.0, 12.3F), randomFloat(-5.0, -3.0), randomFloat(-18.0, -15.0));
+			for (int temp = 0; temp < numOfPeople[idx]; temp++)
+			{
+				agent = new Agent;
+				vector<float> position = Utility::getPedesSource(2, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
+				agent->setPosition(position[0], position[1]);
+				vector<float> desList = Utility::getPedesDestination(2, 0, (float)inputData[2]);
+				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
+				agent->setDesiredSpeed(velocityList[pedesCount]);
+				pedesCount = pedesCount + 1;
+				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+				agent->setColour(color[0], color[1], color[2]);
+				socialForce->addAgent(agent);
+			}
+			break;
+		}
+		case 7:
+		{
+			// setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(6.0, 12.3F), randomFloat(-3.0, 3.0), randomFloat(-18.0, -15.0));
+			for (int temp = 0; temp < numOfPeople[idx]; temp++)
+			{
+				agent = new Agent;
+				vector<float> position = Utility::getPedesSource(2, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
+				agent->setPosition(position[0], position[1]);
+				vector<float> desList = Utility::getPedesDestination(2, 1, (float)inputData[2]);
+				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
+				agent->setDesiredSpeed(velocityList[pedesCount]);
+				pedesCount = pedesCount + 1;
+				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+				agent->setColour(color[0], color[1], color[2]);
+				socialForce->addAgent(agent);
+			}
+			break;
+		}
+		case 8:
+		{
+			// setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(6.0, 12.3F), randomFloat(3.0, 5.0), randomFloat(-18.0, -15.0));
+			for (int temp = 0; temp < numOfPeople[idx]; temp++)
+			{
+				agent = new Agent;
+				vector<float> position = Utility::getPedesSource(2, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
+				agent->setPosition(position[0], position[1]);
+				vector<float> desList = Utility::getPedesDestination(2, 2, (float)inputData[2]);
+				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
+				agent->setDesiredSpeed(velocityList[pedesCount]);
+				pedesCount = pedesCount + 1;
+				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+				agent->setColour(color[0], color[1], color[2]);
+				socialForce->addAgent(agent);
+			}
+			break;
+		}
+		// From Bottom to Top
+		case 9:
+		{
+			// setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(-12.3F, -6.0), randomFloat(-5.0, -3.0), randomFloat(15.0, 18.0));
+			for (int temp = 0; temp < numOfPeople[idx]; temp++)
+			{
+				agent = new Agent;
+				vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
+				agent->setPosition(position[0], position[1]);
+				vector<float> desList = Utility::getPedesDestination(3, 0, (float)inputData[2]);
+				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
+				agent->setDesiredSpeed(velocityList[pedesCount]);
+				pedesCount = pedesCount + 1;
+				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+				agent->setColour(color[0], color[1], color[2]);
+				socialForce->addAgent(agent);
+			}
+			break;
+		}
+		case 10:
+		{
+			// setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(-12.3F, -6.0), randomFloat(-3.0, 3.0), randomFloat(15.0, 18.0));
+			for (int temp = 0; temp < numOfPeople[idx]; temp++)
+			{
+				agent = new Agent;
+				vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
+				agent->setPosition(position[0], position[1]);
+				vector<float> desList = Utility::getPedesDestination(3, 1, (float)inputData[2]);
+				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
+				agent->setDesiredSpeed(velocityList[pedesCount]);
+				pedesCount = pedesCount + 1;
+				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+				agent->setColour(color[0], color[1], color[2]);
+				socialForce->addAgent(agent);
+			}
+			break;
+		}
+		case 11:
+		{
+			// setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(-12.3F, -6.0), randomFloat(3.0, 5.0), randomFloat(15.0, 18.0));
+			for (int temp = 0; temp < numOfPeople[idx]; temp++)
+			{
+				agent = new Agent;
+				vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4], (float)inputData[5]);
+				agent->setPosition(position[0], position[1]);
+				vector<float> desList = Utility::getPedesDestination(3, 2, (float)inputData[2]);
+				agent->setPath(desList[0], desList[1], desList[2]);
+				agent->setDestination(desList[0], desList[1]);
+				agent->setDesiredSpeed(velocityList[pedesCount]);
+				pedesCount = pedesCount + 1;
+				std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+				agent->setColour(color[0], color[1], color[2]);
+				socialForce->addAgent(agent);
+			}
+			break;
+		}
+		default:
+			break;
+		}
+	}
 }
 
 void createAGVs()
@@ -720,27 +732,32 @@ void update()
 
   int count = 0;
 
-  std::vector<Agent *> agents = socialForce->getCrowd();
-  for (Agent *agent : agents)
-  {
-    Point3f src = agent->getPosition();
-    Point3f des = agent->getPath();
-    float distance = src.distance(des);
-    if (distance > 1)
-    {
-      break;
-    }
-    else
-    {
-      count = count + 1;
-    }
-  }
-  if (count == agents.size())
-  {
-    std::cout << "Maximum speed: " << maxSpeed << " - Minimum speed: " << minSpeed << endl;
-    std::cout << "Finish in: " << Utility::convertTime(currTime) << endl;
-    delete socialForce;
-    socialForce = 0;
+	std::vector<Agent *> agents = socialForce->getCrowd();
+	for (Agent *agent : agents)
+	{
+		Point3f src = agent->getPosition();
+		Point3f des = agent->getDestination();
+
+		if (agent->getVelocity().length() < Utility::LOWER_SPEED_LIMIT + 0.2 && agent->getMinDistanceToWalls(socialForce->getWalls(), src, agent->getRadius()) < 0.2 && !agent->hadInterDes)
+		{
+			agent->hadInterDes = true;
+			Point3f intermediateDes = Utility::getIntermediateDes(src, (float)inputData[2], (float)inputData[2]);
+			agent->setPath(intermediateDes.x, intermediateDes.y, 1.0);
+			agent->setPath(des.x, des.y, 1.0);
+		}
+
+		float distance = src.distance(des);
+		if (distance <= 1 || isnan(distance))
+		{
+			count = count + 1;
+		}
+	}
+	if (count == agents.size())
+	{
+		std::cout << "Maximum speed: " << maxSpeed << " - Minimum speed: " << minSpeed << endl;
+		std::cout << "Finish in: " << Utility::convertTime(currTime) << endl;
+		delete socialForce;
+		socialForce = 0;
 
     exit(0); // Terminate program
   }
