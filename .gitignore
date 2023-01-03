@@ -2,6 +2,7 @@
 !/**/
 !*.*
 .vscode
+.idea
 out.dSYM
 !mKF
 !Makefile

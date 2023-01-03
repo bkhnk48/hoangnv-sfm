@@ -17,52 +17,52 @@
 #ifndef TEXCOORD2_H
 #define TEXCOORD2_H
 
-#include "VmUtil.h"
 #include "Tuple2.h"
+#include "VmUtil.h"
 
 VM_BEGIN_NS
 
 /**
-  * A 2 element texture coordinate that is represented by x,y coordinates.
-  * @version specification 1.1, implementation $Revision: 1.3 $, $Date: 1999/10/06 02:52:46 $
-  * @author Kenji hiranabe
-  */
+ * A 2 element texture coordinate that is represented by x,y coordinates.
+ * @version specification 1.1, implementation $Revision: 1.3 $, $Date:
+ * 1999/10/06 02:52:46 $
+ * @author Kenji hiranabe
+ */
 template<class T>
 class TexCoord2 : public Tuple2<T> {
-/*
- * $Log: TexCoord2.h,v $
- * Revision 1.3  1999/10/06  02:52:46  hiranabe
- * Java3D 1.2 and namespace
- *
- * Revision 1.2  1999/05/26  00:59:37  hiranabe
- * support Visual C++
- *
- * Revision 1.1  1999/03/04  11:07:09  hiranabe
- * Initial revision
- *
- * Revision 1.1  1999/03/04  11:07:09  hiranabe
- * Initial revision
- *
- */
+    /*
+     * $Log: TexCoord2.h,v $
+     * Revision 1.3  1999/10/06  02:52:46  hiranabe
+     * Java3D 1.2 and namespace
+     *
+     * Revision 1.2  1999/05/26  00:59:37  hiranabe
+     * support Visual C++
+     *
+     * Revision 1.1  1999/03/04  11:07:09  hiranabe
+     * Initial revision
+     *
+     * Revision 1.1  1999/03/04  11:07:09  hiranabe
+     * Initial revision
+     *
+     */
 public:
     /**
-      * Constructs and initializes a TexCoord2 from the specified xy coordinates.
-      * @param x the x coordinate
-      * @param y the y coordinate
-      */
-    TexCoord2(T x, T y):  Tuple2<T>(x, y) { }
+     * Constructs and initializes a TexCoord2 from the specified xy coordinates.
+     * @param x the x coordinate
+     * @param y the y coordinate
+     */
+    TexCoord2(T x, T y) : Tuple2<T>(x, y) {}
 
     /**
-      * Constructs and initializes a TexCoord2 from the specified array.
-      * @param p the array of length 2 containing xy in order
-      */
-    TexCoord2(const T v[]): Tuple2<T>(v) { }
+     * Constructs and initializes a TexCoord2 from the specified array.
+     * @param p the array of length 2 containing xy in order
+     */
+    TexCoord2(const T v[]) : Tuple2<T>(v) {}
 
     /**
-      * Constructs and initializes a TexCoord2 to (0,0).
-      */
-    TexCoord2(): Tuple2<T>() { }
-
+     * Constructs and initializes a TexCoord2 to (0,0).
+     */
+    TexCoord2() : Tuple2<T>() {}
 };
 
 typedef TexCoord2<float> TexCoord2f;

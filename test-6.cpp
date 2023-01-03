@@ -32,10 +32,10 @@ using namespace kh_vecmath;
 #ifdef TESTALL
 int test_6() {
 #else
-int main(int, char**) {
+
+int main(int, char **) {
 #endif
-    const double da[] =
-             { 1, 2, 3, 4, 5 };
+    const double da[] = {1, 2, 3, 4, 5};
     Point4d p1(da);
     Point4d p2(4, 6, 1, -1);
 

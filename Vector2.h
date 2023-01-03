@@ -17,86 +17,81 @@
 #ifndef VECTOR2_H
 #define VECTOR2_H
 
-#include "VmUtil.h"
 #include "Tuple2.h"
+#include "VmUtil.h"
 
 VM_BEGIN_NS
 
 /**
-  * A 2 element vector that is represented by x,y coordinates.
-  * @version specification 1.1, implementation $Revision: 1.3 $, $Date: 1999/10/06 02:52:46 $
-  * @author Kenji hiranabe
-  */
+ * A 2 element vector that is represented by x,y coordinates.
+ * @version specification 1.1, implementation $Revision: 1.3 $, $Date:
+ * 1999/10/06 02:52:46 $
+ * @author Kenji hiranabe
+ */
 
 template<class T>
 class Vector2 : public Tuple2<T> {
-/*
- * $Log: Vector2.h,v $
- * Revision 1.3  1999/10/06  02:52:46  hiranabe
- * Java3D 1.2 and namespace
- *
- * Revision 1.2  1999/05/26  00:59:37  hiranabe
- * support Visual C++
- *
- * Revision 1.1  1999/03/04  11:07:09  hiranabe
- * Initial revision
- *
- * Revision 1.1  1999/03/04  11:07:09  hiranabe
- * Initial revision
- *
- */
+    /*
+     * $Log: Vector2.h,v $
+     * Revision 1.3  1999/10/06  02:52:46  hiranabe
+     * Java3D 1.2 and namespace
+     *
+     * Revision 1.2  1999/05/26  00:59:37  hiranabe
+     * support Visual C++
+     *
+     * Revision 1.1  1999/03/04  11:07:09  hiranabe
+     * Initial revision
+     *
+     * Revision 1.1  1999/03/04  11:07:09  hiranabe
+     * Initial revision
+     *
+     */
 public:
     /**
-      * Constructs and initializes a Vector2 from the specified xy coordinates.
-      * @param x the x coordinate
-      * @param y the y coordinate
-      */
-    Vector2(T x, T y) : Tuple2<T>(x, y) { }
+     * Constructs and initializes a Vector2 from the specified xy coordinates.
+     * @param x the x coordinate
+     * @param y the y coordinate
+     */
+    Vector2(T x, T y) : Tuple2<T>(x, y) {}
 
     /**
-      * Constructs and initializes a Vector2 from the specified array.
-      * @param v the array of length 2 containing xy in order
-      */
-    Vector2(const T v[]) : Tuple2<T>(v) {  }
+     * Constructs and initializes a Vector2 from the specified array.
+     * @param v the array of length 2 containing xy in order
+     */
+    Vector2(const T v[]) : Tuple2<T>(v) {}
 
     /**
-      * Constructs and initializes a Vector2 from the specified Tuple2.
-      * @param t1 the Tuple2 containing the initialization x y data
-      */
-    Vector2(const Tuple2<T>& t1) : Tuple2<T>(t1) { }
+     * Constructs and initializes a Vector2 from the specified Tuple2.
+     * @param t1 the Tuple2 containing the initialization x y data
+     */
+    Vector2(const Tuple2<T> &t1) : Tuple2<T>(t1) {}
 
     /**
-      * Constructs and initializes a Vector2 to (0,0).
-      */
-    Vector2(): Tuple2<T>() { }
+     * Constructs and initializes a Vector2 to (0,0).
+     */
+    Vector2() : Tuple2<T>() {}
 
     /**
-      * Computes the dot product of the this vector and vector v1.
-      * @param  v1 the other vector
-      */
-    T dot(const Vector2& v1) const {
-        return this->x*v1.x + this->y*v1.y;
-    }
+     * Computes the dot product of the this vector and vector v1.
+     * @param  v1 the other vector
+     */
+    T dot(const Vector2 &v1) const { return this->x * v1.x + this->y * v1.y; }
 
     /**
-      * Returns the squared length of this vector.
-      * @return the squared length of this vector
-      */
-    T lengthSquared() const {
-        return this->x*this->x + this->y*this->y;
-    }
+     * Returns the squared length of this vector.
+     * @return the squared length of this vector
+     */
+    T lengthSquared() const { return this->x * this->x + this->y * this->y; }
 
     /**
-      * Returns the length of this vector.
-      * @return the length of this vector
-      */
-    T length() const {
-        return VmUtil<T>::sqrt(lengthSquared());
-    }
+     * Returns the length of this vector.
+     * @return the length of this vector
+     */
+    T length() const { return VmUtil<T>::sqrt(lengthSquared()); }
 
     /**
-      * Normalizes this vector in place.
-      */
+     * Normalizes this vector in place.
+     */
     void normalize() {
         T d = length();
 
@@ -106,33 +101,33 @@ public:
     }
 
     /**
-      * Sets the value of this vector to the normalization of vector v1.
-      * @param v1 the un-normalized vector
-      */
-    void normalize(const Vector2& v1) {
+     * Sets the value of this vector to the normalization of vector v1.
+     * @param v1 the un-normalized vector
+     */
+    void normalize(const Vector2 &v1) {
         this->set(v1);
         normalize();
     }
 
     /**
-      * Returns the angle in radians between this vector and
-      * the vector parameter; the return value is constrained to the
-      * range [0,PI].
-      * @param v1  the other vector
-      * @return the angle in radians in the range [0,PI]
-      */
-    T angle(const Vector2& v1) const {
+     * Returns the angle in radians between this vector and
+     * the vector parameter; the return value is constrained to the
+     * range [0,PI].
+     * @param v1  the other vector
+     * @return the angle in radians in the range [0,PI]
+     */
+    T angle(const Vector2 &v1) const {
         // stabler than acos
-        return VmUtil<T>::abs(VmUtil<T>::atan2(this->x*v1.y - this->y*v1.x , dot(v1)));
+        return VmUtil<T>::abs(
+                VmUtil<T>::atan2(this->x * v1.y - this->y * v1.x, dot(v1)));
     }
 
     // copy constructor and operator = is made by complier
 
-    Vector2& operator=(const Tuple2<T>& t) {
+    Vector2 &operator=(const Tuple2<T> &t) {
         Tuple2<T>::operator=(t);
         return *this;
     }
-
 };
 
 /*
@@ -145,20 +140,23 @@ public:
 
 VM_END_NS
 
-template <class T>
-inline
-VM_VECMATH_NS::Vector2<T> operator*(T s, const VM_VECMATH_NS::Vector2<T>& t1) {
-    return operator*(s, (const VM_VECMATH_NS::Tuple2<T>&)t1);
+template<class T>
+inline VM_VECMATH_NS::Vector2<T>
+operator*(T s, const VM_VECMATH_NS::Vector2<T> &t1) {
+    return operator*(s, (const VM_VECMATH_NS::Tuple2<T> &) t1);
 }
 
 #ifdef VM_INCLUDE_IO
-template <class T>
+
+template<class T>
 inline
-//VM_IOSTREAM_STD
-std::ostream& operator<<(//VM_IOSTREAM_STD
-std::ostream& o, const VM_VECMATH_NS::Vector2<T>& t1) {
-    return operator<<(o, (const VM_VECMATH_NS::Tuple2<T>&)t1);
+// VM_IOSTREAM_STD
+std::ostream &
+operator<<( // VM_IOSTREAM_STD
+        std::ostream &o, const VM_VECMATH_NS::Vector2<T> &t1) {
+    return operator<<(o, (const VM_VECMATH_NS::Tuple2<T> &) t1);
 }
+
 #endif
 
 VM_BEGIN_NS
@@ -167,7 +165,5 @@ typedef Vector2<double> Vector2d;
 typedef Vector2<float> Vector2f;
 
 VM_END_NS
-
-
 
 #endif /* VECTOR2_H */

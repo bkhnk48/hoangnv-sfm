@@ -35,7 +35,7 @@
 /*
  * places this library in 'kh_vecmath' namespace
  * later section can turn this off(earlyer version than egcs1.1.2 ).
- * 
+ *
  */
 #define VM_INCLUDE_NAMESPACE
 
@@ -66,67 +66,63 @@
 /*
  * uses exception mechanizm (not supported now)
  */
-//#define VM_USE_EXCEPTION
+// #define VM_USE_EXCEPTION
 
 /*
  * uses old non STL version of iostream library (currently only used for MSVC)
  */
-//#define VM_USE_OLDIOSTREAM
-
+// #define VM_USE_OLDIOSTREAM
 
 /* -----------------------------------------------------------
- *   end user customization section 
+ *   end user customization section
  * ----------------------------------------------------------- */
- 
+
 // gcc earlier than egcs1.1.2, doesn't support namespace
 #if !(2 <= __GNUC__ && 91 <= __GNUC_MINOR__)
 #undef VM_INCLUDE_NAMESPACE
 #undef VM_USE_STD_NAMESPACE
 #endif
 
-
 #ifdef _MSC_VER
-#  ifndef VM_USE_STD_NAMESPACE
-#    define VM_USE_STD_NAMESPACE
-#  endif
+#ifndef VM_USE_STD_NAMESPACE
+#define VM_USE_STD_NAMESPACE
+#endif
 #endif
 
 #ifdef VM_INCLUDE_NAMESPACE
-#  define VM_VECMATH_NS  kh_vecmath
-#  define VM_BEGIN_NS namespace kh_vecmath {
-#  define VM_END_NS }
+#define VM_VECMATH_NS kh_vecmath
+#define VM_BEGIN_NS namespace kh_vecmath {
+#define VM_END_NS }
 #else
-#  define VM_VECMATH_NS
-#  define VM_BEGIN_NS
-#  define VM_END_NS
+#define VM_VECMATH_NS
+#define VM_BEGIN_NS
+#define VM_END_NS
 #endif
 
-
 #ifdef VM_INCLUDE_TOSTRING
-#  ifndef VM_INCLUDE_IO
-#    define VM_INCLUDE_IO
-#  endif
+#ifndef VM_INCLUDE_IO
+#define VM_INCLUDE_IO
+#endif
 #endif
 
 #ifdef VM_USE_STD_NAMESPACE
-#  define VM_STD std
+#define VM_STD std
 #else
-#  define VM_STD
+#define VM_STD
 #endif
 
 #ifdef _MSC_VER
-#  define VM_MATH_STD
-#  define VM_STRING_STD VM_STD
-#  ifdef VM_USE_OLDIOSTREAM
-#    define VM_IOSTREAM_STD
-#  else
-#    define VM_IOSTREAM_STD VM_STD
-#  endif
+#define VM_MATH_STD
+#define VM_STRING_STD VM_STD
+#ifdef VM_USE_OLDIOSTREAM
+#define VM_IOSTREAM_STD
 #else
-#  define VM_MATH_STD VM_STD
-#  define VM_STRING_STD VM_STD
-#  define VM_IOSTREAM_STD
+#define VM_IOSTREAM_STD VM_STD
 #endif
-
+#else
+#define VM_MATH_STD VM_STD
+#define VM_STRING_STD VM_STD
+#define VM_IOSTREAM_STD
+#endif
 
 #endif /* VM_CONF_H */

@@ -1,9 +1,10 @@
 g++ -pg -Wno-deprecated -c -g Utility.cpp -std=c++17
 g++ -pg -Wno-deprecated -c -g Wall.cpp -std=c++17
 g++ -pg -Wno-deprecated -c -g Agent.cpp -std=c++17
+g++ -pg -Wno-deprecated -c -g AGV.cpp -std=c++17
 g++ -pg -Wno-deprecated -c -g SocialForce.cpp -std=c++17
 # Use the line bellow if using Linux OS
-# g++ -Wno-deprecated -g Core.cpp -o out Utility.o Wall.o Agent.o SocialForce.o -lglut -lGLU -lGL -std=c++17
+g++ -Wno-deprecated -g Core.cpp -o out Utility.o Wall.o Agent.o AGV.o SocialForce.o -lglut -lGLU -lGL -std=c++17
 # Use the line bellow if using Mac OS
-g++ -Wno-deprecated -g Core.cpp -o out Utility.o Wall.o Agent.o SocialForce.o -framework OpenGL -framework GLUT -std=c++17
+# g++ -Wno-deprecated -g Core.cpp -o out Utility.o Wall.o Agent.o AGV.o SocialForce.o -framework OpenGL -framework GLUT -std=c++17
 rm *.o

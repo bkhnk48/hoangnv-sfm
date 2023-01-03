@@ -17,10 +17,8 @@
 #ifndef VECMATH_H
 #define VECMATH_H
 
-#include "vm_conf.h"
-#include "VmUtil.h"
-#include "AxisAngle4_.h"
 #include "AxisAngle4.h"
+#include "AxisAngle4_.h"
 #include "Color3.h"
 #include "Color4.h"
 #include "Matrix3.h"
@@ -39,5 +37,7 @@
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"
+#include "VmUtil.h"
+#include "vm_conf.h"
 
 #endif /* VECMATH_H */

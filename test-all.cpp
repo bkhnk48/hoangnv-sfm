@@ -1,19 +1,30 @@
 #include <stdio.h>
 
-extern int    test_1();
-extern int    test_2();
-extern int    test_3();
-extern int    test_4();
-extern int    test_5();
-extern int    test_6();
-extern int    test_7();
-extern int    test_8();
-extern int    test_9();
-extern int    test_10();
-extern int    test_11();
-extern int    test_12();
+extern int test_1();
 
-int main(int, char**) {
+extern int test_2();
+
+extern int test_3();
+
+extern int test_4();
+
+extern int test_5();
+
+extern int test_6();
+
+extern int test_7();
+
+extern int test_8();
+
+extern int test_9();
+
+extern int test_10();
+
+extern int test_11();
+
+extern int test_12();
+
+int main(int, char **) {
     int ret = 0;
     ret = test_1();
     if (ret == 0)
@@ -54,4 +65,3 @@ int main(int, char**) {
     ret = printf("** all test success.\n");
     return 0;
 }
-

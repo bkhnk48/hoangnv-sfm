@@ -15,10 +15,8 @@
    purpose.  It is provided "AS IS" with NO WARRANTY.
 */
 #ifndef M_PI
-#define M_PI        3.14159265358979323846
+#define M_PI 3.14159265358979323846
 #endif
-
-
 
 #include <vecmath.h>
 
@@ -36,37 +34,37 @@ using namespace std;
 #ifdef TESTALL
 int test_12() {
 #else
-int main(int, char**) {
+
+int main(int, char **) {
 #endif
 #ifdef VM_INCLUDE_TOSTRING
-    AxisAngle4d aa(1,2,3,4);
+    AxisAngle4d aa(1, 2, 3, 4);
     cout << aa.toString() << endl;
     assert(aa.toString() == "(1,2,3,4)");
 
-    Color3d c3(1,2,3);
+    Color3d c3(1, 2, 3);
     cout << c3.toString() << endl;
     assert(c3.toString() == "(1,2,3)");
 
-    Color4f c4(1,2,3,4);
+    Color4f c4(1, 2, 3, 4);
     cout << c4.toString() << endl;
     assert(c4.toString() == "(1,2,3,4)");
 
-    Matrix3d m3d(1,2,3,4,5,6,7,8,9);
+    Matrix3d m3d(1, 2, 3, 4, 5, 6, 7, 8, 9);
     cout << m3d.toString() << endl;
-    assert(m3d.toString() ==
-           "[ [1,2,3]\n"
-           "  [4,5,6]\n"
-           "  [7,8,9] ]");
+    assert(m3d.toString() == "[ [1,2,3]\n"
+                             "  [4,5,6]\n"
+                             "  [7,8,9] ]");
 
-    Point2f p2f(3,4);
+    Point2f p2f(3, 4);
     cout << p2f.toString() << endl;
     assert(p2f.toString() == "(3,4)");
 
-    Quat4d q4d(3,4,1,2);
+    Quat4d q4d(3, 4, 1, 2);
     cout << q4d.toString() << endl;
     assert(q4d.toString() == "(3,4,1,2)");
 
-    Vector4d v4d(3,4,1,2);
+    Vector4d v4d(3, 4, 1, 2);
     cout << v4d.toString() << endl;
     assert(v4d.toString() == "(3,4,1,2)");
 #endif

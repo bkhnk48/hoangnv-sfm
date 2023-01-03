@@ -9,4 +9,8 @@
 # Run mode (0/1)
 1
 # Direction of AGV: 0/1/2/3 - Go from Left/Bottom/Right/Top, 0/1/2 - Turn Right/Go straight/Turn Left
-0 0
+0 2
+# AGV: Acceleration AGV
+0.25
+# AGV: Distance with Agent that AGV will stop
+0.5

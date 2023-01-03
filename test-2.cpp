@@ -14,9 +14,9 @@
    makes no representations about the suitability of this software for any
    purpose.  It is provided "AS IS" with NO WARRANTY.
 */
-#include "Vector2.h"
-#include "Tuple2.h"
 #include "Point2.h"
+#include "Tuple2.h"
+#include "Vector2.h"
 
 #ifdef VM_INCLUDE_NAMESPACE
 using namespace kh_vecmath;
@@ -28,10 +28,11 @@ using namespace kh_vecmath;
 #ifdef TESTALL
 int test_2() {
 #else
-int main(int, char**) {
+
+int main(int, char **) {
 #endif
-    Point2d p1(1,2);
-    Point2d p2(4,6);
+    Point2d p1(1, 2);
+    Point2d p2(4, 6);
 
     // distance
     Point2d::value_type d = p1.distance(p2);

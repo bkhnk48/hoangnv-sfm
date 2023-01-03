@@ -17,54 +17,55 @@
 #ifndef COLOR3_H
 #define COLOR3_H
 
-#include "VmUtil.h"
 #include "Tuple3.h"
+#include "VmUtil.h"
 
 VM_BEGIN_NS
 
 /**
-  * A 3 element color represented by x,y,z
-  * coordinates. 
-  * @version specification 1.1, implementation $Revision: 1.3 $, $Date: 1999/10/06 02:52:46 $
-  * @author Kenji hiranabe
-  */
+ * A 3 element color represented by x,y,z
+ * coordinates.
+ * @version specification 1.1, implementation $Revision: 1.3 $, $Date:
+ * 1999/10/06 02:52:46 $
+ * @author Kenji hiranabe
+ */
 template<class T>
 class Color3 : public Tuple3<T> {
-/*
- * $Log: Color3.h,v $
- * Revision 1.3  1999/10/06  02:52:46  hiranabe
- * Java3D 1.2 and namespace
- *
- * Revision 1.2  1999/05/26  00:59:37  hiranabe
- * support Visual C++
- *
- * Revision 1.1  1999/03/04  11:07:09  hiranabe
- * Initial revision
- *
- * Revision 1.1  1999/03/04  11:07:09  hiranabe
- * Initial revision
- *
- */
+    /*
+     * $Log: Color3.h,v $
+     * Revision 1.3  1999/10/06  02:52:46  hiranabe
+     * Java3D 1.2 and namespace
+     *
+     * Revision 1.2  1999/05/26  00:59:37  hiranabe
+     * support Visual C++
+     *
+     * Revision 1.1  1999/03/04  11:07:09  hiranabe
+     * Initial revision
+     *
+     * Revision 1.1  1999/03/04  11:07:09  hiranabe
+     * Initial revision
+     *
+     */
 public:
     /**
-      * Constructs and initializes a Color3 from the specified xyz
-      * @param x the x coordinate
-      * @param y the y coordinate
-      * @param z the z coordinate
-      */
-    Color3(T x, T y, T z): Tuple3<T>(x, y, z) { }
+     * Constructs and initializes a Color3 from the specified xyz
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param z the z coordinate
+     */
+    Color3(T x, T y, T z) : Tuple3<T>(x, y, z) {}
 
     /**
-      * Constructs and initializes a Color3 from input array of length 3.
-      * @param c the array of length 3 containing xyz in order
-      */
-    Color3(const T c[]): Tuple3<T>(c) { }
+     * Constructs and initializes a Color3 from input array of length 3.
+     * @param c the array of length 3 containing xyz in order
+     */
+    Color3(const T c[]) : Tuple3<T>(c) {}
 
     /**
-      * Constructs and initializes a Color3 from the specified Tuple3d.
-      * @param t1 the Tuple3d containing the initialization x y z data
-      */
-    Color3(const Tuple3<T>& t1): Tuple3<T>(t1) { }
+     * Constructs and initializes a Color3 from the specified Tuple3d.
+     * @param t1 the Tuple3d containing the initialization x y z data
+     */
+    Color3(const Tuple3<T> &t1) : Tuple3<T>(t1) {}
 
 #if 0
     /**
@@ -72,14 +73,14 @@ public:
       * @param t1 the Tuple3f containing the initialization x y z data
       */
     Color3(Tuple3f t1) {
-	super(t1);
+    super(t1);
     }
 #endif
 
     /**
-      * Constructs and initializes a Color3 to (0,0,0).
-      */
-    Color3(): Tuple3<T>() { }
+     * Constructs and initializes a Color3 to (0,0,0).
+     */
+    Color3() : Tuple3<T>() {}
 };
 
 typedef Color3<float> Color3f;

@@ -32,10 +32,11 @@ bool equals(T a, S b) {
 #ifdef TESTALL
 int test_4() {
 #else
-int main(int, char**) {
+
+int main(int, char **) {
 #endif
-    Point3d p1(1,2,3);
-    Point3d p2(4,6,1);
+    Point3d p1(1, 2, 3);
+    Point3d p2(4, 6, 1);
 
     // distance
     Point3d::value_type d = p1.distance(p2);
