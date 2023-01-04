@@ -464,11 +464,11 @@ void createAGVs() {
     AGV *agv = new AGV;
     vector <Point3f> route = Utility::getRouteAGV(inputData[7], inputData[8], inputData[2]);
     agv->setPosition(route[0].x, route[0].y);
-    agv->setTangentialVelocity(0.6F);
+    agv->setDesiredSpeed(0.6F);
     agv->setAcceleration(inputData[9]);
     agv->setDistance((float) inputData[10]);
     for (int i = 1; i < route.size(); i++) {
-        agv->setPath(route[i].x, route[i].y);
+        agv->setPath(route[i].x, route[i].y, 1.0);
     }
     socialForce->addAGV(agv);
 }
