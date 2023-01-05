@@ -5,6 +5,7 @@
 #include <iostream>
 #include <array>
 #include "vecmath.h"
+#include <map>
 
 class Utility {
 public:
@@ -20,9 +21,11 @@ public:
 
     static float randomFloat(float lowerBound, float upperBound);
 
+    static std::map<std::string, std::vector<float>> readMapData(const char *fileName);
+
     static std::vector<double> readInput(const char *fileName);
 
-    static std::array<int, 12> getNumPedesInFlow(int totalPedestrian);
+    static std::vector<int> getNumPedesInFlow(int junctionType, int totalPedestrian);
 
     static std::vector<double> getPedesVelocity(int numPedes, double n_dist);
 
@@ -36,9 +39,15 @@ public:
 
     static std::vector<float> getPedesColor(float maxSpeed, float minSpeed, float desiredSpeed);
 
-    static std::vector <Point3f> getRouteAGV(int src, int turningDirection, float walkwayWidth);
+    static std::vector <Point3f> getRouteAGV(int junctionType, int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
+
+    static std::vector <Point3f> getRouteAGVCrossRoad(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
+
+    static std::vector <Point3f> getRouteAGVTJunction(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
 
     static Point3f getIntermediateDes(Point3f position, float verWalkwayWidth, float horWalkwayWidth);
+
+    static int randomInt(int from, int to);
 };
 
 #endif

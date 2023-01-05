@@ -36,9 +36,11 @@ float fps = 0;        // Frames per second
 bool animate = false; // Animate scene flag
 
 std::vector<double> inputData;
+std::map<std::string, std::vector<float>> mapData;
+std::vector<float> juncData;
 
 // int numOfPeople[] = {3, 5, 7, 4, 5, 9, 2, 4, 5, 3, 6, 4};
-std::array<int, 12> numOfPeople;
+std::vector<int> numOfPeople;
 float minSpeed = -1;
 float maxSpeed = -1;
 
@@ -76,8 +78,28 @@ void update();
 
 void computeFPS();
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     inputData = Utility::readInput("input.txt");
+    mapData = Utility::readMapData("map.txt");
+
+    std::string input;
+    do
+    {
+        cout << "Please enter the junction you want to emulate" << endl;
+        cout << "(Press enter to randomly select a junction in the map)" << endl;
+        cout << "Your choice: ";
+        getline(cin, input);
+        if (input == "")
+        {
+            auto it = mapData.begin();
+            std::advance(it, Utility::randomInt(1, mapData.size() - 3));
+            std::string random_key = it->first;
+            input.assign(random_key);
+        }
+
+    } while (mapData[input].size() < 3);
+    juncData = mapData[input];
 
     glutInit(&argc, argv); // Initialize GLUT
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA |
@@ -85,11 +107,12 @@ int main(int argc, char **argv) {
     glutInitWindowSize(winWidth, winHeight); // Set window width and height
     glutInitWindowPosition(90, 90);          // Set window position
     glutCreateWindow(
-            "Crowd Simulation using Social Force"); // Set window title and create
+        "Crowd Simulation using Social Force"); // Set window title and create
     // display window
 
     animate = true;
-    if ((int) inputData[6] == 0) {
+    if ((int)inputData[6] == 0)
+    {
         glutHideWindow();
     }
 
@@ -105,11 +128,12 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void init() {
+void init()
+{
     // General Light Intensity
     GLfloat gnrlAmbient[] = {
-            0.8F, 0.8F, 0.8F,
-            1.0}; // Ambient (R, G, B, A) light intensity of entire scene
+        0.8F, 0.8F, 0.8F,
+        1.0}; // Ambient (R, G, B, A) light intensity of entire scene
 
     // Object Light Intensity
     GLfloat lghtDiffuse[] = {0.7F, 0.7F, 0.7F,
@@ -151,18 +175,27 @@ void init() {
     createAGVs();
 }
 
-void createWalls() {
+void createWalls()
+{
     Wall *wall;
 
-    float walkwayWidth = (float) inputData[2];
+    float walkwayWidth = (float)inputData[2];
     vector<float> coors = Utility::getWallCoordinates(walkwayWidth);
 
     // Upper Wall
-    wall = new Wall(coors[0], coors[1], coors[2], coors[3]);
-    socialForce->addWall(wall);
+    if (juncData.size() == 4)
+    {
+        wall = new Wall(coors[0], coors[1], coors[2], coors[3]);
+        socialForce->addWall(wall);
 
-    wall = new Wall(coors[4], coors[5], coors[6], coors[7]);
-    socialForce->addWall(wall);
+        wall = new Wall(coors[4], coors[5], coors[6], coors[7]);
+        socialForce->addWall(wall);
+    }
+    else if (juncData.size() == 3)
+    {
+        wall = new Wall(coors[0], coors[1], coors[6], coors[7]);
+        socialForce->addWall(wall);
+    }
 
     // Lower Wall
     wall = new Wall(coors[8], coors[9], coors[10], coors[11]);
@@ -172,37 +205,31 @@ void createWalls() {
     socialForce->addWall(wall);
 
     // Left Wall
-    wall = new Wall(coors[16], coors[17], coors[18], coors[19]);
-    socialForce->addWall(wall);
+    if (juncData.size() == 4)
+    {
+        wall = new Wall(coors[16], coors[17], coors[18], coors[19]);
+        socialForce->addWall(wall);
+    }
 
     wall = new Wall(coors[20], coors[21], coors[22], coors[23]);
     socialForce->addWall(wall);
 
     // Right Wall
-    wall = new Wall(coors[24], coors[25], coors[26], coors[27]);
-    socialForce->addWall(wall);
+    if (juncData.size() == 4)
+    {
+        wall = new Wall(coors[24], coors[25], coors[26], coors[27]);
+        socialForce->addWall(wall);
+    }
 
     wall = new Wall(coors[28], coors[29], coors[30], coors[31]);
     socialForce->addWall(wall);
 }
 
-// void setFlowFeature(Agent *agent, int numOfPeople, float initPosX, float
-// initPosY, float targetPosX, float targetPosY)
-// {
-// 	for (int temp = 0; temp < numOfPeople; temp++)
-// 	{
-// 		agent = new Agent;
-// 		agent->setPosition(initPosX, initPosY);
-// 		agent->setPath(targetPosX, targetPosY, 2.0);
-// 		agent->setDesiredSpeed(speed);
-// 		socialForce->addAgent(agent);
-// 	}
-// }
-
-void createAgents() {
+void createAgents()
+{
     Agent *agent;
 
-    numOfPeople = Utility::getNumPedesInFlow(int(inputData[0]));
+    numOfPeople = Utility::getNumPedesInFlow(juncData.size(), int(inputData[0]));
     vector<double> velocityList = Utility::getPedesVelocity(int(inputData[0]), inputData[1]);
     minSpeed = velocityList[0];
     maxSpeed = velocityList[velocityList.size() - 1];
@@ -213,36 +240,181 @@ void createAgents() {
 
     // test
 
-    // setFlowFeature(agent, numOfPeople[0], randomFloat(-20.3F, -6.0), randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0), randomFloat(-5.0, -3.0));
     // for (int temp = 0; temp < 3; temp++)
     // {
-    // 	agent = new Agent;
-    // 	// agent->setPosition(randomFloat(-20.3F, -6.0), randomFloat(-2.0, 2.0));
-    // 	agent->setPosition(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0));
-    // 	float x = randomFloat(-20.3F, -6.0);
-    // 	float y = randomFloat(-2.0, 2.0);
-    // 	agent->setPath(x, y, 1.0);
-    // 	agent->setDestination(x, y);
-    // 	// agent->setPath(randomFloat(22.0, 25.0), randomFloat(-3.0, -2.0), 1.0);
-    // 	agent->setDesiredSpeed(1);
-    // 	std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-    // 	agent->setColour(color[0], color[1], color[2]);
-    // 	socialForce->addAgent(agent);
+    //     agent = new Agent;
+    //     // agent->setPosition(randomFloat(-20.3F, -6.0), randomFloat(-2.0, 2.0));
+    //     agent->setPosition(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0));
+    //     float x = randomFloat(-20.3F, -6.0);
+    //     float y = randomFloat(-2.0, 2.0);
+    //     agent->setPath(x, y, 1.0);
+    //     agent->setDestination(x, y);
+    //     // agent->setPath(randomFloat(22.0, 25.0), randomFloat(-3.0, -2.0), 1.0);
+    //     agent->setDesiredSpeed(1);
+    //     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+    //     agent->setColour(color[0], color[1], color[2]);
+    //     socialForce->addAgent(agent);
     // }
 
     // test
 
-    for (int idx = 0; idx < 12; idx++) {
-        switch (idx % 12) {
+    if (juncData.size() == 3)
+    {
+        for (int idx = 0; idx < 6; idx++)
+        {
+            switch (idx % 6)
+            {
+                // From Left to Right
+            case 0:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
+                    agent = new Agent;
+                    vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
+                    agent->setPosition(position[0], position[1]);
+                    float x = randomFloat(20, 23);
+                    float y = randomFloat(-3, 3);
+                    agent->setPath(x, y, 2.0);
+                    agent->setDestination(x, y);
+                    agent->setDesiredSpeed(velocityList[pedesCount]);
+                    pedesCount = pedesCount + 1;
+                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+                    agent->setColour(color[0], color[1], color[2]);
+                    socialForce->addAgent(agent);
+                }
+                break;
+            }
+            // From Left to Bottom
+            case 1:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
+                    agent = new Agent;
+                    vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
+                    agent->setPosition(position[0], position[1]);
+                    agent->setPath(randomFloat(-3, 3), randomFloat(-3, 3), 2.0);
+                    float x = randomFloat(-3, 3);
+                    float y = randomFloat(-15, -13);
+                    agent->setPath(x, y, 2.0);
+                    agent->setDestination(x, y);
+                    agent->setDesiredSpeed(velocityList[pedesCount]);
+                    pedesCount = pedesCount + 1;
+                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+                    agent->setColour(color[0], color[1], color[2]);
+                    socialForce->addAgent(agent);
+                }
+                break;
+            }
+            // From Bottom to Left
+            case 2:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
+                    agent = new Agent;
+                    vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
+                    agent->setPosition(position[0], position[1]);
+                    agent->setPath(randomFloat(-3, 3), randomFloat(-3, 3), 2.0);
+                    float x = randomFloat(-23, -20);
+                    float y = randomFloat(-3, 3);
+                    agent->setPath(x, y, 2.0);
+                    agent->setDestination(x, y);
+                    agent->setDesiredSpeed(velocityList[pedesCount]);
+                    pedesCount = pedesCount + 1;
+                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+                    agent->setColour(color[0], color[1], color[2]);
+                    socialForce->addAgent(agent);
+                }
+                break;
+            }
+            // From Bottom to Right
+            case 3:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
+                    agent = new Agent;
+                    vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
+                    agent->setPosition(position[0], position[1]);
+                    agent->setPath(randomFloat(-3, 3), randomFloat(-3, 3), 2.0);
+                    float x = randomFloat(20, 23);
+                    float y = randomFloat(-3, 3);
+                    agent->setPath(x, y, 2.0);
+                    agent->setDestination(x, y);
+                    agent->setDesiredSpeed(velocityList[pedesCount]);
+                    pedesCount = pedesCount + 1;
+                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+                    agent->setColour(color[0], color[1], color[2]);
+                    socialForce->addAgent(agent);
+                }
+                break;
+            }
+            // From Right to Left
+            case 4:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
+                    agent = new Agent;
+                    vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
+                    agent->setPosition(position[0], position[1]);
+                    float x = randomFloat(-23, -20);
+                    float y = randomFloat(-3, 3);
+                    agent->setPath(x, y, 2.0);
+                    agent->setDestination(x, y);
+                    agent->setDesiredSpeed(velocityList[pedesCount]);
+                    pedesCount = pedesCount + 1;
+                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+                    agent->setColour(color[0], color[1], color[2]);
+                    socialForce->addAgent(agent);
+                }
+                break;
+            }
+            // From Right to Bottom
+            case 5:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
+                    agent = new Agent;
+                    vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
+                    agent->setPosition(position[0], position[1]);
+                    agent->setPath(randomFloat(-3, 3), randomFloat(-3, 3), 2.0);
+                    float x = randomFloat(-3, 3);
+                    float y = randomFloat(-15, -13);
+                    agent->setPath(x, y, 2.0);
+                    agent->setDestination(x, y);
+                    agent->setDesiredSpeed(velocityList[pedesCount]);
+                    pedesCount = pedesCount + 1;
+                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+                    agent->setColour(color[0], color[1], color[2]);
+                    socialForce->addAgent(agent);
+                }
+                break;
+            }
+            default:
+                break;
+            }
+        }
+    }
+    else if (juncData.size() == 4)
+    {
+        for (int idx = 0; idx < 12; idx++)
+        {
+            switch (idx % 12)
+            {
             // From Left to Right
-            case 0: {
-                // setFlowFeature(agent, numOfPeople[idx], randomFloat(-20.3F, -6.0), randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0), randomFloat(-5.0, -3.0));
-                for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+            case 0:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
                     agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(0, (float) inputData[3], (float) inputData[4],
-                                                                     (float) inputData[5]);
+                    vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(0, 0, (float) inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(0, 0, (float)inputData[2]);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -253,14 +425,15 @@ void createAgents() {
                 }
                 break;
             }
-            case 1: {
-                // setFlowFeature(agent, numOfPeople[idx], randomFloat(-20.3F, -6.0), randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0), randomFloat(-3.0, 3.0));
-                for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+            case 1:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
                     agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(0, (float) inputData[3], (float) inputData[4],
-                                                                     (float) inputData[5]);
+                    vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(0, 1, (float) inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(0, 1, (float)inputData[2]);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -271,14 +444,15 @@ void createAgents() {
                 }
                 break;
             }
-            case 2: {
-                // setFlowFeature(agent, numOfPeople[idx], randomFloat(-20.3F, -6.0), randomFloat(-4.0, 4.0), randomFloat(22.0, 25.0), randomFloat(3.0, 5.0));
-                for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+            case 2:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
                     agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(0, (float) inputData[3], (float) inputData[4],
-                                                                     (float) inputData[5]);
+                    vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(0, 2, (float) inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(0, 2, (float)inputData[2]);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -290,14 +464,15 @@ void createAgents() {
                 break;
             }
                 // From Right to Left
-            case 3: {
-                // setFlowFeature(agent, numOfPeople[idx], randomFloat(6.0, 20.3F), randomFloat(-4.0, 4.0), randomFloat(-25.0, -22.0), randomFloat(-5.0, -3.0));
-                for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+            case 3:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
                     agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(1, (float) inputData[3], (float) inputData[4],
-                                                                     (float) inputData[5]);
+                    vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(1, 0, (float) inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(1, 0, (float)inputData[2]);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -308,14 +483,15 @@ void createAgents() {
                 }
                 break;
             }
-            case 4: {
-                // setFlowFeature(agent, numOfPeople[idx], randomFloat(6.0, 20.3F), randomFloat(-4.0, 4.0), randomFloat(-25.0, -22.0), randomFloat(-3.0, 3.0));
-                for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+            case 4:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
                     agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(1, (float) inputData[3], (float) inputData[4],
-                                                                     (float) inputData[5]);
+                    vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(1, 1, (float) inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(1, 1, (float)inputData[2]);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -326,14 +502,15 @@ void createAgents() {
                 }
                 break;
             }
-            case 5: {
-                // setFlowFeature(agent, numOfPeople[idx], randomFloat(6.0, 20.3F), randomFloat(-4.0, 4.0), randomFloat(-25.0, -22.0), randomFloat(3.0, 5.0));
-                for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+            case 5:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
                     agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(1, (float) inputData[3], (float) inputData[4],
-                                                                     (float) inputData[5]);
+                    vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(1, 2, (float) inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(1, 2, (float)inputData[2]);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -345,14 +522,15 @@ void createAgents() {
                 break;
             }
                 // From Top to Bottom
-            case 6: {
-                // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(6.0, 12.3F), randomFloat(-5.0, -3.0), randomFloat(-18.0, -15.0));
-                for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+            case 6:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
                     agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(2, (float) inputData[3], (float) inputData[4],
-                                                                     (float) inputData[5]);
+                    vector<float> position = Utility::getPedesSource(2, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(2, 0, (float) inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(2, 0, (float)inputData[2]);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -363,14 +541,15 @@ void createAgents() {
                 }
                 break;
             }
-            case 7: {
-                // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(6.0, 12.3F), randomFloat(-3.0, 3.0), randomFloat(-18.0, -15.0));
-                for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+            case 7:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
                     agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(2, (float) inputData[3], (float) inputData[4],
-                                                                     (float) inputData[5]);
+                    vector<float> position = Utility::getPedesSource(2, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(2, 1, (float) inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(2, 1, (float)inputData[2]);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -381,14 +560,15 @@ void createAgents() {
                 }
                 break;
             }
-            case 8: {
-                // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(6.0, 12.3F), randomFloat(3.0, 5.0), randomFloat(-18.0, -15.0));
-                for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+            case 8:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
                     agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(2, (float) inputData[3], (float) inputData[4],
-                                                                     (float) inputData[5]);
+                    vector<float> position = Utility::getPedesSource(2, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(2, 2, (float) inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(2, 2, (float)inputData[2]);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -400,14 +580,15 @@ void createAgents() {
                 break;
             }
                 // From Bottom to Top
-            case 9: {
-                // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(-12.3F, -6.0), randomFloat(-5.0, -3.0), randomFloat(15.0, 18.0));
-                for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+            case 9:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
                     agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(3, (float) inputData[3], (float) inputData[4],
-                                                                     (float) inputData[5]);
+                    vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(3, 0, (float) inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(3, 0, (float)inputData[2]);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -418,14 +599,15 @@ void createAgents() {
                 }
                 break;
             }
-            case 10: {
-                // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(-12.3F, -6.0), randomFloat(-3.0, 3.0), randomFloat(15.0, 18.0));
-                for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+            case 10:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
                     agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(3, (float) inputData[3], (float) inputData[4],
-                                                                     (float) inputData[5]);
+                    vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(3, 1, (float) inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(3, 1, (float)inputData[2]);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -436,14 +618,15 @@ void createAgents() {
                 }
                 break;
             }
-            case 11: {
-                // setFlowFeature(agent, numOfPeople[idx], randomFloat(-4.0, 4.0), randomFloat(-12.3F, -6.0), randomFloat(3.0, 5.0), randomFloat(15.0, 18.0));
-                for (int temp = 0; temp < numOfPeople[idx]; temp++) {
+            case 11:
+            {
+                for (int temp = 0; temp < numOfPeople[idx]; temp++)
+                {
                     agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(3, (float) inputData[3], (float) inputData[4],
-                                                                     (float) inputData[5]);
+                    vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4],
+                                                                     (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(3, 2, (float) inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(3, 2, (float)inputData[2]);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -456,24 +639,28 @@ void createAgents() {
             }
             default:
                 break;
+            }
         }
     }
 }
 
-void createAGVs() {
+void createAGVs()
+{
     AGV *agv = new AGV;
-    vector <Point3f> route = Utility::getRouteAGV(inputData[7], inputData[8], inputData[2]);
+    vector<Point3f> route = Utility::getRouteAGV(juncData.size(), inputData[7], inputData[8], inputData[2], juncData);
     agv->setPosition(route[0].x, route[0].y);
     agv->setDesiredSpeed(0.6F);
     agv->setAcceleration(inputData[9]);
-    agv->setDistance((float) inputData[10]);
-    for (int i = 1; i < route.size(); i++) {
+    agv->setDistance((float)inputData[10]);
+    for (int i = 1; i < route.size(); i++)
+    {
         agv->setPath(route[i].x, route[i].y, 1.0);
     }
     socialForce->addAGV(agv);
 }
 
-void display() {
+void display()
+{
     glClear(GL_COLOR_BUFFER_BIT |
             GL_DEPTH_BUFFER_BIT); // Clear the colour and depth buffer
     glLoadIdentity();             // Initialize modelview matrix to identity matrix
@@ -496,10 +683,12 @@ void display() {
     glutSwapBuffers();
 }
 
-void drawAgents() {
-    vector < Agent * > agents = socialForce->getCrowd();
+void drawAgents()
+{
+    vector<Agent *> agents = socialForce->getCrowd();
 
-    for (Agent *agent: agents) {
+    for (Agent *agent : agents)
+    {
         // Draw Agents
         glColor3f(agent->getColour().x, agent->getColour().y, agent->getColour().z);
         drawCylinder(agent->getPosition().x, agent->getPosition().y,
@@ -507,11 +696,13 @@ void drawAgents() {
     }
 }
 
-void drawAGVs() {
-    vector < AGV * > agvs = socialForce->getAGVs();
+void drawAGVs()
+{
+    vector<AGV *> agvs = socialForce->getAGVs();
     Vector3f e_ij;
 
-    for (AGV *agv: agvs) {
+    for (AGV *agv : agvs)
+    {
         // Draw AGVs
         glColor3f(agv->getColour().x, agv->getColour().y, agv->getColour().z);
         float w, l;
@@ -544,7 +735,8 @@ void drawAGVs() {
     }
 }
 
-void drawCylinder(float x, float y, float radius, int slices, float height) {
+void drawCylinder(float x, float y, float radius, int slices, float height)
+{
     float sliceAngle;
     Point3f current, next;
 
@@ -555,7 +747,8 @@ void drawCylinder(float x, float y, float radius, int slices, float height) {
     current.x = radius; // Set initial point
     current.y = 0;      // Set initial point
 
-    for (float angle = sliceAngle; angle <= 360; angle += sliceAngle) {
+    for (float angle = sliceAngle; angle <= 360; angle += sliceAngle)
+    {
         next.x = radius * cos(angle * PI / 180); // Compute next point
         next.y = radius * sin(angle * PI / 180); // Compute next point
 
@@ -586,12 +779,14 @@ void drawCylinder(float x, float y, float radius, int slices, float height) {
     glPopMatrix();
 }
 
-void drawWalls() {
-    vector < Wall * > walls = socialForce->getWalls();
+void drawWalls()
+{
+    vector<Wall *> walls = socialForce->getWalls();
 
     glColor3f(0.2F, 0.2F, 0.2F);
     glPushMatrix();
-    for (Wall *wall: walls) {
+    for (Wall *wall : walls)
+    {
         glBegin(GL_LINES);
         glVertex2f(wall->getStartPoint().x, wall->getStartPoint().y);
         glVertex2f(wall->getEndPoint().x, wall->getEndPoint().y);
@@ -600,7 +795,8 @@ void drawWalls() {
     glPopMatrix();
 }
 
-void showInformation() {
+void showInformation()
+{
     Point3f margin;
     char totalAgentsStr[5] = "\0", fpsStr[8] = "\0", frctnStr[6] = "\0";
 
@@ -634,10 +830,11 @@ void showInformation() {
     drawText(margin.x + 1.7F, margin.y - 0.9F, s.c_str() /*fpsStr*/);
 }
 
-void drawText(float x, float y, const char text[]) {
+void drawText(float x, float y, const char text[])
+{
     glDisable(GL_LIGHTING); // Disable lighting for proper display of 'drawText()'
     glDisable(
-            GL_DEPTH_TEST); // Disable depth test for proper display of 'drawText()'
+        GL_DEPTH_TEST); // Disable depth test for proper display of 'drawText()'
 
     glPushMatrix();
     glTranslatef(x, y, 0.0);
@@ -653,7 +850,8 @@ void drawText(float x, float y, const char text[]) {
     glEnable(GL_LIGHTING);   // Prepare OpenGL to perform lighting calculations
 }
 
-void reshape(int width, int height) {
+void reshape(int width, int height)
+{
     glViewport(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height));
 
     glMatrixMode(GL_PROJECTION);
@@ -667,27 +865,31 @@ void reshape(int width, int height) {
     winHeight = height;
 }
 
-void normalKey(unsigned char key, int xMousePos, int yMousePos) {
-    switch (key) {
-        case 'a': // Animate or inanimate scene
-            animate = (!animate) ? true : false;
-            break;
+void normalKey(unsigned char key, int xMousePos, int yMousePos)
+{
+    switch (key)
+    {
+    case 'a': // Animate or inanimate scene
+        animate = (!animate) ? true : false;
+        break;
 
-        case 27: // ASCII character for Esc key
-            delete socialForce;
-            socialForce = 0;
+    case 27: // ASCII character for Esc key
+        delete socialForce;
+        socialForce = 0;
 
-            exit(0); // Terminate program
-            break;
+        exit(0); // Terminate program
+        break;
     }
 }
 
-float randomFloat(float lowerBound, float upperBound) {
+float randomFloat(float lowerBound, float upperBound)
+{
     return (lowerBound +
             (static_cast<float>(rand()) / RAND_MAX) * (upperBound - lowerBound));
 }
 
-void update() {
+void update()
+{
     int currTime, frameTime; // Store time in milliseconds
     static int prevTime;     // Stores time in milliseconds
 
@@ -725,7 +927,8 @@ void update() {
         exit(0); // Terminate program
     }
 
-    if (animate) {
+    if (animate)
+    {
         socialForce->moveCrowd(static_cast<float>(frameTime) / 1000); // Perform calculations and move agents
         socialForce->moveAGV(static_cast<float>(frameTime) / 1000);
     }
@@ -734,7 +937,8 @@ void update() {
     glutIdleFunc(update); // Continuously execute 'update()'
 }
 
-void computeFPS() {
+void computeFPS()
+{
     static int frameCount = 0; // Stores number of frames
     int currTime, frameTime;   // Store time in milliseconds
     static int prevTime;       // Stores time in milliseconds
@@ -742,10 +946,11 @@ void computeFPS() {
     frameCount++;
 
     currTime = glutGet(
-            GLUT_ELAPSED_TIME); // Get time in milliseconds since 'glutInit()' called
+        GLUT_ELAPSED_TIME); // Get time in milliseconds since 'glutInit()' called
     frameTime = currTime - prevTime;
 
-    if (frameTime > 1000) {
+    if (frameTime > 1000)
+    {
         fps = frameCount /
               (static_cast<float>(frameTime) / 1000); // Compute the number of FPS
         prevTime = currTime;
