@@ -646,17 +646,25 @@ void createAgents()
 
 void createAGVs()
 {
-    AGV *agv = new AGV;
-    vector<Point3f> route = Utility::getRouteAGV(juncData.size(), inputData[7], inputData[8], inputData[2], juncData);
-    agv->setPosition(route[0].x, route[0].y);
-    agv->setDesiredSpeed(0.6F);
-    agv->setAcceleration(inputData[9]);
-    agv->setDistance((float)inputData[10]);
-    for (int i = 1; i < route.size(); i++)
+    AGV *agv = NULL;
+    for (int i = 0; i < juncData.size(); i++)
     {
-        agv->setPath(route[i].x, route[i].y, 1.0);
+        for (int j = 0; j < juncData.size() - 1; j++)
+        {
+            agv = new AGV();
+            vector<Point3f> route = Utility::getRouteAGV(juncData.size(), i, j, inputData[2], juncData);
+            agv->setPosition(route[0].x, route[0].y);
+            agv->setDestination(route[route.size() - 1].x, route[route.size() - 1].y);
+            agv->setDesiredSpeed(0.6F);
+            agv->setAcceleration(inputData[9]);
+            agv->setDistance((float)inputData[10]);
+            for (int i = 1; i < route.size(); i++)
+            {
+                agv->setPath(route[i].x, route[i].y, 1.0);
+            }
+            socialForce->addAGV(agv);
+        }
     }
-    socialForce->addAGV(agv);
 }
 
 void display()
@@ -899,26 +907,50 @@ void update()
 
     int count = 0;
 
-    std::vector < Agent * > agents = socialForce->getCrowd();
-    for (Agent *agent: agents) {
+    std::vector<Agent *> agents = socialForce->getCrowd();
+    for (Agent *agent : agents)
+    {
         Point3f src = agent->getPosition();
         Point3f des = agent->getDestination();
 
         if (agent->getVelocity().length() < Utility::LOWER_SPEED_LIMIT + 0.2 &&
             agent->getMinDistanceToWalls(socialForce->getWalls(), src, agent->getRadius()) < 0.2 &&
-            !agent->hadInterDes) {
+            !agent->hadInterDes)
+        {
             agent->hadInterDes = true;
-            Point3f intermediateDes = Utility::getIntermediateDes(src, (float) inputData[2], (float) inputData[2]);
+            Point3f intermediateDes = Utility::getIntermediateDes(src, (float)inputData[2], (float)inputData[2]);
             agent->setPath(intermediateDes.x, intermediateDes.y, 1.0);
             agent->setPath(des.x, des.y, 1.0);
         }
 
+        // float distance = src.distance(des);
+        // if (distance <= 1 || isnan(distance))
+        // {
+        //     count = count + 1;
+        // }
+    }
+    // if (count == agents.size()) {
+    //     std::cout << "Maximum speed: " << maxSpeed << " - Minimum speed: " << minSpeed << endl;
+    //     std::cout << "Finish in: " << Utility::convertTime(currTime) << endl;
+    //     delete socialForce;
+    //     socialForce = 0;
+
+    //     exit(0); // Terminate program
+    // }
+    std::vector<AGV *> agvs = socialForce->getAGVs();
+    for (AGV *agv : agvs)
+    {
+        Point3f src = agv->getPosition();
+        Point3f des = agv->getDestination();
+
         float distance = src.distance(des);
-        if (distance <= 1 || isnan(distance)) {
+        if (distance <= 1 || isnan(distance))
+        {
             count = count + 1;
         }
     }
-    if (count == agents.size()) {
+    if (count == socialForce->getNumAGVs())
+    {
         std::cout << "Maximum speed: " << maxSpeed << " - Minimum speed: " << minSpeed << endl;
         std::cout << "Finish in: " << Utility::convertTime(currTime) << endl;
         delete socialForce;
@@ -930,7 +962,7 @@ void update()
     if (animate)
     {
         socialForce->moveCrowd(static_cast<float>(frameTime) / 1000); // Perform calculations and move agents
-        socialForce->moveAGV(static_cast<float>(frameTime) / 1000);
+        socialForce->moveAGVs(static_cast<float>(frameTime) / 1000);
     }
     computeFPS();
     glutPostRedisplay();

@@ -39,10 +39,11 @@ public:
     void removeWalls();
 
     void removeAGV();
+    void removeAGVs();
 
     void moveCrowd(float stepTime);
 
-    void moveAGV(float stepTime);
+    void moveAGVs(float stepTime);
 };
 
 #endif

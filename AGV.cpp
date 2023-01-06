@@ -123,30 +123,37 @@ void AGV::move(float stepTime, vector<Point3f> position_list)
     vector_acceleration = e_ij * acceleration;
     vector_acceleration *= stepTime;
 
-    if (checkNearAgent(position_list))
+    if (getDestination().distance(position) < 1.0F && path.size() == 1)
     {
-        if (abs(instantaneous_velocity.x) >= abs(vector_acceleration.x) &&
-            abs(instantaneous_velocity.y) >= abs(vector_acceleration.y))
-        {
-            position = position + instantaneous_velocity * stepTime;
-            instantaneous_velocity = instantaneous_velocity - vector_acceleration;
-        }
-        else
-        {
-            instantaneous_velocity.set(0, 0, 0);
-        }
+        position = getDestination();
     }
     else
     {
-        if (instantaneous_velocity.length() < velocity.length())
+        if (checkNearAgent(position_list))
         {
-            position = position + instantaneous_velocity * stepTime;
-            instantaneous_velocity = instantaneous_velocity + vector_acceleration;
+            if (abs(instantaneous_velocity.x) >= abs(vector_acceleration.x) &&
+                abs(instantaneous_velocity.y) >= abs(vector_acceleration.y))
+            {
+                position = position + instantaneous_velocity * stepTime;
+                instantaneous_velocity = instantaneous_velocity - vector_acceleration;
+            }
+            else
+            {
+                instantaneous_velocity.set(0, 0, 0);
+            }
         }
         else
         {
-            instantaneous_velocity = velocity;
-            position = position + velocity * stepTime;
+            if (instantaneous_velocity.length() < velocity.length())
+            {
+                position = position + instantaneous_velocity * stepTime;
+                instantaneous_velocity = instantaneous_velocity + vector_acceleration;
+            }
+            else
+            {
+                instantaneous_velocity = velocity;
+                position = position + velocity * stepTime;
+            }
         }
     }
 }
