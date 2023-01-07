@@ -14,7 +14,7 @@ class MovingObject
 {
 protected:
     int id;
-    Color3f colour;
+    Color3f color;
     float desiredSpeed;
     std::deque <Waypoint> path;
     Point3f destination;
@@ -25,7 +25,7 @@ public:
     MovingObject();
     ~MovingObject();
 
-    void setColour(float red, float green, float blue);
+    void setColor(float red, float green, float blue);
 
     void setPosition(float x, float y);
 
@@ -39,7 +39,7 @@ public:
 
     float getDesiredSpeed() const { return desiredSpeed; }
 
-    Color3f getColour() const { return colour; }
+    Color3f getColor() const { return color; }
 
     Point3f getPosition() const { return position; }
 
@@ -52,6 +52,8 @@ public:
     Point3f getAheadVector() const;
 
     float getOrientation();
+
+    virtual void move() {};
 
 };
 

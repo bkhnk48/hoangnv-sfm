@@ -3,15 +3,15 @@
 const float PI = 3.14159265359F;
 
 MovingObject::MovingObject() {
-    colour.set(0.0, 0.0, 0.0);
+    color.set(0.0, 0.0, 0.0);
     position.set(0.0, 0.0, 0.0);
     velocity.set(0.0, 0.0, 0.0);
 }
 
 MovingObject::~MovingObject() { }
 
-void MovingObject::setColour(float red, float green, float blue) {
-    colour.set(red / 255, green / 255, blue / 255);
+void MovingObject::setColor(float red, float green, float blue) {
+    color.set(red / 255, green / 255, blue / 255);
 }
 
 void MovingObject::setPosition(float x, float y) {
