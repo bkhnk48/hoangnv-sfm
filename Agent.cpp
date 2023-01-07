@@ -219,86 +219,90 @@ Vector3f Agent::getAgvInteractForce(vector<AGV *> agvs)
 
     for (const AGV *agv : agvs)
     {
-        // Compute Distance Between Agent j and i
-        distance_ij = agv->getNearestPoint(position) - position;
-
-        // Skip Computation if Agents i and j are Too Far Away
-        if (distance_ij.lengthSquared() > (2.0 * 2.0))
-            continue;
-
-        // Compute Direction of Agent j from i
-        // Formula: e_ij = (position_j - position_i) / ||position_j - position_i||
-        e_ij = distance_ij;
-        e_ij.normalize();
-
-        // Compute Interaction Vector Between Agent i and j
-        // Formula: D = lambda * (velocity_i - velocity_j) + e_ij
-        D_ij = lambda * (velocity - agv->getVelocity()) + e_ij;
-
-        // Compute Modal Parameter B
-        // Formula: B = gamma * ||D_ij||
-        B = gamma * D_ij.length();
-
-        // Compute Interaction Direction
-        // Formula: t_ij = D_ij / ||D_ij||
-        t_ij = D_ij;
-        t_ij.normalize();
-
-        // Compute Angle Between Interaction Direction (t_ij) and Vector Pointing
-        // from Agent i to j (e_ij)
-        theta = t_ij.angle(e_ij);
-
-        // Compute Sign of Angle 'theta'
-        // Formula: K = theta / |theta|
-        K = (theta == 0) ? 0 : static_cast<int>(theta / abs(theta));
-
-        // Compute Amount of Deceleration
-        // Formula: f_v = -A * exp(-distance_ij / B - ((n_prime * B * theta) *
-        // (n_prime * B * theta)))
-        f_v = -A * exp(-distance_ij.length() / B -
-                       ((n_prime * B * theta) * (n_prime * B * theta)));
-
-        // Compute Amount of Directional Changes
-        // Formula: f_theta = -A * K * exp(-distance_ij / B - ((n * B * theta) * (n
-        // * B * theta)))
-        f_theta =
-            -A * K *
-            exp(-distance_ij.length() / B - ((n * B * theta) * (n * B * theta)));
-
-        // Compute Normal Vector of Interaction Direction Oriented to the Left
-        n_ij.set(-t_ij.y, t_ij.x, 0.0);
-
-        if (distance_ij.lengthSquared() < (0.5 * 0.5))
+        if (agv->getIsRunning())
         {
-            const int a = 3;
-            const float b = 0.1F;
+            // Compute Distance Between Agent j and i
+            distance_ij = agv->getNearestPoint(position) - position;
 
-            Point3f nearestPoint;
-            Vector3f vector_wi, minVector_wi;
-            float distanceSquared, minDistanceSquared = INFINITY, d_w, f_iw;
+            // Skip Computation if Agents i and j are Too Far Away
+            if (distance_ij.lengthSquared() > (2.0 * 2.0))
+                continue;
 
-            nearestPoint = agv->getNearestPoint(position);
-            vector_wi = position - nearestPoint;
-            distanceSquared = vector_wi.lengthSquared();
-
-            if (distanceSquared < minDistanceSquared)
+            if (distance_ij.length() < 0.3)
             {
-                minDistanceSquared = distanceSquared;
-                minVector_wi = vector_wi;
+                const int a = 3;
+                const float b = 0.1F;
+
+                Point3f nearestPoint;
+                Vector3f vector_wi, minVector_wi;
+                float distanceSquared, minDistanceSquared = INFINITY, d_w, f_iw;
+
+                nearestPoint = agv->getNearestPoint(position);
+                vector_wi = position - nearestPoint;
+                distanceSquared = vector_wi.lengthSquared();
+
+                if (distanceSquared < minDistanceSquared)
+                {
+                    minDistanceSquared = distanceSquared;
+                    minVector_wi = vector_wi;
+                }
+
+                d_w = sqrt(minDistanceSquared) - radius;
+
+                f_iw = a * exp(-d_w / b);
+                minVector_wi.normalize();
+
+                f_ij += f_iw * minVector_wi;
             }
+            else
+            {
+                // Compute Direction of Agent j from i
+                // Formula: e_ij = (position_j - position_i) / ||position_j - position_i||
+                e_ij = distance_ij;
+                e_ij.normalize();
 
-            d_w = sqrt(minDistanceSquared) - radius;
+                // Compute Interaction Vector Between Agent i and j
+                // Formula: D = lambda * (velocity_i - velocity_j) + e_ij
+                D_ij = lambda * (velocity - agv->getVelocity()) + e_ij;
 
-            f_iw = a * exp(-d_w / b);
-            minVector_wi.normalize();
+                // Compute Modal Parameter B
+                // Formula: B = gamma * ||D_ij||
+                B = gamma * D_ij.length();
 
-            f_ij += f_iw * minVector_wi;
-        }
-        else
-        {
-            // Compute Interaction Force
-            // Formula: f_ij = f_v * t_ij + f_theta * n_ij
-            f_ij += f_v * t_ij + f_theta * n_ij;
+                // Compute Interaction Direction
+                // Formula: t_ij = D_ij / ||D_ij||
+                t_ij = D_ij;
+                t_ij.normalize();
+
+                // Compute Angle Between Interaction Direction (t_ij) and Vector Pointing
+                // from Agent i to j (e_ij)
+                theta = t_ij.angle(e_ij);
+
+                // Compute Sign of Angle 'theta'
+                // Formula: K = theta / |theta|
+                K = (theta == 0) ? 0 : static_cast<int>(theta / abs(theta));
+
+                // Compute Amount of Deceleration
+                // Formula: f_v = -A * exp(-distance_ij / B - ((n_prime * B * theta) *
+                // (n_prime * B * theta)))
+                f_v = -A * exp(-distance_ij.length() / B -
+                               ((n_prime * B * theta) * (n_prime * B * theta)));
+
+                // Compute Amount of Directional Changes
+                // Formula: f_theta = -A * K * exp(-distance_ij / B - ((n * B * theta) * (n
+                // * B * theta)))
+                f_theta =
+                    -A * K *
+                    exp(-distance_ij.length() / B - ((n * B * theta) * (n * B * theta)));
+
+                // Compute Normal Vector of Interaction Direction Oriented to the Left
+                n_ij.set(-t_ij.y, t_ij.x, 0.0);
+
+                // Compute Interaction Force
+                // Formula: f_ij = f_v * t_ij + f_theta * n_ij
+                f_ij += f_v * t_ij + f_theta * n_ij;
+            }
+            break;
         }
     }
 

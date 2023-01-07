@@ -38,6 +38,7 @@ bool animate = false; // Animate scene flag
 std::vector<double> inputData;
 std::map<std::string, std::vector<float>> mapData;
 std::vector<float> juncData;
+std::string input;
 
 // int numOfPeople[] = {3, 5, 7, 4, 5, 9, 2, 4, 5, 3, 6, 4};
 std::vector<int> numOfPeople;
@@ -83,7 +84,6 @@ int main(int argc, char **argv)
     inputData = Utility::readInput("input.txt");
     mapData = Utility::readMapData("map.txt");
 
-    std::string input;
     do
     {
         cout << "Please enter the junction you want to emulate" << endl;
@@ -646,17 +646,47 @@ void createAgents()
 
 void createAGVs()
 {
-    AGV *agv = new AGV;
-    vector<Point3f> route = Utility::getRouteAGV(juncData.size(), inputData[7], inputData[8], inputData[2], juncData);
-    agv->setPosition(route[0].x, route[0].y);
-    agv->setDesiredSpeed(0.6F);
-    agv->setAcceleration(inputData[9]);
-    agv->setDistance((float)inputData[10]);
-    for (int i = 1; i < route.size(); i++)
+    AGV *agv = NULL;
+    vector<int> array;
+    for (int i = 0; i < juncData.size(); i++)
     {
-        agv->setPath(route[i].x, route[i].y, 1.0);
+        if (juncData.size() == 4)
+        {
+            array = {0, 1, 2};
+        }
+        else
+        {
+            if (i == 0)
+            {
+                array = {1, 2};
+            }
+            else if (i == 1)
+            {
+                array = {0, 2};
+            }
+            else
+            {
+                array = {0, 1};
+            }
+        }
+
+        for (int j : array)
+        {
+            agv = new AGV();
+            vector<Point3f> route = Utility::getRouteAGV(juncData.size(), i, j, inputData[2], juncData);
+            agv->setDirection(i, j);
+            agv->setPosition(route[0].x, route[0].y);
+            agv->setDestination(route[route.size() - 1].x, route[route.size() - 1].y);
+            agv->setDesiredSpeed(0.6F);
+            agv->setAcceleration(inputData[9]);
+            agv->setDistance((float)inputData[10]);
+            for (int i = 1; i < route.size(); i++)
+            {
+                agv->setPath(route[i].x, route[i].y, 1.0);
+            }
+            socialForce->addAGV(agv);
+        }
     }
-    socialForce->addAGV(agv);
 }
 
 void display()
@@ -700,9 +730,35 @@ void drawAGVs()
 {
     vector<AGV *> agvs = socialForce->getAGVs();
     Vector3f e_ij;
+    AGV *agv = NULL;
+    int i;
+    vector<int> j;
 
-    for (AGV *agv : agvs)
+    for (i = 0; i < agvs.size(); i++)
     {
+        if (agvs[i]->getIsRunning() && agvs[i]->getTotalTime() != 0)
+        {
+            agv = agvs[i];
+            break;
+        }
+        else if (!agvs[i]->getIsRunning() && agvs[i]->getTotalTime() == 0)
+        {
+            j.push_back(i);
+        }
+    }
+
+    if (i == agvs.size())
+    {
+        agv = agvs[j.front()];
+    }
+
+    if (agv)
+    {
+        agv->setIsRunning(true);
+        if (agv->getTotalTime() == 0)
+        {
+            agv->setTotalTime(glutGet(GLUT_ELAPSED_TIME));
+        }
         // Draw AGVs
         glColor3f(agv->getColor().x, agv->getColor().y, agv->getColor().z);
         float w, l;
@@ -897,7 +953,7 @@ void update()
     frameTime = currTime - prevTime;
     prevTime = currTime;
 
-    int count = 0;
+    int count_agents = 0, count_agvs = 0;
 
     std::vector<Agent *> agents = socialForce->getCrowd();
     for (Agent *agent : agents)
@@ -916,7 +972,6 @@ void update()
             agent->setPath(des.x, des.y, 1.0);
         }
 
-
         if ((agent->interDes).size() > 0)
         {
             float distanceToInterDes = src.distance((agent->interDes).front());
@@ -929,11 +984,29 @@ void update()
         float distanceToTarget = src.distance(des);
         if (distanceToTarget <= 1 || isnan(distanceToTarget))
         {
-            count = count + 1;
+            count_agents = count_agents + 1;
         }
     }
-    if (count == agents.size())
+    std::vector<AGV *> agvs = socialForce->getAGVs();
+    for (AGV *agv : agvs)
     {
+        Point3f src = agv->getPosition();
+        Point3f des = agv->getDestination();
+
+        float distance = src.distance(des);
+        if (distance <= 1 || isnan(distance))
+        {
+            if (agv->getIsRunning())
+            {
+                agv->setTotalTime(glutGet(GLUT_ELAPSED_TIME) - agv->getTotalTime());
+                agv->setIsRunning(false);
+            }
+            count_agvs = count_agvs + 1;
+        }
+    }
+    if (count_agents == agents.size() && count_agvs == agvs.size())
+    {
+        Utility::writeEnd("end.txt", input, inputData[6], agvs);
         std::cout << "Maximum speed: " << maxSpeed << " - Minimum speed: " << minSpeed << endl;
         std::cout << "Finish in: " << Utility::convertTime(currTime) << endl;
         delete socialForce;
@@ -945,7 +1018,7 @@ void update()
     if (animate)
     {
         socialForce->moveCrowd(static_cast<float>(frameTime) / 1000); // Perform calculations and move agents
-        socialForce->moveAGV(static_cast<float>(frameTime) / 1000);
+        socialForce->moveAGVs(static_cast<float>(frameTime) / 1000);
     }
     computeFPS();
     glutPostRedisplay();

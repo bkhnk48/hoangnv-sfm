@@ -9,8 +9,12 @@ AGV::AGV()
     MovingObject();
     id = ++agvIdx;
 
-    dimension = Vector3f(0.5F, 1.5F, 0.0);
+    totalTime = 0;
+    collision = 0;
+    dimension = Vector3f(0.35F, 0.75F, 0.0);
     distance = 0;
+    isRunning = false;
+    stop = false;
 
     instantaneous_velocity.set(0.0, 0.0, 0.0);
 }
@@ -19,6 +23,10 @@ AGV::~AGV()
 {
     agvIdx--;
 }
+
+void AGV::setTotalTime(int totalTime) { this->totalTime = totalTime; }
+
+void AGV::setCollision(int collision) { this->collision = collision; }
 
 void AGV::setAcceleration(float acceleration)
 {
@@ -36,6 +44,10 @@ void AGV::setBorderPoint(Vector3f d1, Vector3f d2, Vector3f d3, Vector3f d4)
     this->d3 = d3;
     this->d4 = d4;
 }
+
+void AGV::setIsRunning(bool isRunning) { this->isRunning = isRunning; }
+
+void AGV::setDirection(float x, float y) { this->direction.set(x, y, 0.0F); }
 
 Point3f AGV::getNearestPoint(Point3f position_i) const
 {
@@ -123,30 +135,43 @@ void AGV::move(float stepTime, vector<Point3f> position_list)
     vector_acceleration = e_ij * acceleration;
     vector_acceleration *= stepTime;
 
-    if (checkNearAgent(position_list))
+    if (getDestination().distance(position) < 1.0F)
     {
-        if (abs(instantaneous_velocity.x) >= abs(vector_acceleration.x) &&
-            abs(instantaneous_velocity.y) >= abs(vector_acceleration.y))
-        {
-            position = position + instantaneous_velocity * stepTime;
-            instantaneous_velocity = instantaneous_velocity - vector_acceleration;
-        }
-        else
-        {
-            instantaneous_velocity.set(0, 0, 0);
-        }
+        position = getDestination();
     }
     else
     {
-        if (instantaneous_velocity.length() < velocity.length())
+        if (checkNearAgent(position_list))
         {
-            position = position + instantaneous_velocity * stepTime;
-            instantaneous_velocity = instantaneous_velocity + vector_acceleration;
+            if (!stop)
+            {
+                collision++;
+            }
+            stop = true;
+            if (abs(instantaneous_velocity.x) >= abs(vector_acceleration.x) &&
+                abs(instantaneous_velocity.y) >= abs(vector_acceleration.y))
+            {
+                position = position + instantaneous_velocity * stepTime;
+                instantaneous_velocity = instantaneous_velocity - vector_acceleration;
+            }
+            else
+            {
+                instantaneous_velocity.set(0, 0, 0);
+            }
         }
         else
         {
-            instantaneous_velocity = velocity;
-            position = position + velocity * stepTime;
+            stop = false;
+            if (instantaneous_velocity.length() < velocity.length())
+            {
+                position = position + instantaneous_velocity * stepTime;
+                instantaneous_velocity = instantaneous_velocity + vector_acceleration;
+            }
+            else
+            {
+                instantaneous_velocity = velocity;
+                position = position + velocity * stepTime;
+            }
         }
     }
 }

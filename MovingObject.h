@@ -5,7 +5,8 @@
 #include <deque>
 #include <vector>
 
-struct Waypoint {
+struct Waypoint
+{
     Point3f position;
     float radius;
 };
@@ -16,7 +17,7 @@ protected:
     int id;
     Color3f color;
     float desiredSpeed;
-    std::deque <Waypoint> path;
+    std::deque<Waypoint> path;
     Point3f destination;
     Point3f position;
     Vector3f velocity;
@@ -53,8 +54,7 @@ public:
 
     float getOrientation();
 
-    virtual void move() {};
-
+    virtual void move(){};
 };
 
 #endif

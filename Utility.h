@@ -6,8 +6,10 @@
 #include <array>
 #include "vecmath.h"
 #include <map>
+#include "AGV.h"
 
-class Utility {
+class Utility
+{
 public:
     Utility();
 
@@ -25,6 +27,8 @@ public:
 
     static std::vector<double> readInput(const char *fileName);
 
+    static void writeEnd(const char *fileName, std::string name, int mode, std::vector<AGV *> data);
+
     static std::vector<int> getNumPedesInFlow(int junctionType, int totalPedestrian);
 
     static std::vector<double> getPedesVelocity(int numPedes, double n_dist);
@@ -39,11 +43,11 @@ public:
 
     static std::vector<float> getPedesColor(float maxSpeed, float minSpeed, float desiredSpeed);
 
-    static std::vector <Point3f> getRouteAGV(int junctionType, int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
+    static std::vector<Point3f> getRouteAGV(int junctionType, int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
 
-    static std::vector <Point3f> getRouteAGVCrossRoad(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
+    static std::vector<Point3f> getRouteAGVCrossRoad(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
 
-    static std::vector <Point3f> getRouteAGVTJunction(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
+    static std::vector<Point3f> getRouteAGVTJunction(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
 
     static Point3f getIntermediateDes(Point3f position, float verWalkwayWidth, float horWalkwayWidth);
 
