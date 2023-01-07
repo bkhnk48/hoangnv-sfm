@@ -750,6 +750,17 @@ void drawAGVs()
     if (i == agvs.size())
     {
         agv = agvs[j.front()];
+        float distance = (agv->getDimension().x > agv->getDimension().y) ? agv->getDimension().x : agv->getDimension().y;
+        for (Agent *agent : socialForce->getCrowd())
+        {
+            if (agent->getPosition().distance(agv->getPosition()) < distance / 2)
+            {
+                do
+                {
+                    agent->setPosition(agent->getPosition().x - 0.1F, agent->getPosition().y - 0.1F);
+                } while (agent->getPosition().distance(agv->getPosition()) < distance / 2);
+            }
+        }
     }
 
     if (agv)
@@ -1004,7 +1015,7 @@ void update()
             count_agvs = count_agvs + 1;
         }
     }
-    if (count_agents == agents.size() && count_agvs == agvs.size())
+    if (count_agvs == agvs.size())
     {
         Utility::writeEnd("end.txt", input, inputData[6], agvs);
         std::cout << "Maximum speed: " << maxSpeed << " - Minimum speed: " << minSpeed << endl;
