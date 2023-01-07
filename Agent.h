@@ -7,21 +7,25 @@
 #include "Wall.h"
 #include "AGV.h"
 #include "MovingObject.h"
+#include "Force.h"
 
-class Agent: public MovingObject {
+class Agent : public MovingObject, public Force
+{
 private:
-    static int crowdIdx;    // Keep track of 'crowd' vector index in 'SocialForce.h'
-
+    static int crowdIdx; // Keep track of 'crowd' vector index in 'SocialForce.h'
     float radius;
 
-    Point3f destination;
+    Vector3f getDrivingForce(const Point3f position_target);
+    Vector3f getAgentInteractForce(std::vector<Agent *> agents);
+    Vector3f getWallInteractForce(std::vector<Wall *> walls);
+    Vector3f getAgvInteractForce(std::vector<AGV *> agvs);
 
 public:
     Agent();
 
     ~Agent();
 
-    bool hadInterDes;
+    std::vector<Point3f> interDes;
 
     void setRadius(float radius);
 

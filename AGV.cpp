@@ -11,7 +11,7 @@ AGV::AGV()
 
     totalTime = 0;
     collision = 0;
-    dimension = Vector3f(0.5F, 1.5F, 0.0);
+    dimension = Vector3f(0.35F, 0.75F, 0.0);
     distance = 0;
     isRunning = false;
     stop = false;

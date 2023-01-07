@@ -33,7 +33,7 @@ public:
 
     static std::vector<double> getPedesVelocity(int numPedes, double n_dist);
 
-    static std::vector<float> getWallCoordinates(float walkwayWidth);
+    static std::vector<float> getWallCoordinates(float walkwayWidth, std::vector<float> juncData);
 
     static std::string convertTime(int milliseconds);
 

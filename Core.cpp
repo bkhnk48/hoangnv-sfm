@@ -143,7 +143,7 @@ void init()
     GLfloat lghtPosition[] = {4.0, -4.0, 4.0, 0.0};
 
     glClearColor(1.0, 1.0, 1.0,
-                 0.0);       // Set colour used when colour buffer cleared
+                 0.0);       // Set color used when color buffer cleared
     glShadeModel(GL_SMOOTH); // Set shading option
 
     // General Lighting
@@ -180,7 +180,7 @@ void createWalls()
     Wall *wall;
 
     float walkwayWidth = (float)inputData[2];
-    vector<float> coors = Utility::getWallCoordinates(walkwayWidth);
+    vector<float> coors = Utility::getWallCoordinates(walkwayWidth, juncData);
 
     // Upper Wall
     if (juncData.size() == 4)
@@ -252,7 +252,7 @@ void createAgents()
     //     // agent->setPath(randomFloat(22.0, 25.0), randomFloat(-3.0, -2.0), 1.0);
     //     agent->setDesiredSpeed(1);
     //     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-    //     agent->setColour(color[0], color[1], color[2]);
+    //     agent->setColor(color[0], color[1], color[2]);
     //     socialForce->addAgent(agent);
     // }
 
@@ -280,7 +280,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -302,7 +302,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -324,7 +324,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -346,7 +346,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -367,7 +367,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -389,7 +389,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -420,7 +420,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -439,7 +439,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -458,7 +458,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -478,7 +478,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -497,7 +497,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -516,7 +516,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -536,7 +536,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -555,7 +555,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -574,7 +574,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -594,7 +594,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -613,7 +613,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -632,7 +632,7 @@ void createAgents()
                     agent->setDesiredSpeed(velocityList[pedesCount]);
                     pedesCount = pedesCount + 1;
                     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColour(color[0], color[1], color[2]);
+                    agent->setColor(color[0], color[1], color[2]);
                     socialForce->addAgent(agent);
                 }
                 break;
@@ -692,7 +692,7 @@ void createAGVs()
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT |
-            GL_DEPTH_BUFFER_BIT); // Clear the colour and depth buffer
+            GL_DEPTH_BUFFER_BIT); // Clear the color and depth buffer
     glLoadIdentity();             // Initialize modelview matrix to identity matrix
 
     // Camera
@@ -720,7 +720,7 @@ void drawAgents()
     for (Agent *agent : agents)
     {
         // Draw Agents
-        glColor3f(agent->getColour().x, agent->getColour().y, agent->getColour().z);
+        glColor3f(agent->getColor().x, agent->getColor().y, agent->getColor().z);
         drawCylinder(agent->getPosition().x, agent->getPosition().y,
                      agent->getRadius(), 15, 0.0);
     }
@@ -760,7 +760,7 @@ void drawAGVs()
             agv->setTotalTime(glutGet(GLUT_ELAPSED_TIME));
         }
         // Draw AGVs
-        glColor3f(agv->getColour().x, agv->getColour().y, agv->getColour().z);
+        glColor3f(agv->getColor().x, agv->getColor().y, agv->getColor().z);
         float w, l;
         Vector3f top, bottom, a, b, d1, d2, d3, d4;
         w = agv->getDimension().x;
@@ -953,7 +953,7 @@ void update()
     frameTime = currTime - prevTime;
     prevTime = currTime;
 
-    int count = 0;
+    int count_agents = 0, count_agvs = 0;
 
     std::vector<Agent *> agents = socialForce->getCrowd();
     for (Agent *agent : agents)
@@ -963,28 +963,30 @@ void update()
 
         if (agent->getVelocity().length() < Utility::LOWER_SPEED_LIMIT + 0.2 &&
             agent->getMinDistanceToWalls(socialForce->getWalls(), src, agent->getRadius()) < 0.2 &&
-            !agent->hadInterDes)
+            (agent->interDes).size() == 0)
         {
-            agent->hadInterDes = true;
             Point3f intermediateDes = Utility::getIntermediateDes(src, (float)inputData[2], (float)inputData[2]);
+
+            (agent->interDes).push_back(intermediateDes);
             agent->setPath(intermediateDes.x, intermediateDes.y, 1.0);
             agent->setPath(des.x, des.y, 1.0);
         }
 
-        // float distance = src.distance(des);
-        // if (distance <= 1 || isnan(distance))
-        // {
-        //     count = count + 1;
-        // }
-    }
-    // if (count == agents.size()) {
-    //     std::cout << "Maximum speed: " << maxSpeed << " - Minimum speed: " << minSpeed << endl;
-    //     std::cout << "Finish in: " << Utility::convertTime(currTime) << endl;
-    //     delete socialForce;
-    //     socialForce = 0;
+        if ((agent->interDes).size() > 0)
+        {
+            float distanceToInterDes = src.distance((agent->interDes).front());
+            if (distanceToInterDes <= 1)
+            {
+                (agent->interDes).clear();
+            }
+        }
 
-    //     exit(0); // Terminate program
-    // }
+        float distanceToTarget = src.distance(des);
+        if (distanceToTarget <= 1 || isnan(distanceToTarget))
+        {
+            count_agents = count_agents + 1;
+        }
+    }
     std::vector<AGV *> agvs = socialForce->getAGVs();
     for (AGV *agv : agvs)
     {
@@ -999,10 +1001,10 @@ void update()
                 agv->setTotalTime(glutGet(GLUT_ELAPSED_TIME) - agv->getTotalTime());
                 agv->setIsRunning(false);
             }
-            count = count + 1;
+            count_agvs = count_agvs + 1;
         }
     }
-    if (count == socialForce->getNumAGVs())
+    if (count_agents == agents.size() && count_agvs == agvs.size())
     {
         Utility::writeEnd("end.txt", input, inputData[6], agvs);
         std::cout << "Maximum speed: " << maxSpeed << " - Minimum speed: " << minSpeed << endl;
