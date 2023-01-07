@@ -38,6 +38,7 @@ bool animate = false; // Animate scene flag
 std::vector<double> inputData;
 std::map<std::string, std::vector<float>> mapData;
 std::vector<float> juncData;
+std::string input;
 
 // int numOfPeople[] = {3, 5, 7, 4, 5, 9, 2, 4, 5, 3, 6, 4};
 std::vector<int> numOfPeople;
@@ -83,7 +84,6 @@ int main(int argc, char **argv)
     inputData = Utility::readInput("input.txt");
     mapData = Utility::readMapData("map.txt");
 
-    std::string input;
     do
     {
         cout << "Please enter the junction you want to emulate" << endl;
@@ -647,12 +647,34 @@ void createAgents()
 void createAGVs()
 {
     AGV *agv = NULL;
+    vector<int> array;
     for (int i = 0; i < juncData.size(); i++)
     {
-        for (int j = 0; j < juncData.size() - 1; j++)
+        if (juncData.size() == 4)
+        {
+            array = {0, 1, 2};
+        }
+        else
+        {
+            if (i == 0)
+            {
+                array = {1, 2};
+            }
+            else if (i == 1)
+            {
+                array = {0, 2};
+            }
+            else
+            {
+                array = {0, 1};
+            }
+        }
+
+        for (int j : array)
         {
             agv = new AGV();
             vector<Point3f> route = Utility::getRouteAGV(juncData.size(), i, j, inputData[2], juncData);
+            agv->setDirection(i, j);
             agv->setPosition(route[0].x, route[0].y);
             agv->setDestination(route[route.size() - 1].x, route[route.size() - 1].y);
             agv->setDesiredSpeed(0.6F);
@@ -708,9 +730,35 @@ void drawAGVs()
 {
     vector<AGV *> agvs = socialForce->getAGVs();
     Vector3f e_ij;
+    AGV *agv = NULL;
+    int i;
+    vector<int> j;
 
-    for (AGV *agv : agvs)
+    for (i = 0; i < agvs.size(); i++)
     {
+        if (agvs[i]->getIsRunning() && agvs[i]->getTotalTime() != 0)
+        {
+            agv = agvs[i];
+            break;
+        }
+        else if (!agvs[i]->getIsRunning() && agvs[i]->getTotalTime() == 0)
+        {
+            j.push_back(i);
+        }
+    }
+
+    if (i == agvs.size())
+    {
+        agv = agvs[j.front()];
+    }
+
+    if (agv)
+    {
+        agv->setIsRunning(true);
+        if (agv->getTotalTime() == 0)
+        {
+            agv->setTotalTime(glutGet(GLUT_ELAPSED_TIME));
+        }
         // Draw AGVs
         glColor3f(agv->getColour().x, agv->getColour().y, agv->getColour().z);
         float w, l;
@@ -946,11 +994,17 @@ void update()
         float distance = src.distance(des);
         if (distance <= 1 || isnan(distance))
         {
+            if (agv->getIsRunning())
+            {
+                agv->setTotalTime(glutGet(GLUT_ELAPSED_TIME) - agv->getTotalTime());
+                agv->setIsRunning(false);
+            }
             count = count + 1;
         }
     }
     if (count == socialForce->getNumAGVs())
     {
+        Utility::writeEnd("end.txt", input, inputData[6], agvs);
         std::cout << "Maximum speed: " << maxSpeed << " - Minimum speed: " << minSpeed << endl;
         std::cout << "Finish in: " << Utility::convertTime(currTime) << endl;
         delete socialForce;

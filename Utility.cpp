@@ -114,6 +114,25 @@ std::vector<double> Utility::readInput(const char *fileName)
     return v;
 }
 
+// write end file
+void Utility::writeEnd(const char *fileName, string name, int mode, std::vector<AGV *> data)
+{
+    vector<double> v;
+    ofstream output(fileName);
+
+    std::string delimiter = " ";
+
+    for (AGV *agv : data)
+    {
+        string array1[] = {"Left", "Bottom", "Right", "Top"};
+        string array2[] = {"Turn Right", "Go straight", "Turn Left"};
+        string direction = array1[(int)(agv->getDirection().x)] + "-" + array2[(int)(agv->getDirection().y)];
+        output << name << delimiter << mode << delimiter << direction << delimiter << convertTime(agv->getTotalTime()) << delimiter << agv->getCollision() << endl;
+    }
+
+    output.close();
+}
+
 // calculate number of people in each flow
 std::vector<int> Utility::getNumPedesInFlow(int junctionType, int totalPedestrian)
 {

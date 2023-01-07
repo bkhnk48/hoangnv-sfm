@@ -72,7 +72,6 @@ void SocialForce::moveCrowd(float stepTime)
 
 void SocialForce::moveAGVs(float stepTime)
 {
-    int lastIdx;
     vector<Point3f> position_list;
     for (Agent *agent : crowd)
     {
@@ -81,19 +80,12 @@ void SocialForce::moveAGVs(float stepTime)
         position_list.push_back(agent->getPosition());
     }
 
-    if (!agvs.empty())
+    for (AGV *agv : agvs)
     {
-        lastIdx = agvs.size() - 1; // Assign index of last element
-        agvs[lastIdx]->move(stepTime, position_list);
-
-        Point3f src = agvs[lastIdx]->getPosition();
-        Point3f des = agvs[lastIdx]->getDestination();
-
-        float distance = src.distance(des);
-        if (distance <= 1 || isnan(distance))
+        if (agv->getIsRunning())
         {
-            delete agvs[lastIdx];
-            agvs.pop_back();
+            agv->move(stepTime, position_list);
+            break;
         }
     }
 }

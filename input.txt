@@ -13,4 +13,4 @@
 # AGV: Acceleration AGV
 0.25
 # AGV: Distance with Agent that AGV will stop
-0.5
+0.3
