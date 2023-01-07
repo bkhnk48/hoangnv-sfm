@@ -676,6 +676,18 @@ void createAGVs()
             vector<Point3f> route = Utility::getRouteAGV(juncData.size(), i, j, inputData[2], juncData);
             agv->setDirection(i, j);
             agv->setPosition(route[0].x, route[0].y);
+
+            for (Agent *agent : socialForce->getCrowd())
+            {
+                if (agent->getPosition().distance(agv->getPosition()) < 0.5F)
+                {
+                    do
+                    {
+                        agent->setPosition(agent->getPosition().x - 0.1F, agent->getPosition().y - 0.1F);
+                    } while (agent->getPosition().distance(agv->getPosition()) < 0.5F);
+                }
+            }
+
             agv->setDestination(route[route.size() - 1].x, route[route.size() - 1].y);
             agv->setDesiredSpeed(0.6F);
             agv->setAcceleration(inputData[9]);
