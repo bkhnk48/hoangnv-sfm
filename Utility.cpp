@@ -208,11 +208,11 @@ std::vector<float> Utility::getWallCoordinates(float wWidth, std::vector<float> 
     std::vector<float> v;
     float temp = wWidth / 2;
 
-    float leftWidthLimit = -juncData[0];
-    float rightWidthLimit = juncData[2];
+    float leftWidthLimit = -juncData[0] - temp;
+    float rightWidthLimit = juncData[2] + temp;
 
-    float lowerHeightLimit = -juncData[1];
-    float upperHeightLimit = juncData[3];
+    float lowerHeightLimit = -juncData[1] - temp;
+    float upperHeightLimit = juncData[3] + temp;
 
     // Upper Wall
     v.insert(v.end(), {leftWidthLimit, temp, -temp, temp});
@@ -570,10 +570,10 @@ std::vector<Point3f> Utility::getRouteAGVTJunction(int src, int turningDirection
     float posHorAsymtote = horWalkwayWidth / 2;
     float negHorAsymtote = -horWalkwayWidth / 2;
 
-    float leftWidthLimit = -juncData[0];
-    float rightWidthLimit = juncData[2];
+    float leftWidthLimit = -juncData[0] - walkwayWidth / 2;
+    float rightWidthLimit = juncData[2] + walkwayWidth / 2;
 
-    float lowerHeightLimit = -juncData[1];
+    float lowerHeightLimit = -juncData[1] - walkwayWidth / 2;
 
     switch (src)
     {
@@ -596,7 +596,9 @@ std::vector<Point3f> Utility::getRouteAGVTJunction(int src, int turningDirection
         case 2:
         {
             v.insert(v.end(), {Point3f(leftWidthLimit - 1, -horWalkwayWidth / 3, 0.0),
-                               Point3f(-verWalkwayWidth / 5, -horWalkwayWidth / 3, 0.0)});
+                               Point3f(-verWalkwayWidth / 2, -horWalkwayWidth / 3, 0.0),
+                               Point3f(-verWalkwayWidth / 3.5, -horWalkwayWidth / 2.5, 0.0),
+                               Point3f(-verWalkwayWidth / 3.5, -horWalkwayWidth / 2, 0.0)});
             v.insert(v.end(), {Point3f(-verWalkwayWidth / 3, lowerHeightLimit - 1, 0.0),
                                Point3f(-verWalkwayWidth / 3, lowerHeightLimit - 2, 0.0)});
             return v;
@@ -638,7 +640,9 @@ std::vector<Point3f> Utility::getRouteAGVTJunction(int src, int turningDirection
         case 2:
         {
             v.insert(v.end(), {Point3f(verWalkwayWidth / 3, lowerHeightLimit - 1, 0.0),
-                               Point3f(verWalkwayWidth / 3, -horWalkwayWidth / 5, 0.0)});
+                               Point3f(verWalkwayWidth / 3, -horWalkwayWidth / 2, 0.0),
+                               Point3f(verWalkwayWidth / 2.5, -horWalkwayWidth / 3.5, 0.0),
+                               Point3f(verWalkwayWidth / 2, -horWalkwayWidth / 3.5, 0.0)});
             v.insert(v.end(), {Point3f(rightWidthLimit + 1, -horWalkwayWidth / 3, 0.0),
                                Point3f(rightWidthLimit + 2, -horWalkwayWidth / 3, 0.0)});
             return v;
@@ -706,11 +710,11 @@ std::vector<Point3f> Utility::getRouteAGVCrossRoad(int src, int turningDirection
     float posHorAsymtote = horWalkwayWidth / 2;
     float negHorAsymtote = -horWalkwayWidth / 2;
 
-    float leftWidthLimit = -juncData[0];
-    float rightWidthLimit = juncData[2];
+    float leftWidthLimit = -juncData[0] - walkwayWidth / 2;
+    float rightWidthLimit = juncData[2] + walkwayWidth / 2;
 
-    float lowerHeightLimit = -juncData[1];
-    float upperHeightLimit = juncData[3];
+    float lowerHeightLimit = -juncData[1] - walkwayWidth / 2;
+    float upperHeightLimit = juncData[3] + walkwayWidth / 2;
 
     std::vector<Point3f> v;
     switch (src)
@@ -752,7 +756,9 @@ std::vector<Point3f> Utility::getRouteAGVCrossRoad(int src, int turningDirection
         case 2:
         {
             v.insert(v.end(), {Point3f(leftWidthLimit - 1, -horWalkwayWidth / 3, 0.0),
-                               Point3f(-verWalkwayWidth / 5, -horWalkwayWidth / 3, 0.0)});
+                               Point3f(-verWalkwayWidth / 2, -horWalkwayWidth / 3, 0.0),
+                               Point3f(-verWalkwayWidth / 3.5, -horWalkwayWidth / 2.5, 0.0),
+                               Point3f(-verWalkwayWidth / 3.5, -horWalkwayWidth / 2, 0.0)});
             v.insert(v.end(), {Point3f(-verWalkwayWidth / 3, lowerHeightLimit - 1, 0.0),
                                Point3f(-verWalkwayWidth / 3, lowerHeightLimit - 2, 0.0)});
             return v;
@@ -800,7 +806,9 @@ std::vector<Point3f> Utility::getRouteAGVCrossRoad(int src, int turningDirection
         case 2:
         {
             v.insert(v.end(), {Point3f(verWalkwayWidth / 3, lowerHeightLimit - 1, 0.0),
-                               Point3f(verWalkwayWidth / 3, -horWalkwayWidth / 5, 0.0)});
+                               Point3f(verWalkwayWidth / 3, -horWalkwayWidth / 2, 0.0),
+                               Point3f(verWalkwayWidth / 2.5, -horWalkwayWidth / 3.5, 0.0),
+                               Point3f(verWalkwayWidth / 2, -horWalkwayWidth / 3.5, 0.0)});
             v.insert(v.end(), {Point3f(rightWidthLimit + 1, -horWalkwayWidth / 3, 0.0),
                                Point3f(rightWidthLimit + 2, -horWalkwayWidth / 3, 0.0)});
             return v;
@@ -848,7 +856,9 @@ std::vector<Point3f> Utility::getRouteAGVCrossRoad(int src, int turningDirection
         case 2:
         {
             v.insert(v.end(), {Point3f(rightWidthLimit + 1, horWalkwayWidth / 3, 0.0),
-                               Point3f(verWalkwayWidth / 5, horWalkwayWidth / 3, 0.0)});
+                               Point3f(verWalkwayWidth / 2, horWalkwayWidth / 3, 0.0),
+                               Point3f(verWalkwayWidth / 3.5, horWalkwayWidth / 2.5, 0.0),
+                               Point3f(verWalkwayWidth / 3.5, horWalkwayWidth / 2, 0.0)});
             v.insert(v.end(), {Point3f(verWalkwayWidth / 3, upperHeightLimit + 1, 0.0),
                                Point3f(verWalkwayWidth / 3, upperHeightLimit + 2, 0.0)});
             return v;
@@ -896,7 +906,9 @@ std::vector<Point3f> Utility::getRouteAGVCrossRoad(int src, int turningDirection
         case 2:
         {
             v.insert(v.end(), {Point3f(-verWalkwayWidth / 3, upperHeightLimit + 1, 0.0),
-                               Point3f(-verWalkwayWidth / 3, horWalkwayWidth / 5, 0.0)});
+                               Point3f(-verWalkwayWidth / 3, horWalkwayWidth / 2, 0.0),
+                               Point3f(-verWalkwayWidth / 2.5, horWalkwayWidth / 3.5, 0.0),
+                               Point3f(-verWalkwayWidth / 2, horWalkwayWidth / 3.5, 0.0)});
             v.insert(v.end(), {Point3f(leftWidthLimit - 1, horWalkwayWidth / 3, 0.0),
                                Point3f(leftWidthLimit - 2, horWalkwayWidth / 3, 0.0)});
             return v;
