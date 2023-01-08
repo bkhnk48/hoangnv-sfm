@@ -29,8 +29,8 @@ using namespace std;
 const float PI = 3.14159265359F;
 
 // Global Variables
-GLsizei winWidth = 992;  // Window width (16:9 ratio)
-GLsizei winHeight = 620; // Window height (16:9 ratio)
+GLsizei winWidth = 1080;  // Window width (16:10 ratio)
+GLsizei winHeight = 660; // Window height (16:10 ratio)
 SocialForce *socialForce;
 float fps = 0;        // Frames per second
 bool animate = false; // Animate scene flag
@@ -39,6 +39,7 @@ std::vector<double> inputData;
 std::map<std::string, std::vector<float>> mapData;
 std::vector<float> juncData;
 std::string input;
+float walkwayWidth;
 
 // int numOfPeople[] = {3, 5, 7, 4, 5, 9, 2, 4, 5, 3, 6, 4};
 std::vector<int> numOfPeople;
@@ -100,6 +101,7 @@ int main(int argc, char **argv)
 
     } while (mapData[input].size() < 3);
     juncData = mapData[input];
+    walkwayWidth = mapData["walkwayWidth"][0];
 
     glutInit(&argc, argv); // Initialize GLUT
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA |
@@ -179,7 +181,7 @@ void createWalls()
 {
     Wall *wall;
 
-    float walkwayWidth = (float)inputData[2];
+    // float walkwayWidth = (float)inputData[2];
     vector<float> coors = Utility::getWallCoordinates(walkwayWidth, juncData);
 
     // Upper Wall
@@ -240,15 +242,23 @@ void createAgents()
 
     // test
 
-    // for (int temp = 0; temp < 3; temp++)
+    // for (int temp = 0; temp < 1; temp++)
     // {
     //     agent = new Agent;
     //     // agent->setPosition(randomFloat(-20.3F, -6.0), randomFloat(-2.0, 2.0));
-    //     agent->setPosition(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0));
-    //     float x = randomFloat(-20.3F, -6.0);
-    //     float y = randomFloat(-2.0, 2.0);
-    //     agent->setPath(x, y, 1.0);
-    //     agent->setDestination(x, y);
+    //     vector<Point3f> route = Utility::getRouteAGV(juncData.size(), 0, 2, walkwayWidth, juncData);
+    //     agent->setPosition(route[0].x, route[0].y);
+    //     for (int i = 1; i < route.size(); i++)
+    //     {
+    //         agent->setPath(route[i].x, route[i].y, 1.0);
+    //     }
+    //     agent->setDestination(route[route.size() - 1].x, route[route.size() - 1].y);
+
+    //     // agent->setPosition(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0));
+    //     // float x = randomFloat(-20.3F, -6.0);
+    //     // float y = randomFloat(-2.0, 2.0);
+    //     // agent->setPath(x, y, 1.0);
+    //     // agent->setDestination(x, y);
     //     // agent->setPath(randomFloat(22.0, 25.0), randomFloat(-3.0, -2.0), 1.0);
     //     agent->setDesiredSpeed(1);
     //     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
@@ -414,7 +424,7 @@ void createAgents()
                     vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4],
                                                                      (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(0, 0, (float)inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(0, 0, walkwayWidth);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -433,7 +443,7 @@ void createAgents()
                     vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4],
                                                                      (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(0, 1, (float)inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(0, 1, walkwayWidth);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -452,7 +462,7 @@ void createAgents()
                     vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4],
                                                                      (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(0, 2, (float)inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(0, 2, walkwayWidth);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -472,7 +482,7 @@ void createAgents()
                     vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4],
                                                                      (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(1, 0, (float)inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(1, 0, walkwayWidth);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -491,7 +501,7 @@ void createAgents()
                     vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4],
                                                                      (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(1, 1, (float)inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(1, 1, walkwayWidth);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -510,7 +520,7 @@ void createAgents()
                     vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4],
                                                                      (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(1, 2, (float)inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(1, 2, walkwayWidth);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -530,7 +540,7 @@ void createAgents()
                     vector<float> position = Utility::getPedesSource(2, (float)inputData[3], (float)inputData[4],
                                                                      (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(2, 0, (float)inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(2, 0, walkwayWidth);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -549,7 +559,7 @@ void createAgents()
                     vector<float> position = Utility::getPedesSource(2, (float)inputData[3], (float)inputData[4],
                                                                      (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(2, 1, (float)inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(2, 1, walkwayWidth);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -568,7 +578,7 @@ void createAgents()
                     vector<float> position = Utility::getPedesSource(2, (float)inputData[3], (float)inputData[4],
                                                                      (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(2, 2, (float)inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(2, 2, walkwayWidth);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -588,7 +598,7 @@ void createAgents()
                     vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4],
                                                                      (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(3, 0, (float)inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(3, 0, walkwayWidth);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -607,7 +617,7 @@ void createAgents()
                     vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4],
                                                                      (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(3, 1, (float)inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(3, 1, walkwayWidth);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -626,7 +636,7 @@ void createAgents()
                     vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4],
                                                                      (float)inputData[5]);
                     agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(3, 2, (float)inputData[2]);
+                    vector<float> desList = Utility::getPedesDestination(3, 2, walkwayWidth);
                     agent->setPath(desList[0], desList[1], desList[2]);
                     agent->setDestination(desList[0], desList[1]);
                     agent->setDesiredSpeed(velocityList[pedesCount]);
@@ -648,6 +658,37 @@ void createAGVs()
 {
     AGV *agv = NULL;
     vector<int> array;
+
+    // test
+    // agv = new AGV();
+    // vector<Point3f> route = Utility::getRouteAGV(juncData.size(), 0, 2, walkwayWidth, juncData);
+    // agv->setDirection(0, 2);
+    // agv->setPosition(route[0].x, route[0].y);
+
+    // for (Agent *agent : socialForce->getCrowd())
+    // {
+    //     if (agent->getPosition().distance(agv->getPosition()) < 0.5F)
+    //     {
+    //         do
+    //         {
+    //             agent->setPosition(agent->getPosition().x - 0.1F, agent->getPosition().y - 0.1F);
+    //         } while (agent->getPosition().distance(agv->getPosition()) < 0.5F);
+    //     }
+    // }
+
+    // agv->setDestination(route[route.size() - 1].x, route[route.size() - 1].y);
+    // agv->setDesiredSpeed(0.6F);
+    // agv->setAcceleration(inputData[9]);
+    // agv->setDistance((float)inputData[10]);
+    // for (int i = 1; i < route.size(); i++)
+    // {
+    //     agv->setPath(route[i].x, route[i].y, 1.0);
+    //     std::cout << route[i] << endl;
+    // }
+    // socialForce->addAGV(agv);
+
+    // test
+
     for (int i = 0; i < juncData.size(); i++)
     {
         if (juncData.size() == 4)
@@ -673,9 +714,21 @@ void createAGVs()
         for (int j : array)
         {
             agv = new AGV();
-            vector<Point3f> route = Utility::getRouteAGV(juncData.size(), i, j, inputData[2], juncData);
+            vector<Point3f> route = Utility::getRouteAGV(juncData.size(), i, j, walkwayWidth, juncData);
             agv->setDirection(i, j);
             agv->setPosition(route[0].x, route[0].y);
+
+            for (Agent *agent : socialForce->getCrowd())
+            {
+                if (agent->getPosition().distance(agv->getPosition()) < 0.5F)
+                {
+                    do
+                    {
+                        agent->setPosition(agent->getPosition().x - 0.1F, agent->getPosition().y - 0.1F);
+                    } while (agent->getPosition().distance(agv->getPosition()) < 0.5F);
+                }
+            }
+
             agv->setDestination(route[route.size() - 1].x, route[route.size() - 1].y);
             agv->setDesiredSpeed(0.6F);
             agv->setAcceleration(inputData[9]);
@@ -976,7 +1029,7 @@ void update()
             agent->getMinDistanceToWalls(socialForce->getWalls(), src, agent->getRadius()) < 0.2 &&
             (agent->interDes).size() == 0)
         {
-            Point3f intermediateDes = Utility::getIntermediateDes(src, (float)inputData[2], (float)inputData[2]);
+            Point3f intermediateDes = Utility::getIntermediateDes(src, walkwayWidth, walkwayWidth);
 
             (agent->interDes).push_back(intermediateDes);
             agent->setPath(intermediateDes.x, intermediateDes.y, 1.0);
