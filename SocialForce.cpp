@@ -15,15 +15,11 @@ void SocialForce::addWall(Wall *wall) { walls.push_back(wall); }
 
 void SocialForce::addAGV(AGV *agv) { agvs.push_back(agv); }
 
-void SocialForce::removeAgent()
+void SocialForce::removeAgent(int agentId)
 {
-    int lastIdx;
-
     if (!crowd.empty())
     {
-        lastIdx = crowd.size() - 1; // Assign index of last element
-
-        delete crowd[lastIdx];
+        crowd[agentId] = crowd.back();
         crowd.pop_back();
     }
 }
@@ -67,7 +63,12 @@ void SocialForce::removeAGVs()
 void SocialForce::moveCrowd(float stepTime)
 {
     for (unsigned int idx = 0; idx < crowd.size(); idx++)
-        crowd[idx]->move(crowd, walls, agvs, stepTime);
+    {
+        if (crowd[idx]->getIsMoving())
+        {
+            crowd[idx]->move(crowd, walls, agvs, stepTime);
+        }
+    }
 }
 
 void SocialForce::moveAGVs(float stepTime)
@@ -82,7 +83,7 @@ void SocialForce::moveAGVs(float stepTime)
 
     for (AGV *agv : agvs)
     {
-        if (agv->getIsRunning())
+        if (agv->getIsMoving())
         {
             agv->move(stepTime, position_list);
             break;

@@ -34,7 +34,7 @@ public:
 
     int getNumAGVs() const { return agvs.size(); }
 
-    void removeAgent(); // Removes individual or single group
+    void removeAgent(int agentId);
     void removeCrowd(); // Remove all individuals and groups
     void removeWalls();
 

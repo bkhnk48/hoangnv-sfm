@@ -13,7 +13,7 @@ private:
     int totalTime, collision;
     float acceleration, distance;
     Vector3f dimension, instantaneous_velocity, d1, d2, d3, d4;
-    bool isRunning, stop;
+    bool stop;
     Vector3f direction;
 
 public:
@@ -33,8 +33,6 @@ public:
 
     void setBorderPoint(Vector3f d1, Vector3f d2, Vector3f d3, Vector3f d4);
 
-    void setIsRunning(bool isRunning);
-
     void setDirection(float x, float y);
 
     int getTotalTime() { return totalTime; }
@@ -46,8 +44,6 @@ public:
     float getDistance() { return distance; }
 
     Vector3f getDimension() const { return dimension; }
-
-    bool getIsRunning() const { return isRunning; }
 
     Vector3f getDirection() { return direction; }
 

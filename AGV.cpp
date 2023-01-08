@@ -13,7 +13,7 @@ AGV::AGV()
     collision = 0;
     dimension = Vector3f(0.35F, 0.75F, 0.0);
     distance = 0;
-    isRunning = false;
+    isMoving = false;
     stop = false;
 
     instantaneous_velocity.set(0.0, 0.0, 0.0);
@@ -44,8 +44,6 @@ void AGV::setBorderPoint(Vector3f d1, Vector3f d2, Vector3f d3, Vector3f d4)
     this->d3 = d3;
     this->d4 = d4;
 }
-
-void AGV::setIsRunning(bool isRunning) { this->isRunning = isRunning; }
 
 void AGV::setDirection(float x, float y) { this->direction.set(x, y, 0.0F); }
 

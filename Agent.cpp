@@ -13,6 +13,7 @@ Agent::Agent()
     id = ++crowdIdx;
 
     radius = 0.2F;
+    isMoving = true;
 
     // Desired Speed Based on (Moussaid et al., 2009)
     normal_distribution<float> distribution(1.29F,
@@ -219,7 +220,7 @@ Vector3f Agent::getAgvInteractForce(vector<AGV *> agvs)
 
     for (const AGV *agv : agvs)
     {
-        if (agv->getIsRunning())
+        if (agv->getIsMoving())
         {
             // Compute Distance Between Agent j and i
             distance_ij = agv->getNearestPoint(position) - position;

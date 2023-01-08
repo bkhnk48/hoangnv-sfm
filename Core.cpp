@@ -29,7 +29,7 @@ using namespace std;
 const float PI = 3.14159265359F;
 
 // Global Variables
-GLsizei winWidth = 1080;  // Window width (16:10 ratio)
+GLsizei winWidth = 1080; // Window width (16:10 ratio)
 GLsizei winHeight = 660; // Window height (16:10 ratio)
 SocialForce *socialForce;
 float fps = 0;        // Frames per second
@@ -242,23 +242,25 @@ void createAgents()
 
     // test
 
-    // for (int temp = 0; temp < 1; temp++)
+    // for (int temp = 0; temp < 3; temp++)
     // {
     //     agent = new Agent;
     //     // agent->setPosition(randomFloat(-20.3F, -6.0), randomFloat(-2.0, 2.0));
-    //     vector<Point3f> route = Utility::getRouteAGV(juncData.size(), 0, 2, walkwayWidth, juncData);
-    //     agent->setPosition(route[0].x, route[0].y);
-    //     for (int i = 1; i < route.size(); i++)
-    //     {
-    //         agent->setPath(route[i].x, route[i].y, 1.0);
-    //     }
-    //     agent->setDestination(route[route.size() - 1].x, route[route.size() - 1].y);
+    //     // vector<Point3f> route = Utility::getRouteAGV(juncData.size(), 0, 2, walkwayWidth, juncData);
+    //     // agent->setPosition(route[0].x, route[0].y);
+    //     // for (int i = 1; i < route.size(); i++)
+    //     // {
+    //     //     agent->setPath(route[i].x, route[i].y, 1.0);
+    //     // }
+    //     // agent->setDestination(route[route.size() - 1].x, route[route.size() - 1].y);
 
-    //     // agent->setPosition(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0));
-    //     // float x = randomFloat(-20.3F, -6.0);
+    //     agent->setPosition(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0));
+    //     // float x = randomFloat(-13.3F, -6.0);
     //     // float y = randomFloat(-2.0, 2.0);
-    //     // agent->setPath(x, y, 1.0);
-    //     // agent->setDestination(x, y);
+    //     float x = randomFloat(-3.2, -2.8);
+    //     float y = randomFloat(-2.2, -1.8);
+    //     agent->setPath(x, y, 1.0);
+    //     agent->setDestination(x, y);
     //     // agent->setPath(randomFloat(22.0, 25.0), randomFloat(-3.0, -2.0), 1.0);
     //     agent->setDesiredSpeed(1);
     //     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
@@ -789,12 +791,12 @@ void drawAGVs()
 
     for (i = 0; i < agvs.size(); i++)
     {
-        if (agvs[i]->getIsRunning() && agvs[i]->getTotalTime() != 0)
+        if (agvs[i]->getIsMoving() && agvs[i]->getTotalTime() != 0)
         {
             agv = agvs[i];
             break;
         }
-        else if (!agvs[i]->getIsRunning() && agvs[i]->getTotalTime() == 0)
+        else if (!agvs[i]->getIsMoving() && agvs[i]->getTotalTime() == 0)
         {
             j.push_back(i);
         }
@@ -818,7 +820,7 @@ void drawAGVs()
 
     if (agv)
     {
-        agv->setIsRunning(true);
+        agv->setIsMoving(true);
         if (agv->getTotalTime() == 0)
         {
             agv->setTotalTime(glutGet(GLUT_ELAPSED_TIME));
@@ -1019,6 +1021,8 @@ void update()
 
     int count_agents = 0, count_agvs = 0;
 
+    std::vector<int> pedesToDelete;
+
     std::vector<Agent *> agents = socialForce->getCrowd();
     for (Agent *agent : agents)
     {
@@ -1048,9 +1052,20 @@ void update()
         float distanceToTarget = src.distance(des);
         if (distanceToTarget <= 1 || isnan(distanceToTarget))
         {
+            agent->setIsMoving(false);
+            pedesToDelete.push_back(agent->getId());
             count_agents = count_agents + 1;
         }
     }
+
+    if (pedesToDelete.size() > 0)
+    {
+        for (int pedesId : pedesToDelete)
+        {
+            socialForce->removeAgent(pedesId);
+        }
+    }
+
     std::vector<AGV *> agvs = socialForce->getAGVs();
     for (AGV *agv : agvs)
     {
@@ -1060,10 +1075,10 @@ void update()
         float distance = src.distance(des);
         if (distance <= 1 || isnan(distance))
         {
-            if (agv->getIsRunning())
+            if (agv->getIsMoving())
             {
                 agv->setTotalTime(glutGet(GLUT_ELAPSED_TIME) - agv->getTotalTime());
-                agv->setIsRunning(false);
+                agv->setIsMoving(false);
             }
             count_agvs = count_agvs + 1;
         }

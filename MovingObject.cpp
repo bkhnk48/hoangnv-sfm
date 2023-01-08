@@ -31,6 +31,11 @@ void MovingObject::setDesiredSpeed(float speed)
     desiredSpeed = speed;
 }
 
+void MovingObject::setIsMoving(bool isMoving)
+{
+    this->isMoving = isMoving;
+}
+
 Point3f MovingObject::getPath() {
     Vector3f distanceCurr, distanceNext;
 

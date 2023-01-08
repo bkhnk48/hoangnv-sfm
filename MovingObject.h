@@ -21,6 +21,7 @@ protected:
     Point3f destination;
     Point3f position;
     Vector3f velocity;
+    bool isMoving;
 
 public:
     MovingObject();
@@ -35,6 +36,10 @@ public:
     void setDestination(float x, float y);
 
     void setDesiredSpeed(float speed);
+    
+    void setIsMoving(bool isMoving);
+
+    bool getIsMoving() const { return isMoving; }
 
     int getId() const { return id; }
 
