@@ -8,6 +8,8 @@
 #include <string>
 #include <random>
 #include <cmath>
+#include <ctime>
+#include <chrono>
 
 using namespace std;
 
@@ -118,9 +120,12 @@ std::vector<double> Utility::readInput(const char *fileName)
 void Utility::writeEnd(const char *fileName, string name, int mode, std::vector<AGV *> data)
 {
     vector<double> v;
-    ofstream output(fileName);
+    ofstream output(fileName, ios::app);
 
     std::string delimiter = " ";
+    std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+
+    output << "#" << name << " run completed on " << std::ctime(&now);
 
     for (AGV *agv : data)
     {
