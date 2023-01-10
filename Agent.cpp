@@ -14,6 +14,7 @@ Agent::Agent()
 
     radius = 0.2F;
     isMoving = true;
+    stopAtCorridor = false;
 
     // Desired Speed Based on (Moussaid et al., 2009)
     normal_distribution<float> distribution(1.29F,
@@ -30,6 +31,11 @@ Agent::~Agent()
 void Agent::setRadius(float radius)
 {
     this->radius = radius;
+}
+
+void Agent::setStopAtCorridor(bool stopAtCorridor)
+{
+    this->stopAtCorridor = stopAtCorridor;
 }
 
 float Agent::getMinDistanceToWalls(vector<Wall *> walls, Point3f position, float radius)

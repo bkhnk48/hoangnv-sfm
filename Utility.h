@@ -16,8 +16,6 @@ public:
     virtual ~Utility();
 
     static constexpr const float MEAN = 1.2;
-    static constexpr const float HEIGHT_LIMIT = 13;
-    static constexpr const float WIDTH_LIMIT = 20;
     static constexpr const double UPPER_SPEED_LIMIT = 1.8;
     static constexpr const double LOWER_SPEED_LIMIT = 0.6;
 
@@ -31,15 +29,21 @@ public:
 
     static std::vector<int> getNumPedesInFlow(int junctionType, int totalPedestrian);
 
-    static std::vector<double> getPedesVelocity(int numPedes, double n_dist);
+    static std::vector<double> getPedesVelocity(int type, std::vector<double> inputData);
+
+    static std::vector<double> getPedesVelocityBasedTDis(int numPedes, double n_dist);
+
+    static std::vector<double> getPedesVelocityBasedDDis(std::vector<double> inputData);
 
     static std::vector<float> getWallCoordinates(float walkwayWidth, std::vector<float> juncData);
 
     static std::string convertTime(int milliseconds);
 
-    static std::vector<float> getPedesDestination(int direction, int side, float walkwayWidth);
+    static std::vector<float> getMapLimit(float walkwayWidth, std::vector<float> juncData);
 
-    static std::vector<float> getPedesSource(int direction, float totalLength, float subLength, float caravanWidth);
+    static std::vector<float> getPedesDestination(int direction, int side, float walkwayWidth, std::vector<float> juncData, bool stopAtCorridor);
+
+    static std::vector<float> getPedesSource(int direction, float totalLength, float subLength, float caravanWidth, float walkwayWidth, std::vector<float> juncData);
 
     static std::vector<float> getPedesColor(float maxSpeed, float minSpeed, float desiredSpeed);
 

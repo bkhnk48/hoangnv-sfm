@@ -32,7 +32,9 @@ const float PI = 3.14159265359F;
 GLsizei winWidth = 1080; // Window width (16:10 ratio)
 GLsizei winHeight = 660; // Window height (16:10 ratio)
 SocialForce *socialForce;
-float fps = 0;        // Frames per second
+float fps = 0; // Frames per second
+int currTime = 0;
+int startTime = 0;
 bool animate = false; // Animate scene flag
 
 std::vector<double> inputData;
@@ -45,6 +47,7 @@ float walkwayWidth;
 std::vector<int> numOfPeople;
 float minSpeed = -1;
 float maxSpeed = -1;
+int threshold = 0;
 
 // Function Prototypes
 void init();
@@ -102,6 +105,8 @@ int main(int argc, char **argv)
     } while (mapData[input].size() < 3);
     juncData = mapData[input];
     walkwayWidth = mapData["walkwayWidth"][0];
+    // Threshold people stopping at the corridor
+    threshold = int(inputData[0]) * (float)(inputData[11]) / 100;
 
     glutInit(&argc, argv); // Initialize GLUT
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA |
@@ -113,6 +118,7 @@ int main(int argc, char **argv)
     // display window
 
     animate = true;
+    startTime = currTime;
     if ((int)inputData[6] == 0)
     {
         glutHideWindow();
@@ -181,7 +187,6 @@ void createWalls()
 {
     Wall *wall;
 
-    // float walkwayWidth = (float)inputData[2];
     vector<float> coors = Utility::getWallCoordinates(walkwayWidth, juncData);
 
     // Upper Wall
@@ -227,14 +232,117 @@ void createWalls()
     socialForce->addWall(wall);
 }
 
+void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSpeed, int caseJump, int juncType)
+{
+    if(socialForce->getCrowdSize() < threshold) {
+        agent->setStopAtCorridor(true);
+    }
+
+    int codeSrc;
+    int codeDes;
+
+    if (juncType == 4)
+    {
+        if (caseJump < 3)
+        {
+            codeSrc = 0; // Go from Left to Right
+        }
+        else if (caseJump < 6)
+        {
+            codeSrc = 1; // Go from Right to Left
+        }
+        else if (caseJump < 9)
+        {
+            codeSrc = 2; // Go from Top to Bottom
+        }
+        else
+        {
+            codeSrc = 3; // Go from Bottom to Top
+        }
+    }
+    else if (juncType == 3)
+    {
+        if (caseJump < 6)
+        {
+            codeSrc = 0;
+            if (caseJump % 2 == 0)
+            {
+                codeDes = 0;
+            }
+            else
+            {
+                codeDes = 2;
+            }
+        }
+        else if (caseJump < 12)
+        {
+            codeSrc = 1;
+            if (caseJump % 2 == 0)
+            {
+                codeDes = 1;
+            }
+            else
+            {
+                codeDes = 2;
+            }
+        }
+        else if (caseJump < 18)
+        {
+            codeSrc = 3;
+            if (caseJump % 2 == 0)
+            {
+                codeDes = 0;
+            }
+            else
+            {
+                codeDes = 1;
+            }
+        }
+    }
+
+    vector<float> position = Utility::getPedesSource(codeSrc, (float)inputData[3], (float)inputData[4],
+                                                     (float)inputData[5], walkwayWidth, juncData);
+    vector<float> desList;
+    if (juncType == 4)
+    {
+        desList = Utility::getPedesDestination(codeSrc, caseJump % 3, walkwayWidth, juncData, agent->getStopAtCorridor());
+    }
+    else if (juncType == 3)
+    {
+        desList = Utility::getPedesDestination(codeDes, caseJump % 3, walkwayWidth, juncData, agent->getStopAtCorridor());
+    }
+
+    agent->setPosition(position[0], position[1]);
+    if (juncType == 3 && codeSrc != codeDes)
+    {
+        agent->setPath(randomFloat(-walkwayWidth / 2, walkwayWidth / 2), randomFloat(-walkwayWidth / 2, walkwayWidth / 2), 2.0);
+    }
+    agent->setPath(desList[0], desList[1], desList[2]);
+    agent->setDestination(desList[0], desList[1]);
+    agent->setDesiredSpeed(desiredSpeed);
+    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+    agent->setColor(color[0], color[1], color[2]);
+    socialForce->addAgent(agent);
+}
+
 void createAgents()
 {
     Agent *agent;
 
     numOfPeople = Utility::getNumPedesInFlow(juncData.size(), int(inputData[0]));
-    vector<double> velocityList = Utility::getPedesVelocity(int(inputData[0]), inputData[1]);
-    minSpeed = velocityList[0];
-    maxSpeed = velocityList[velocityList.size() - 1];
+    int typeGetVelocity = 0;
+    vector<double> velocityList = Utility::getPedesVelocity(typeGetVelocity, inputData);
+    if (typeGetVelocity == 0)
+    {
+        minSpeed = 0.52;
+        maxSpeed = 2.28;
+    }
+    else
+    {
+        minSpeed = velocityList[0];
+        maxSpeed = velocityList[velocityList.size() - 1];
+    }
+
     auto rng = std::default_random_engine{};
     std::shuffle(velocityList.begin(), velocityList.end(), rng);
 
@@ -245,169 +353,32 @@ void createAgents()
     // for (int temp = 0; temp < 3; temp++)
     // {
     //     agent = new Agent;
-    //     // agent->setPosition(randomFloat(-20.3F, -6.0), randomFloat(-2.0, 2.0));
-    //     // vector<Point3f> route = Utility::getRouteAGV(juncData.size(), 0, 2, walkwayWidth, juncData);
-    //     // agent->setPosition(route[0].x, route[0].y);
-    //     // for (int i = 1; i < route.size(); i++)
-    //     // {
-    //     //     agent->setPath(route[i].x, route[i].y, 1.0);
-    //     // }
-    //     // agent->setDestination(route[route.size() - 1].x, route[route.size() - 1].y);
-
-    //     agent->setPosition(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0));
-    //     // float x = randomFloat(-13.3F, -6.0);
-    //     // float y = randomFloat(-2.0, 2.0);
-    //     float x = randomFloat(-3.2, -2.8);
-    //     float y = randomFloat(-2.2, -1.8);
-    //     agent->setPath(x, y, 1.0);
-    //     agent->setDestination(x, y);
-    //     // agent->setPath(randomFloat(22.0, 25.0), randomFloat(-3.0, -2.0), 1.0);
-    //     agent->setDesiredSpeed(1);
-    //     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-    //     agent->setColor(color[0], color[1], color[2]);
-    //     socialForce->addAgent(agent);
+    //     setAgentsFlow(agent, 1, maxSpeed, minSpeed, Point3f(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0), 0.0), Point3f(randomFloat(-3.2, -2.8), randomFloat(-2.2, -1.8), 0.0));
+    //     // agent->setPosition(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0));
+    //     // // float x = randomFloat(-13.3F, -6.0);
+    //     // // float y = randomFloat(-2.0, 2.0);
+    //     // float x = randomFloat(-3.2, -2.8);
+    //     // float y = randomFloat(-2.2, -1.8);
+    //     // agent->setPath(x, y, 1.0);
+    //     // agent->setDestination(x, y);
+    //     // // agent->setPath(randomFloat(22.0, 25.0), randomFloat(-3.0, -2.0), 1.0);
+    //     // agent->setDesiredSpeed(1);
+    //     // std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+    //     // agent->setColor(color[0], color[1], color[2]);
+    //     // socialForce->addAgent(agent);
     // }
 
     // test
 
     if (juncData.size() == 3)
     {
-        for (int idx = 0; idx < 6; idx++)
+        for (int idx = 0; idx < 18; idx++)
         {
-            switch (idx % 6)
+            for (int temp = 0; temp < numOfPeople[idx]; temp++)
             {
-                // From Left to Right
-            case 0:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    float x = randomFloat(20, 23);
-                    float y = randomFloat(-3, 3);
-                    agent->setPath(x, y, 2.0);
-                    agent->setDestination(x, y);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-            // From Left to Bottom
-            case 1:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    agent->setPath(randomFloat(-3, 3), randomFloat(-3, 3), 2.0);
-                    float x = randomFloat(-3, 3);
-                    float y = randomFloat(-15, -13);
-                    agent->setPath(x, y, 2.0);
-                    agent->setDestination(x, y);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-            // From Bottom to Left
-            case 2:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    agent->setPath(randomFloat(-3, 3), randomFloat(-3, 3), 2.0);
-                    float x = randomFloat(-23, -20);
-                    float y = randomFloat(-3, 3);
-                    agent->setPath(x, y, 2.0);
-                    agent->setDestination(x, y);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-            // From Bottom to Right
-            case 3:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    agent->setPath(randomFloat(-3, 3), randomFloat(-3, 3), 2.0);
-                    float x = randomFloat(20, 23);
-                    float y = randomFloat(-3, 3);
-                    agent->setPath(x, y, 2.0);
-                    agent->setDestination(x, y);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-            // From Right to Left
-            case 4:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    float x = randomFloat(-23, -20);
-                    float y = randomFloat(-3, 3);
-                    agent->setPath(x, y, 2.0);
-                    agent->setDestination(x, y);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-            // From Right to Bottom
-            case 5:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    agent->setPath(randomFloat(-3, 3), randomFloat(-3, 3), 2.0);
-                    float x = randomFloat(-3, 3);
-                    float y = randomFloat(-15, -13);
-                    agent->setPath(x, y, 2.0);
-                    agent->setDestination(x, y);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-            default:
-                break;
+                agent = new Agent;
+                setAgentsFlow(agent, velocityList[pedesCount], maxSpeed, minSpeed, idx, juncData.size());
+                pedesCount = pedesCount + 1;
             }
         }
     }
@@ -415,242 +386,11 @@ void createAgents()
     {
         for (int idx = 0; idx < 12; idx++)
         {
-            switch (idx % 12)
+            for (int temp = 0; temp < numOfPeople[idx]; temp++)
             {
-            // From Left to Right
-            case 0:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(0, 0, walkwayWidth);
-                    agent->setPath(desList[0], desList[1], desList[2]);
-                    agent->setDestination(desList[0], desList[1]);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-            case 1:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(0, 1, walkwayWidth);
-                    agent->setPath(desList[0], desList[1], desList[2]);
-                    agent->setDestination(desList[0], desList[1]);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-            case 2:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(0, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(0, 2, walkwayWidth);
-                    agent->setPath(desList[0], desList[1], desList[2]);
-                    agent->setDestination(desList[0], desList[1]);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-                // From Right to Left
-            case 3:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(1, 0, walkwayWidth);
-                    agent->setPath(desList[0], desList[1], desList[2]);
-                    agent->setDestination(desList[0], desList[1]);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-            case 4:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(1, 1, walkwayWidth);
-                    agent->setPath(desList[0], desList[1], desList[2]);
-                    agent->setDestination(desList[0], desList[1]);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-            case 5:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(1, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(1, 2, walkwayWidth);
-                    agent->setPath(desList[0], desList[1], desList[2]);
-                    agent->setDestination(desList[0], desList[1]);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-                // From Top to Bottom
-            case 6:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(2, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(2, 0, walkwayWidth);
-                    agent->setPath(desList[0], desList[1], desList[2]);
-                    agent->setDestination(desList[0], desList[1]);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-            case 7:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(2, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(2, 1, walkwayWidth);
-                    agent->setPath(desList[0], desList[1], desList[2]);
-                    agent->setDestination(desList[0], desList[1]);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-            case 8:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(2, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(2, 2, walkwayWidth);
-                    agent->setPath(desList[0], desList[1], desList[2]);
-                    agent->setDestination(desList[0], desList[1]);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-                // From Bottom to Top
-            case 9:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(3, 0, walkwayWidth);
-                    agent->setPath(desList[0], desList[1], desList[2]);
-                    agent->setDestination(desList[0], desList[1]);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-            case 10:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(3, 1, walkwayWidth);
-                    agent->setPath(desList[0], desList[1], desList[2]);
-                    agent->setDestination(desList[0], desList[1]);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-            case 11:
-            {
-                for (int temp = 0; temp < numOfPeople[idx]; temp++)
-                {
-                    agent = new Agent;
-                    vector<float> position = Utility::getPedesSource(3, (float)inputData[3], (float)inputData[4],
-                                                                     (float)inputData[5]);
-                    agent->setPosition(position[0], position[1]);
-                    vector<float> desList = Utility::getPedesDestination(3, 2, walkwayWidth);
-                    agent->setPath(desList[0], desList[1], desList[2]);
-                    agent->setDestination(desList[0], desList[1]);
-                    agent->setDesiredSpeed(velocityList[pedesCount]);
-                    pedesCount = pedesCount + 1;
-                    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-                    agent->setColor(color[0], color[1], color[2]);
-                    socialForce->addAgent(agent);
-                }
-                break;
-            }
-            default:
-                break;
+                agent = new Agent;
+                setAgentsFlow(agent, velocityList[pedesCount], maxSpeed, minSpeed, idx, juncData.size());
+                pedesCount = pedesCount + 1;
             }
         }
     }
@@ -922,34 +662,35 @@ void showInformation()
     Point3f margin;
     char totalAgentsStr[5] = "\0", fpsStr[8] = "\0", frctnStr[6] = "\0";
 
-    margin.x = static_cast<float>(-winWidth) / 50;
-    margin.y = static_cast<float>(winHeight) / 50 - 0.75F;
+    margin.x = static_cast<float>(-winWidth) / 60;
+    margin.y = static_cast<float>(winHeight) / 60 - 0.75F;
 
     glColor3f(0.0, 0.0, 0.0);
 
     // Total Agents
-    drawText(margin.x, margin.y, "Total agents:");
-    //_itoa_s
-    // std::_itoa(socialForce->getCrowdSize(), totalAgentsStr, 10);
+    drawText(margin.x, margin.y - 0.9F, "Total agents:");
     std::string s = std::to_string(socialForce->getCrowdSize());
-    drawText(margin.x + 4.0F, margin.y, // totalAgentsStr
+    drawText(margin.x + 4.0F, margin.y - 0.9F, // totalAgentsStr
              s.c_str());
 
     // FPS
-    drawText(margin.x, margin.y - 0.9F, "FPS:");
-    //_itoa_s(static_cast<int>(fps), fpsStr, 10);
-    //// Convert integer portion into char
+    drawText(margin.x, margin.y, "FPS:");
     s = std::to_string(static_cast<int>(fps));
-    // strcat_s(fpsStr, ".");
-    // // Append decimal mark
-    s = s + ".";
-    //_itoa_s((fps - static_cast<int>(fps)) * 100000, frctnStr, 10);
-    //// Convert fractional portion into char
-    s = s + std::to_string(fps - static_cast<int>(fps) * 100000);
-    // strncat_s(fpsStr, frctnStr, sizeof(fpsStr) - (strlen(fpsStr) + 1));
-    // // Append fractional portion
-    fpsStr[7] = '\0';
-    drawText(margin.x + 1.7F, margin.y - 0.9F, s.c_str() /*fpsStr*/);
+    drawText(margin.x + 1.7F, margin.y, s.c_str() /*fpsStr*/);
+
+    // Simulation Time
+    drawText(margin.x, margin.y - 1.8F, "Simulation time:");
+    if (animate)
+    {
+        s = Utility::convertTime(currTime - startTime);
+    }
+    else
+    {
+        s = Utility::convertTime(0);
+    }
+
+    drawText(margin.x + 5.0F, margin.y - 1.8F, // totalAgentsStr
+             s.c_str());
 }
 
 void drawText(float x, float y, const char text[])
@@ -993,6 +734,7 @@ void normalKey(unsigned char key, int xMousePos, int yMousePos)
     {
     case 'a': // Animate or inanimate scene
         animate = (!animate) ? true : false;
+        startTime = currTime;
         break;
 
     case 27: // ASCII character for Esc key
@@ -1012,16 +754,14 @@ float randomFloat(float lowerBound, float upperBound)
 
 void update()
 {
-    int currTime, frameTime; // Store time in milliseconds
-    static int prevTime;     // Stores time in milliseconds
+    int frameTime;       // Store time in milliseconds
+    static int prevTime; // Stores time in milliseconds
 
     currTime = glutGet(GLUT_ELAPSED_TIME); // Get time in milliseconds since 'glutInit()' called
     frameTime = currTime - prevTime;
     prevTime = currTime;
 
     int count_agents = 0, count_agvs = 0;
-
-    std::vector<int> pedesToDelete;
 
     std::vector<Agent *> agents = socialForce->getCrowd();
     for (Agent *agent : agents)
@@ -1053,16 +793,11 @@ void update()
         if (distanceToTarget <= 1 || isnan(distanceToTarget))
         {
             agent->setIsMoving(false);
-            pedesToDelete.push_back(agent->getId());
+            if (!agent->getStopAtCorridor())
+            {
+                socialForce->removeAgent(agent->getId());
+            }
             count_agents = count_agents + 1;
-        }
-    }
-
-    if (pedesToDelete.size() > 0)
-    {
-        for (int pedesId : pedesToDelete)
-        {
-            socialForce->removeAgent(pedesId);
         }
     }
 
@@ -1087,7 +822,7 @@ void update()
     {
         Utility::writeEnd("end.txt", input, inputData[6], agvs);
         std::cout << "Maximum speed: " << maxSpeed << " - Minimum speed: " << minSpeed << endl;
-        std::cout << "Finish in: " << Utility::convertTime(currTime) << endl;
+        std::cout << "Finish in: " << Utility::convertTime(currTime - startTime) << endl;
         delete socialForce;
         socialForce = 0;
 

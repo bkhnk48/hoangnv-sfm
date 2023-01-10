@@ -19,8 +19,9 @@ void SocialForce::removeAgent(int agentId)
 {
     if (!crowd.empty())
     {
-        crowd[agentId] = crowd.back();
-        crowd.pop_back();
+        crowd.erase(remove_if(begin(crowd), end(crowd), [agentId](Agent *u)
+                              { return u->getId() == agentId; }),
+                    end(crowd));
     }
 }
 
@@ -64,10 +65,11 @@ void SocialForce::moveCrowd(float stepTime)
 {
     for (unsigned int idx = 0; idx < crowd.size(); idx++)
     {
-        if (crowd[idx]->getIsMoving())
-        {
-            crowd[idx]->move(crowd, walls, agvs, stepTime);
-        }
+        // if (crowd[idx]->getIsMoving())
+        // {
+        //     crowd[idx]->move(crowd, walls, agvs, stepTime);
+        // }
+        crowd[idx]->move(crowd, walls, agvs, stepTime);
     }
 }
 

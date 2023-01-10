@@ -144,7 +144,7 @@ std::vector<int> Utility::getNumPedesInFlow(int junctionType, int totalPedestria
     int numFlow;
     if (junctionType == 3)
     {
-        numFlow = 6;
+        numFlow = 18;
     }
     else if (junctionType == 4)
     {
@@ -165,8 +165,76 @@ std::vector<int> Utility::getNumPedesInFlow(int junctionType, int totalPedestria
     return v;
 }
 
-// get list velocity of all pedestrians
-std::vector<double> Utility::getPedesVelocity(int numPedes, double n_dist)
+// get list velocity of all pedestrians: type 0 - Discrete distribution, type 1 - T distribution
+std::vector<double> Utility::getPedesVelocity(int type, std::vector<double> inputData)
+{
+    if (type == 0)
+    {
+        return getPedesVelocityBasedDDis(inputData);
+    }
+    else
+    {
+        return getPedesVelocityBasedTDis(int(inputData[0]), inputData[1]);
+    }
+}
+
+std::vector<double> Utility::getPedesVelocityBasedDDis(std::vector<double> inputData)
+{
+    vector<double> v;
+    float perNoDisabilityWithoutOvertaking = inputData[12];
+    float perNoDisabilityWithOvertaking = inputData[13];
+    float perWalkingWithCrutches = inputData[14];
+    float perWalkingWithSticks = inputData[15];
+    float perWheelchairs = inputData[16];
+    float perTheBlind = inputData[17];
+
+    const int nrolls = 10000;               // number of experiments
+    const int numPedes = int(inputData[0]); // maximum number of pedes to distribute
+
+    std::default_random_engine generator;
+    std::discrete_distribution<int> distribution{
+        perNoDisabilityWithoutOvertaking,
+        perNoDisabilityWithOvertaking,
+        perWalkingWithCrutches,
+        perWalkingWithSticks,
+        perWheelchairs,
+        perTheBlind};
+
+    int p[6] = {};
+
+    for (int i = 0; i < nrolls; ++i)
+    {
+        int number = distribution(generator);
+        ++p[number];
+    }
+
+    std::map<int, float> map;
+    map[0] = 1.24;
+    map[1] = 2.28;
+    map[2] = 0.94;
+    map[3] = 0.81;
+    map[4] = 0.69;
+    map[5] = 0.52;
+
+    for (int i = 0; i < 6; ++i)
+    {
+        // std::cout << i << ": " << p[i] * numPedes / nrolls << std::endl;
+        // std::cout << i << ": " << std::string(p[i] * numPedes / nrolls, '*') << std::endl;
+        for (int j = 0; j < p[i] * numPedes / nrolls; j++)
+        {
+            v.push_back(map[i]);
+        }
+    }
+    int curSize = v.size();
+    for (int i = 0; i < numPedes - curSize; i++)
+    {
+        v.push_back(map[0]);
+    }
+
+    return v;
+}
+
+std::vector<double> Utility::getPedesVelocityBasedTDis(int numPedes, double n_dist)
 {
     vector<double> v;
     double std = sqrt(n_dist / (n_dist + 2));
@@ -208,16 +276,19 @@ std::vector<double> Utility::getPedesVelocity(int numPedes, double n_dist)
     return v;
 }
 
-std::vector<float> Utility::getWallCoordinates(float wWidth, std::vector<float> juncData)
+std::vector<float> Utility::getWallCoordinates(float walkwayWidth, std::vector<float> juncData)
 {
     std::vector<float> v;
-    float temp = wWidth / 2;
 
-    float leftWidthLimit = -juncData[0] - temp;
-    float rightWidthLimit = juncData[2] + temp;
+    std::vector<float> mapLimit = getMapLimit(walkwayWidth, juncData);
 
-    float lowerHeightLimit = -juncData[1] - temp;
-    float upperHeightLimit = juncData[3] + temp;
+    float temp = walkwayWidth / 2;
+
+    float leftWidthLimit = mapLimit[0];
+    float rightWidthLimit = mapLimit[1];
+
+    float lowerHeightLimit = mapLimit[2];
+    float upperHeightLimit = mapLimit[3];
 
     // Upper Wall
     v.insert(v.end(), {leftWidthLimit, temp, -temp, temp});
@@ -254,120 +325,212 @@ std::string Utility::convertTime(int ms)
            std::string("s ") + std::to_string(ms) + std::string("ms");
 }
 
-// direction: 0 Left - Right, 1 Right - Left, 2 Top - Bottom, 3 Bottom - Top
-// side: 0 Left side, 1 Center, 2 Right side
-std::vector<float> Utility::getPedesDestination(int direction, int side, float walkwayWidth)
+// Position 0/1/2/3: Left/Right/Lower/Upper Limit
+std::vector<float> Utility::getMapLimit(float walkwayWidth, std::vector<float> juncData)
 {
     std::vector<float> v;
 
-    float radius = 3.0;
+    float temp = walkwayWidth / 2;
+
+    float leftWidthLimit = -juncData[0] - temp;
+    float rightWidthLimit = juncData[2] + temp;
+
+    float lowerHeightLimit = -juncData[1] - temp;
+    float upperHeightLimit = juncData[3] + temp;
+
+    v.insert(v.end(), {leftWidthLimit, rightWidthLimit, lowerHeightLimit, upperHeightLimit});
+
+    return v;
+}
+
+// direction: 0 To Right, 1 To Left, 2 To Bottom, 3 To Top
+// side: 0 Left side, 1 Center, 2 Right side
+std::vector<float> Utility::getPedesDestination(int direction, int side, float walkwayWidth, std::vector<float> juncData, bool stopAtCorridor)
+{
+    std::vector<float> v;
+
+    std::vector<float> mapLimit = getMapLimit(walkwayWidth, juncData);
+    float leftWidthLimit = mapLimit[0];
+    float rightWidthLimit = mapLimit[1];
+    float lowerHeightLimit = mapLimit[2];
+    float upperHeightLimit = mapLimit[3];
+
+    float radius = 0.5;
     switch (direction)
     {
-    // Left - Right
+        // To Right
     case 0:
+    {
+        float latitude;
+        if (stopAtCorridor)
+        {
+            latitude = Utility::randomFloat(0, rightWidthLimit - 2);
+        }
+        else
+        {
+            latitude = Utility::randomFloat(rightWidthLimit + 1, rightWidthLimit + 2);
+        }
         switch (side)
         {
         case 0:
-            v.insert(v.end(), {Utility::randomFloat(Utility::WIDTH_LIMIT, Utility::WIDTH_LIMIT + 3),
+        {
+            v.insert(v.end(), {latitude,
                                Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3, walkwayWidth / 2),
                                radius});
             return v;
             break;
+        }
         case 1:
-            v.insert(v.end(), {Utility::randomFloat(Utility::WIDTH_LIMIT, Utility::WIDTH_LIMIT + 3),
+        {
+            v.insert(v.end(), {latitude,
                                Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3,
                                                     walkwayWidth / 2 - walkwayWidth / 3),
                                radius});
             return v;
             break;
+        }
         case 2:
-            v.insert(v.end(), {Utility::randomFloat(Utility::WIDTH_LIMIT, Utility::WIDTH_LIMIT + 3),
+        {
+            v.insert(v.end(), {latitude,
                                Utility::randomFloat(-walkwayWidth / 2, -walkwayWidth / 2 + walkwayWidth / 3),
                                radius});
             return v;
             break;
+        }
         default:
             break;
         }
         break;
-        // Right - Left
+    }
+        // To Left
     case 1:
+    {
+        float latitude;
+        if (stopAtCorridor)
+        {
+            latitude = Utility::randomFloat(leftWidthLimit + 2, 0);
+        }
+        else
+        {
+            latitude = Utility::randomFloat(leftWidthLimit - 2, leftWidthLimit - 1);
+        }
         switch (side)
         {
         case 0:
-            v.insert(v.end(), {Utility::randomFloat(-Utility::WIDTH_LIMIT - 3, -Utility::WIDTH_LIMIT),
+        {
+            v.insert(v.end(), {latitude,
                                Utility::randomFloat(-walkwayWidth / 2, -walkwayWidth / 2 + walkwayWidth / 3),
                                radius});
             return v;
             break;
+        }
         case 1:
-            v.insert(v.end(), {Utility::randomFloat(-Utility::WIDTH_LIMIT - 3, -Utility::WIDTH_LIMIT),
+        {
+            v.insert(v.end(), {latitude,
                                Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3,
                                                     walkwayWidth / 2 - walkwayWidth / 3),
                                radius});
             return v;
             break;
+        }
         case 2:
-            v.insert(v.end(), {Utility::randomFloat(-Utility::WIDTH_LIMIT - 3, -Utility::WIDTH_LIMIT),
+        {
+            v.insert(v.end(), {latitude,
                                Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3, walkwayWidth / 2),
                                radius});
             return v;
             break;
+        }
         default:
             break;
         }
         break;
-        // Top - Bottom
+    }
+        // To Bottom
     case 2:
+    {
+        float longitude;
+        if (stopAtCorridor)
+        {
+            longitude = Utility::randomFloat(lowerHeightLimit + 2, 0);
+        }
+        else
+        {
+            longitude = Utility::randomFloat(lowerHeightLimit - 2, lowerHeightLimit - 1);
+        }
         switch (side)
         {
         case 0:
+        {
             v.insert(v.end(), {Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3, walkwayWidth / 2),
-                               Utility::randomFloat(-Utility::HEIGHT_LIMIT - 3, -Utility::HEIGHT_LIMIT),
+                               longitude,
                                radius});
             return v;
             break;
+        }
         case 1:
+        {
             v.insert(v.end(), {Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3,
                                                     walkwayWidth / 2 - walkwayWidth / 3),
-                               Utility::randomFloat(-Utility::HEIGHT_LIMIT - 3, -Utility::HEIGHT_LIMIT),
+                               longitude,
                                radius});
             return v;
             break;
+        }
         case 2:
+        {
             v.insert(v.end(), {Utility::randomFloat(-walkwayWidth / 2, -walkwayWidth / 2 + walkwayWidth / 3),
-                               Utility::randomFloat(-Utility::HEIGHT_LIMIT - 3, -Utility::HEIGHT_LIMIT),
+                               longitude,
                                radius});
             return v;
             break;
+        }
         default:
             break;
         }
         break;
-        // Bottom - Top
+    }
+        // To Top
     case 3:
+    {
+        float longitude;
+        if (stopAtCorridor)
+        {
+            longitude = Utility::randomFloat(0, upperHeightLimit - 2);
+        }
+        else
+        {
+            longitude = Utility::randomFloat(upperHeightLimit + 1, upperHeightLimit + 2);
+        }
         switch (side)
         {
         case 0:
+        {
             v.insert(v.end(), {Utility::randomFloat(-walkwayWidth / 2, -walkwayWidth / 2 + walkwayWidth / 3),
-                               Utility::randomFloat(Utility::HEIGHT_LIMIT, Utility::HEIGHT_LIMIT + 3), radius});
+                               longitude, radius});
             return v;
             break;
+        }
         case 1:
+        {
             v.insert(v.end(), {Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3,
                                                     walkwayWidth / 2 - walkwayWidth / 3),
-                               Utility::randomFloat(Utility::HEIGHT_LIMIT, Utility::HEIGHT_LIMIT + 3), radius});
+                               longitude, radius});
             return v;
             break;
+        }
         case 2:
+        {
             v.insert(v.end(), {Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3, walkwayWidth / 2),
-                               Utility::randomFloat(Utility::HEIGHT_LIMIT, Utility::HEIGHT_LIMIT + 3), radius});
+                               longitude, radius});
             return v;
             break;
+        }
         default:
             break;
         }
         break;
+    }
     default:
         return v;
         break;
@@ -375,8 +538,8 @@ std::vector<float> Utility::getPedesDestination(int direction, int side, float w
     return v;
 }
 
-// direction: 0 Left - Right, 1 Right - Left, 2 Top - Bottom, 3 Bottom - Top
-std::vector<float> Utility::getPedesSource(int direction, float totalLength, float subLength, float caravanWidth)
+// direction: 0 From Left, 1 From Right, 2 From Top, 3 From Bottom
+std::vector<float> Utility::getPedesSource(int direction, float totalLength, float subLength, float caravanWidth, float walkwayWidth, std::vector<float> juncData)
 {
     std::vector<float> v;
     float totalArea = totalLength * caravanWidth;
@@ -395,8 +558,12 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength, flo
     int sampled_value = choices[d(gen)];
     // cout << "sampled_value " << sampled_value << endl;
 
-    float horLandmark = Utility::WIDTH_LIMIT;
-    float verLandmark = Utility::HEIGHT_LIMIT;
+    std::vector<float> mapLimit = getMapLimit(walkwayWidth, juncData);
+    float rightWidthLimit = mapLimit[1];
+    float upperHeightLimit = mapLimit[3];
+
+    float horLandmark = rightWidthLimit;
+    float verLandmark = upperHeightLimit;
     if (totalLength > 40)
     {
         horLandmark = totalLength / 2;

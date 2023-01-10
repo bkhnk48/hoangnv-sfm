@@ -14,6 +14,7 @@ class Agent : public MovingObject, public Force
 private:
     static int crowdIdx; // Keep track of 'crowd' vector index in 'SocialForce.h'
     float radius;
+    bool stopAtCorridor;
 
     Vector3f getDrivingForce(const Point3f position_target);
     Vector3f getAgentInteractForce(std::vector<Agent *> agents);
@@ -30,6 +31,10 @@ public:
     void setRadius(float radius);
 
     float getRadius() const { return radius; }
+
+    void setStopAtCorridor(bool stopAtCorridor);
+
+    float getStopAtCorridor() const { return stopAtCorridor; }
 
     float getMinDistanceToWalls(vector<Wall *> walls, Point3f position, float radius);
 
