@@ -18,14 +18,14 @@
 10
 # Percentage of pedestrians at different states
 # - No disability, without overtaking behavior
-30
+22
 # - No disability, with overtaking behavior
 5
 # - Walking with crutches
-15
+17
 # - Walking with sticks
-20
+22
 # - Wheelchairs
-15
+17
 # - The blind
-15
+17

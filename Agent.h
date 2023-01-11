@@ -7,9 +7,8 @@
 #include "Wall.h"
 #include "AGV.h"
 #include "MovingObject.h"
-#include "Force.h"
 
-class Agent : public MovingObject, public Force
+class Agent : public MovingObject
 {
 private:
     static int crowdIdx; // Keep track of 'crowd' vector index in 'SocialForce.h'
