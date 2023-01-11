@@ -37,6 +37,7 @@ public:
 
     float getMinDistanceToWalls(vector<Wall *> walls, Point3f position, float radius);
 
+    using MovingObject::move;
     void move(std::vector<Agent *> agents, std::vector<Wall *> walls, std::vector<AGV *> agvs, float stepTime);
 };
 

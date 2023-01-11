@@ -51,6 +51,7 @@ public:
 
     bool checkNearAgent(std::vector<Point3f> position_list);
 
+    using MovingObject::move;
     void move(float stepTime, std::vector<Point3f> position_list);
 };
 

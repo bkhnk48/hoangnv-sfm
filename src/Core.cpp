@@ -238,8 +238,8 @@ void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSp
         agent->setStopAtCorridor(true);
     }
 
-    int codeSrc;
-    int codeDes;
+    int codeSrc = 0;
+    int codeDes = 0;
 
     if (juncType == 4)
     {
@@ -660,7 +660,6 @@ void drawWalls()
 void showInformation()
 {
     Point3f margin;
-    char totalAgentsStr[5] = "\0", fpsStr[8] = "\0", frctnStr[6] = "\0";
 
     margin.x = static_cast<float>(-winWidth) / 60;
     margin.y = static_cast<float>(winHeight) / 60 - 0.75F;

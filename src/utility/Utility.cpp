@@ -141,7 +141,7 @@ void Utility::writeEnd(const char *fileName, string name, int mode, std::vector<
 // calculate number of people in each flow
 std::vector<int> Utility::getNumPedesInFlow(int junctionType, int totalPedestrian)
 {
-    int numFlow;
+    int numFlow = 0;
     if (junctionType == 3)
     {
         numFlow = 18;
@@ -255,7 +255,7 @@ std::vector<double> Utility::getPedesVelocityBasedTDis(int numPedes, double n_di
     }
 
     // std::cout << "Distribution for " << numPedes << " samples:" << std::endl;
-    int counter = 0;
+    // int counter = 0;
     for (const auto &elem : histogram)
     {
         // std::cout << std::fixed << std::setw(11) << ++counter << ": "
@@ -740,7 +740,7 @@ std::vector<Point3f> Utility::getRouteAGVTJunction(int src, int turningDirection
     float negVerAsymtote = -verWalkwayWidth / 2;
 
     float posHorAsymtote = horWalkwayWidth / 2;
-    float negHorAsymtote = -horWalkwayWidth / 2;
+    // float negHorAsymtote = -horWalkwayWidth / 2;
 
     float leftWidthLimit = -juncData[0] - walkwayWidth / 2;
     float rightWidthLimit = juncData[2] + walkwayWidth / 2;
