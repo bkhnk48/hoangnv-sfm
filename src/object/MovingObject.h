@@ -1,7 +1,7 @@
 #ifndef MOVINGOBJECT_H
 #define MOVINGOBJECT_H
 
-#include "vecmath.h"
+#include "lib/vecmath/vecmath.h"
 #include <deque>
 #include <vector>
 

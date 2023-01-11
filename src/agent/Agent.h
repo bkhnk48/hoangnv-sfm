@@ -1,12 +1,12 @@
 #ifndef AGENT_H
 #define AGENT_H
 
-#include "vecmath.h"
+#include "lib/vecmath/vecmath.h"
 #include <deque>
 #include <vector>
-#include "Wall.h"
-#include "AGV.h"
-#include "MovingObject.h"
+#include "src/wall/Wall.h"
+#include "src/agv/AGV.h"
+#include "src/object/MovingObject.h"
 
 class Agent : public MovingObject
 {

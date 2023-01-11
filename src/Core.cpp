@@ -20,8 +20,8 @@
 
 #endif
 
-#include "SocialForce.h"
-#include "Utility.h"
+#include "model/SocialForce.h"
+#include "utility/Utility.h"
 
 using namespace std;
 
@@ -85,8 +85,8 @@ void computeFPS();
 
 int main(int argc, char **argv)
 {
-    inputData = Utility::readInput("input.txt");
-    mapData = Utility::readMapData("map.txt");
+    inputData = Utility::readInput("data/input.txt");
+    mapData = Utility::readMapData("data/map.txt");
 
     do
     {
@@ -820,7 +820,7 @@ void update()
     }
     if (count_agvs == agvs.size())
     {
-        Utility::writeEnd("end.txt", input, inputData[6], agvs);
+        Utility::writeEnd("data/end.txt", input, inputData[6], agvs);
         std::cout << "Maximum speed: " << maxSpeed << " - Minimum speed: " << minSpeed << endl;
         std::cout << "Finish in: " << Utility::convertTime(currTime - startTime) << endl;
         delete socialForce;

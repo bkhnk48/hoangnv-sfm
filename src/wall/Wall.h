@@ -1,7 +1,7 @@
 #ifndef WALL_H
 #define WALL_H
 
-#include "vecmath.h"
+#include "lib/vecmath/vecmath.h"
 
 struct Line {
     Point3f start;

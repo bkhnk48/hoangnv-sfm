@@ -1,10 +1,11 @@
 #ifndef SOCIAL_FORCE_H
 #define SOCIAL_FORCE_H
 
-#include "AGV.h"
-#include "Agent.h"
-#include "Wall.h"
+#include "../agv/AGV.h"
+#include "../agent/Agent.h"
+#include "../wall/Wall.h"
 #include <vector>
+#include <algorithm>
 
 class SocialForce {
 private:

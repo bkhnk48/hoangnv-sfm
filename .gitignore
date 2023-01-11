@@ -3,6 +3,9 @@
 !*.*
 .vscode
 .idea
+build
+bin/*
+.DS_Store
 out.dSYM
 !mKF
 !Makefile

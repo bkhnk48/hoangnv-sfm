@@ -4,9 +4,9 @@
 #include <vector>
 #include <iostream>
 #include <array>
-#include "vecmath.h"
+#include "lib/vecmath/vecmath.h"
 #include <map>
-#include "AGV.h"
+#include "src/agv/AGV.h"
 
 class Utility
 {

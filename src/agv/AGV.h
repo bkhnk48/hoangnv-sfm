@@ -1,10 +1,10 @@
 #ifndef AGV_H
 #define AGV_H
 
-#include "vecmath.h"
+#include "lib/vecmath/vecmath.h"
 #include <deque>
 #include <vector>
-#include "MovingObject.h"
+#include "../object/MovingObject.h"
 
 class AGV : public MovingObject
 {
