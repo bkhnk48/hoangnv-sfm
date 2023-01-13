@@ -36,7 +36,7 @@ public:
     void setDestination(float x, float y);
 
     void setDesiredSpeed(float speed);
-    
+
     void setIsMoving(bool isMoving);
 
     bool getIsMoving() const { return isMoving; }

@@ -56,6 +56,7 @@ public:
 
     bool isNearPedes(std::vector<Point3f> position_list);
 
+    using MovingObject::move;
     void move(float stepTime, std::vector<Point3f> position_list);
 };
 
