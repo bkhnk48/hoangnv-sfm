@@ -132,7 +132,7 @@ void Utility::writeEnd(const char *fileName, string name, int mode, std::vector<
         string array1[] = {"Left", "Bottom", "Right", "Top"};
         string array2[] = {"Turn Right", "Go straight", "Turn Left"};
         string direction = array1[(int)(agv->getDirection().x)] + "-" + array2[(int)(agv->getDirection().y)];
-        output << name << delimiter << mode << delimiter << direction << delimiter << convertTime(agv->getTotalTime()) << delimiter << agv->getCollision() << endl;
+        output << name << delimiter << mode << delimiter << direction << delimiter << convertTime(agv->getTravelingTime()) << delimiter << agv->getNumOfCollision() << endl;
     }
 
     output.close();

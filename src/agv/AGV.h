@@ -10,46 +10,51 @@ class AGV : public MovingObject
 {
 private:
     static int agvIdx;
-    int totalTime, collision;
-    float acceleration, distance;
-    Vector3f dimension, instantaneous_velocity, d1, d2, d3, d4;
-    bool stop;
+    float width, length;
+    int travelingTime;
+    int numOfCollision;
+    float acceleration;
+    float thresholdDisToPedes;
+    Point3f pointA, pointB, pointC, pointD;
     Vector3f direction;
+    bool isCollision;
 
 public:
     AGV();
 
     ~AGV();
 
-    void setTotalTime(int totalTime);
+    void setAgvSize(float width, float length);
 
-    void setCollision(int collision);
+    float getWidth() const { return width; }
+
+    float getLength() const { return length; }
+
+    void setTravelingTime(int travelingTime);
+
+    int getTravelingTime() const { return travelingTime; }
+
+    void setNumOfCollision(int numOfCollision);
+
+    int getNumOfCollision() const { return numOfCollision; }
 
     void setAcceleration(float acceleration);
 
-    void setDistance(float distance);
+    double getAcceleration() const { return acceleration; }
 
-    void setDimension(Vector3f dimension);
+    void setThresholdDisToPedes(float thresholdDisToPedes);
 
-    void setBorderPoint(Vector3f d1, Vector3f d2, Vector3f d3, Vector3f d4);
+    float getThresholdDisToPedes() const { return thresholdDisToPedes; }
+
+    void setPoints(Point3f pointA, Point3f pointB, Point3f pointC, Point3f pointD);
 
     void setDirection(float x, float y);
 
-    int getTotalTime() { return totalTime; }
+    Vector3f getDirection() const { return direction; }
 
-    int getCollision() { return collision; }
+    Point3f getNearestPoint(Point3f position_i);
 
-    double getAcceleration() { return acceleration; }
-
-    float getDistance() { return distance; }
-
-    Vector3f getDimension() const { return dimension; }
-
-    Vector3f getDirection() { return direction; }
-
-    Point3f getNearestPoint(Point3f position_i) const;
-
-    bool checkNearAgent(std::vector<Point3f> position_list);
+    bool isNearPedes(std::vector<Point3f> position_list);
 
     void move(float stepTime, std::vector<Point3f> position_list);
 };

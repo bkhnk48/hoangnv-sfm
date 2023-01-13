@@ -32,6 +32,8 @@ void Agent::setRadius(float radius)
     this->radius = radius;
 }
 
+void Agent::setImpatient(float impatient) { this->impatient = impatient; }
+
 void Agent::setStopAtCorridor(bool stopAtCorridor)
 {
     this->stopAtCorridor = stopAtCorridor;
@@ -223,7 +225,7 @@ Vector3f Agent::getAgvInteractForce(vector<AGV *> agvs)
 
     f_ij.set(0.0, 0.0, 0.0);
 
-    for (const AGV *agv : agvs)
+    for (AGV *agv : agvs)
     {
         if (agv->getIsMoving())
         {

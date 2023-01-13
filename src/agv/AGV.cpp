@@ -9,14 +9,12 @@ AGV::AGV()
     MovingObject();
     id = ++agvIdx;
 
-    totalTime = 0;
-    collision = 0;
-    dimension = Vector3f(0.35F, 0.75F, 0.0);
-    distance = 0;
+    setAgvSize(0.35F, 0.75F);
+    travelingTime = 0;
+    numOfCollision = 0;
+    thresholdDisToPedes = 0;
     isMoving = false;
-    stop = false;
-
-    instantaneous_velocity.set(0.0, 0.0, 0.0);
+    velocity.set(0.0, 0.0, 0.0);
 }
 
 AGV::~AGV()
@@ -24,52 +22,68 @@ AGV::~AGV()
     agvIdx--;
 }
 
-void AGV::setTotalTime(int totalTime) { this->totalTime = totalTime; }
+void AGV::setAgvSize(float width, float length)
+{
+    this->width = width;
+    this->length = length;
+}
 
-void AGV::setCollision(int collision) { this->collision = collision; }
+void AGV::setTravelingTime(int travelingTime)
+{
+    this->travelingTime = travelingTime;
+}
+
+void AGV::setNumOfCollision(int numOfCollision)
+{
+    this->numOfCollision = numOfCollision;
+}
 
 void AGV::setAcceleration(float acceleration)
 {
     this->acceleration = acceleration;
 }
 
-void AGV::setDistance(float distance) { this->distance = distance; }
-
-void AGV::setDimension(Vector3f dimension) { this->dimension = dimension; }
-
-void AGV::setBorderPoint(Vector3f d1, Vector3f d2, Vector3f d3, Vector3f d4)
+void AGV::setThresholdDisToPedes(float thresholdDisToPedes)
 {
-    this->d1 = d1;
-    this->d2 = d2;
-    this->d3 = d3;
-    this->d4 = d4;
+    this->thresholdDisToPedes = thresholdDisToPedes;
 }
 
-void AGV::setDirection(float x, float y) { this->direction.set(x, y, 0.0F); }
-
-Point3f AGV::getNearestPoint(Point3f position_i) const
+void AGV::setPoints(Point3f pointA, Point3f pointB, Point3f pointC, Point3f pointD)
 {
-    vector<Vector3f> edges;
-    edges.push_back(d1);
-    edges.push_back(d2);
-    edges.push_back(d3);
-    edges.push_back(d4);
+    this->pointA = pointA;
+    this->pointB = pointB;
+    this->pointC = pointC;
+    this->pointD = pointD;
+}
+
+void AGV::setDirection(float x, float y)
+{
+    this->direction.set(x, y, 0.0F);
+}
+
+Point3f AGV::getNearestPoint(Point3f positionAgent)
+{
+    vector<Point3f> points;
+    points.push_back(pointA);
+    points.push_back(pointB);
+    points.push_back(pointC);
+    points.push_back(pointD);
     Vector3f relativeEnd, relativePos, relativeEndScal, relativePosScal;
     float dotProduct;
     vector<Point3f> nearestPoint;
     Point3f point;
-    for (int i = 0; i < edges.size(); i++)
+    for (int i = 0; i < points.size(); i++)
     {
-        if (i < edges.size() - 1)
+        if (i < points.size() - 1)
         {
-            relativeEnd = edges[i + 1] - edges[i];
+            relativeEnd = points[i + 1] - points[i];
         }
         else
         {
-            relativeEnd = edges[0] - edges[i];
+            relativeEnd = points[0] - points[i];
         }
 
-        relativePos = position_i - edges[i];
+        relativePos = positionAgent - points[i];
 
         relativeEndScal = relativeEnd;
         relativeEndScal.normalize();
@@ -79,20 +93,20 @@ Point3f AGV::getNearestPoint(Point3f position_i) const
         dotProduct = relativeEndScal.dot(relativePosScal);
 
         if (dotProduct < 0.0)
-            nearestPoint.push_back(edges[i]);
+            nearestPoint.push_back(points[i]);
         else if (dotProduct > 1.0)
         {
-            if (i < edges.size() - 1)
+            if (i < points.size() - 1)
             {
-                nearestPoint.push_back(edges[i + 1]);
+                nearestPoint.push_back(points[i + 1]);
             }
             else
             {
-                nearestPoint.push_back(edges[0]);
+                nearestPoint.push_back(points[0]);
             }
         }
         else
-            nearestPoint.push_back((relativeEnd * dotProduct) + edges[i]);
+            nearestPoint.push_back((relativeEnd * dotProduct) + points[i]);
     }
 
     nearestPoint.push_back(position);
@@ -101,7 +115,7 @@ Point3f AGV::getNearestPoint(Point3f position_i) const
 
     for (int i = 0; i < nearestPoint.size(); i++)
     {
-        if (position_i.distance(nearestPoint[i]) < position_i.distance(point))
+        if (positionAgent.distance(nearestPoint[i]) < positionAgent.distance(point))
         {
             point = nearestPoint[i];
         }
@@ -110,11 +124,11 @@ Point3f AGV::getNearestPoint(Point3f position_i) const
     return point;
 }
 
-bool AGV::checkNearAgent(vector<Point3f> position_list)
+bool AGV::isNearPedes(vector<Point3f> positionList)
 {
-    for (Point3f p : position_list)
+    for (Point3f p : positionList)
     {
-        if (getNearestPoint(p).distance(p) < distance)
+        if (getNearestPoint(p).distance(p) < thresholdDisToPedes)
         {
             return true;
         }
@@ -124,52 +138,44 @@ bool AGV::checkNearAgent(vector<Point3f> position_list)
 
 void AGV::move(float stepTime, vector<Point3f> position_list)
 {
-    Vector3f vector_acceleration, e_ij;
+    Vector3f velocityDiff, desiredVelocity, e_ij;
 
     e_ij = getPath() - position;
     e_ij.normalize();
 
-    velocity = e_ij * desiredSpeed;
-    vector_acceleration = e_ij * acceleration;
-    vector_acceleration *= stepTime;
+    desiredVelocity = e_ij * desiredSpeed;
+    velocityDiff = e_ij * acceleration * stepTime;
 
-    if (getDestination().distance(position) < 1.0F)
+    if (isNearPedes(position_list))
     {
-        position = getDestination();
-    }
-    else
-    {
-        if (checkNearAgent(position_list))
+        if (isCollision)
         {
-            if (!stop)
-            {
-                collision++;
-            }
-            stop = true;
-            if (abs(instantaneous_velocity.x) >= abs(vector_acceleration.x) &&
-                abs(instantaneous_velocity.y) >= abs(vector_acceleration.y))
-            {
-                position = position + instantaneous_velocity * stepTime;
-                instantaneous_velocity = instantaneous_velocity - vector_acceleration;
-            }
-            else
-            {
-                instantaneous_velocity.set(0, 0, 0);
-            }
+            numOfCollision++;
+        }
+        isCollision = true;
+        if (abs(velocity.x) >= abs(desiredVelocity.x) &&
+            abs(velocity.y) >= abs(desiredVelocity.y))
+        {
+            position = position + velocity * stepTime;
+            velocity = velocity - velocityDiff;
         }
         else
         {
-            stop = false;
-            if (instantaneous_velocity.length() < velocity.length())
-            {
-                position = position + instantaneous_velocity * stepTime;
-                instantaneous_velocity = instantaneous_velocity + vector_acceleration;
-            }
-            else
-            {
-                instantaneous_velocity = velocity;
-                position = position + velocity * stepTime;
-            }
+            velocity.set(0, 0, 0);
+        }
+    }
+    else
+    {
+        isCollision = true;
+        if (velocity.length() < desiredVelocity.length())
+        {
+            position = position + velocity * stepTime;
+            velocity = velocity + velocityDiff;
+        }
+        else
+        {
+            position = position + desiredVelocity * stepTime;
+            velocity = desiredVelocity;
         }
     }
 }

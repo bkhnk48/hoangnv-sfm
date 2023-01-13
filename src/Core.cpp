@@ -234,7 +234,8 @@ void createWalls()
 
 void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSpeed, int caseJump, int juncType)
 {
-    if(socialForce->getCrowdSize() < threshold) {
+    if (socialForce->getCrowdSize() < threshold)
+    {
         agent->setStopAtCorridor(true);
     }
 
@@ -474,7 +475,7 @@ void createAGVs()
             agv->setDestination(route[route.size() - 1].x, route[route.size() - 1].y);
             agv->setDesiredSpeed(0.6F);
             agv->setAcceleration(inputData[9]);
-            agv->setDistance((float)inputData[10]);
+            agv->setThresholdDisToPedes((float)inputData[10]);
             for (int i = 1; i < route.size(); i++)
             {
                 agv->setPath(route[i].x, route[i].y, 1.0);
@@ -531,12 +532,12 @@ void drawAGVs()
 
     for (i = 0; i < agvs.size(); i++)
     {
-        if (agvs[i]->getIsMoving() && agvs[i]->getTotalTime() != 0)
+        if (agvs[i]->getIsMoving() && agvs[i]->getTravelingTime() != 0)
         {
             agv = agvs[i];
             break;
         }
-        else if (!agvs[i]->getIsMoving() && agvs[i]->getTotalTime() == 0)
+        else if (!agvs[i]->getIsMoving() && agvs[i]->getTravelingTime() == 0)
         {
             j.push_back(i);
         }
@@ -545,7 +546,7 @@ void drawAGVs()
     if (i == agvs.size())
     {
         agv = agvs[j.front()];
-        float distance = (agv->getDimension().x > agv->getDimension().y) ? agv->getDimension().x : agv->getDimension().y;
+        float distance = (agv->getWidth() > agv->getLength()) ? agv->getWidth() : agv->getLength();
         for (Agent *agent : socialForce->getCrowd())
         {
             if (agent->getPosition().distance(agv->getPosition()) < distance / 2)
@@ -561,16 +562,17 @@ void drawAGVs()
     if (agv)
     {
         agv->setIsMoving(true);
-        if (agv->getTotalTime() == 0)
+        if (agv->getTravelingTime() == 0)
         {
-            agv->setTotalTime(glutGet(GLUT_ELAPSED_TIME));
+            agv->setTravelingTime(glutGet(GLUT_ELAPSED_TIME));
         }
         // Draw AGVs
         glColor3f(agv->getColor().x, agv->getColor().y, agv->getColor().z);
         float w, l;
-        Vector3f top, bottom, a, b, d1, d2, d3, d4;
-        w = agv->getDimension().x;
-        l = agv->getDimension().y;
+        Vector3f a, b;
+        Point3f top, bottom, pointA, pointB, pointC, pointD;
+        w = agv->getWidth();
+        l = agv->getLength();
         e_ij = agv->getPath() - agv->getPosition();
         e_ij.normalize();
         top = agv->getPosition() + e_ij * l * 0.5F;
@@ -581,18 +583,18 @@ void drawAGVs()
         b = Vector3f(-e_ij.y, e_ij.x, 0.0F);
         b.normalize();
 
-        d1 = top + a * w * 0.5F;
-        d2 = top + b * w * 0.5F;
-        d3 = bottom + b * w * 0.5F;
-        d4 = bottom + a * w * 0.5F;
+        pointA = top + a * w * 0.5F;
+        pointB = top + b * w * 0.5F;
+        pointC = bottom + b * w * 0.5F;
+        pointD = bottom + a * w * 0.5F;
 
-        agv->setBorderPoint(d1, d2, d3, d4);
+        agv->setPoints(pointA, pointB, pointC, pointD);
 
         glBegin(GL_QUADS);
-        glVertex3f(d1.x, d1.y, 0);
-        glVertex3f(d2.x, d2.y, 0);
-        glVertex3f(d3.x, d3.y, 0);
-        glVertex3f(d4.x, d4.y, 0);
+        glVertex3f(pointA.x, pointA.y, 0);
+        glVertex3f(pointB.x, pointB.y, 0);
+        glVertex3f(pointC.x, pointC.y, 0);
+        glVertex3f(pointD.x, pointD.y, 0);
         glEnd();
     }
 }
@@ -812,7 +814,7 @@ void update()
         {
             if (agv->getIsMoving())
             {
-                agv->setTotalTime(glutGet(GLUT_ELAPSED_TIME) - agv->getTotalTime());
+                agv->setTravelingTime(glutGet(GLUT_ELAPSED_TIME) - agv->getTravelingTime());
                 agv->setIsMoving(false);
             }
             count_agvs = count_agvs + 1;

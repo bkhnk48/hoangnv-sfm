@@ -13,6 +13,7 @@ class Agent : public MovingObject
 private:
     static int crowdIdx; // Keep track of 'crowd' vector index in 'SocialForce.h'
     float radius;
+    float impatient;
     bool stopAtCorridor;
 
     Vector3f getDrivingForce(const Point3f position_target);
@@ -30,6 +31,10 @@ public:
     void setRadius(float radius);
 
     float getRadius() const { return radius; }
+
+    void setImpatient(float impatient);
+
+    float getImpatient() const { return impatient; }
 
     void setStopAtCorridor(bool stopAtCorridor);
 
