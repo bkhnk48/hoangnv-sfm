@@ -32,7 +32,7 @@ public:
 
     float getRadius() const { return radius; }
 
-    void setImpatient(float impatient);
+    void setImpatient(float impatient, float maxImpatientOfNearAgent);
 
     float getImpatient() const { return impatient; }
 
