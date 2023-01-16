@@ -33,16 +33,9 @@ void Agent::setRadius(float radius)
     this->radius = radius;
 }
 
-void Agent::setImpatient(float impatient, float maxImpatientOfNearAgent)
+void Agent::setImpatient(float impatient)
 {
-    if (maxImpatientOfNearAgent == 0)
-    {
-        this->impatient = 0;
-    }
-    else
-    {
-        this->impatient = impatient / maxImpatientOfNearAgent;
-    }
+    this->impatient = impatient / (1 / exp(-5 / (3.14159265359F)));
 }
 
 void Agent::setStopAtCorridor(bool stopAtCorridor)
@@ -126,7 +119,6 @@ Vector3f Agent::getAgentInteractForce(vector<Agent *> agents)
     float B, theta, f_v, f_theta;
     int K;
     int numOfAgents = 0;
-    float maxImpatientOfNearAgent = getImpatient();
 
     f_ij.set(0.0, 0.0, 0.0);
 
@@ -144,11 +136,6 @@ Vector3f Agent::getAgentInteractForce(vector<Agent *> agents)
                 continue;
 
             numOfAgents++;
-
-            if (agent_j->getImpatient() > maxImpatientOfNearAgent)
-            {
-                maxImpatientOfNearAgent = agent_j->getImpatient();
-            }
 
             // Compute Direction of Agent j from i
             // Formula: e_ij = (position_j - position_i) / ||position_j - position_i||
@@ -192,9 +179,7 @@ Vector3f Agent::getAgentInteractForce(vector<Agent *> agents)
         }
     }
 
-    maxImpatientOfNearAgent = (maxImpatientOfNearAgent > (numOfAgents / (3.14159265359F * 4))) ? maxImpatientOfNearAgent : (numOfAgents / (3.14159265359F * 4));
-
-    setImpatient(numOfAgents / (3.14159265359F * 4), maxImpatientOfNearAgent);
+    setImpatient(1 / exp(-numOfAgents / (3.14159265359F * 4)));
 
     return f_ij;
 }
