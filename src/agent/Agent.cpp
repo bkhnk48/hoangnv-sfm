@@ -14,6 +14,7 @@ Agent::Agent()
     radius = 0.2F;
     isMoving = true;
     stopAtCorridor = false;
+    impatient = 0;
 
     // Desired Speed Based on (Moussaid et al., 2009)
     normal_distribution<float> distribution(1.29F,
@@ -30,6 +31,11 @@ Agent::~Agent()
 void Agent::setRadius(float radius)
 {
     this->radius = radius;
+}
+
+void Agent::setImpatient(float impatient)
+{
+    this->impatient = impatient / (1 / exp(-5 / (3.14159265359F)));
 }
 
 void Agent::setStopAtCorridor(bool stopAtCorridor)
@@ -112,6 +118,7 @@ Vector3f Agent::getAgentInteractForce(vector<Agent *> agents)
     Vector3f distance_ij, e_ij, D_ij, t_ij, n_ij, f_ij;
     float B, theta, f_v, f_theta;
     int K;
+    int numOfAgents = 0;
 
     f_ij.set(0.0, 0.0, 0.0);
 
@@ -127,6 +134,8 @@ Vector3f Agent::getAgentInteractForce(vector<Agent *> agents)
             // Skip Computation if Agents i and j are Too Far Away
             if (distance_ij.lengthSquared() > (2.0 * 2.0))
                 continue;
+
+            numOfAgents++;
 
             // Compute Direction of Agent j from i
             // Formula: e_ij = (position_j - position_i) / ||position_j - position_i||
@@ -169,6 +178,8 @@ Vector3f Agent::getAgentInteractForce(vector<Agent *> agents)
             f_ij += f_v * t_ij + f_theta * n_ij;
         }
     }
+
+    setImpatient(1 / exp(-numOfAgents / (3.14159265359F * 4)));
 
     return f_ij;
 }
@@ -223,7 +234,7 @@ Vector3f Agent::getAgvInteractForce(vector<AGV *> agvs)
 
     f_ij.set(0.0, 0.0, 0.0);
 
-    for (const AGV *agv : agvs)
+    for (AGV *agv : agvs)
     {
         if (agv->getIsMoving())
         {
@@ -234,7 +245,7 @@ Vector3f Agent::getAgvInteractForce(vector<AGV *> agvs)
             if (distance_ij.lengthSquared() > (2.0 * 2.0))
                 continue;
 
-            if (distance_ij.length() < 0.3)
+            if (distance_ij.length() < 0.3F)
             {
                 const int a = 3;
                 const float b = 0.1F;
@@ -306,7 +317,7 @@ Vector3f Agent::getAgvInteractForce(vector<AGV *> agvs)
 
                 // Compute Interaction Force
                 // Formula: f_ij = f_v * t_ij + f_theta * n_ij
-                f_ij += f_v * t_ij + f_theta * n_ij;
+                f_ij += (f_v * t_ij + f_theta * n_ij) * exp(-getImpatient());
             }
             break;
         }
