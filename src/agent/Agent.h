@@ -15,11 +15,6 @@ private:
     float radius;
     bool stopAtCorridor;
 
-    Vector3f getDrivingForce(const Point3f position_target);
-    Vector3f getAgentInteractForce(std::vector<Agent *> agents);
-    Vector3f getWallInteractForce(std::vector<Wall *> walls);
-    Vector3f getAgvInteractForce(std::vector<AGV *> agvs);
-
 public:
     Agent();
 
@@ -36,6 +31,11 @@ public:
     float getStopAtCorridor() const { return stopAtCorridor; }
 
     float getMinDistanceToWalls(vector<Wall *> walls, Point3f position, float radius);
+
+    Vector3f getDrivingForce(const Point3f destination);
+    Vector3f getAgentInteractForce(std::vector<Agent *> agents);
+    Vector3f getWallInteractForce(std::vector<Wall *> walls);
+    Vector3f getAgvInteractForce(std::vector<AGV *> agvs);
 
     using MovingObject::move;
     void move(std::vector<Agent *> agents, std::vector<Wall *> walls, std::vector<AGV *> agvs, float stepTime);

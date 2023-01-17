@@ -15,10 +15,6 @@ public:
 
     virtual ~Utility();
 
-    static constexpr const float MEAN = 1.2;
-    static constexpr const double UPPER_SPEED_LIMIT = 1.8;
-    static constexpr const double LOWER_SPEED_LIMIT = 0.6;
-
     static float randomFloat(float lowerBound, float upperBound);
 
     static std::map<std::string, std::vector<float>> readMapData(const char *fileName);
@@ -45,7 +41,7 @@ public:
 
     static std::vector<float> getPedesSource(int direction, float totalLength, float subLength, float caravanWidth, float walkwayWidth, std::vector<float> juncData);
 
-    static std::vector<float> getPedesColor(float maxSpeed, float minSpeed, float desiredSpeed);
+    static std::vector<float> getPedesColor(float maxSpeed, float minSpeed, float desiredSpeed, int type);
 
     static std::vector<Point3f> getRouteAGV(int junctionType, int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
 

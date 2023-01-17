@@ -10,8 +10,10 @@
 #include <cmath>
 #include <ctime>
 #include <chrono>
+#include "src/constant/Constant.h"
 
 using namespace std;
+using namespace Constant;
 
 Utility::Utility()
 {
@@ -209,12 +211,12 @@ std::vector<double> Utility::getPedesVelocityBasedDDis(std::vector<double> input
     }
 
     std::map<int, float> map;
-    map[0] = 1.24;
-    map[1] = 2.28;
-    map[2] = 0.94;
-    map[3] = 0.81;
-    map[4] = 0.69;
-    map[5] = 0.52;
+    map[0] = V1;
+    map[1] = V2;
+    map[2] = V3;
+    map[3] = V4;
+    map[4] = V5;
+    map[5] = V6;
 
     for (int i = 0; i < 6; ++i)
     {
@@ -260,14 +262,14 @@ std::vector<double> Utility::getPedesVelocityBasedTDis(int numPedes, double n_di
     {
         // std::cout << std::fixed << std::setw(11) << ++counter << ": "
         //           << std::setw(14) << std::setprecision(3) << elem.first << std::endl;
-        double velocity = std * elem.first * 0.1 + Utility::MEAN;
+        double velocity = std * elem.first * 0.1 + MEAN;
         if (velocity > 1.8)
         {
-            velocity = Utility::UPPER_SPEED_LIMIT;
+            velocity = UPPER_SPEED_LIMIT;
         }
         else if (velocity < 0.6)
         {
-            velocity = Utility::LOWER_SPEED_LIMIT;
+            velocity = LOWER_SPEED_LIMIT;
         }
 
         v.push_back(velocity);
@@ -686,25 +688,63 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength, flo
     return v;
 }
 
-std::vector<float> Utility::getPedesColor(float maxSpeed, float minSpeed, float desiredSpeed)
+std::vector<float> Utility::getPedesColor(float maxSpeed, float minSpeed, float desiredSpeed, int type)
 {
     std::vector<float> v;
-    float oneThirdVeloRange = (maxSpeed - minSpeed) / 3;
 
-    if (desiredSpeed >= Utility::MEAN)
+    if (type == 1)
     {
-        v.insert(v.end(), {0.0, 128.0, 0.0}); // Green
-        return v;
-    }
-    else if (desiredSpeed < Utility::MEAN && desiredSpeed >= minSpeed + oneThirdVeloRange)
-    {
-        v.insert(v.end(), {0.0, 0.0, 0.0}); // Black
-        return v;
+        float oneThirdVeloRange = (maxSpeed - minSpeed) / 3;
+
+        if (desiredSpeed >= MEAN)
+        {
+            v.insert(v.end(), {GREEN.x, GREEN.y, GREEN.z}); // Green
+            return v;
+        }
+        else if (desiredSpeed < MEAN && desiredSpeed >= minSpeed + oneThirdVeloRange)
+        {
+            v.insert(v.end(), {BLACK.x, BLACK.y, BLACK.z}); // Black
+            return v;
+        }
+        else
+        {
+            v.insert(v.end(), {RED.x, RED.y, RED.z}); // Red
+            return v;
+        }
     }
     else
     {
-        v.insert(v.end(), {216.0, 32.0, 42.0}); // Red
-        return v;
+        // cout << fabs(V1 - desiredSpeed)  << endl;
+        if (fabs(V1 - desiredSpeed) < 0.01)
+        {
+            v.insert(v.end(), {GREEN.x, GREEN.y, GREEN.z});
+            return v;
+        }
+        else if (fabs(V2 - desiredSpeed) < 0.01)
+        {
+            v.insert(v.end(), {PURPLE.x, PURPLE.y, PURPLE.z});
+            return v;
+        }
+        else if (fabs(V3 - desiredSpeed) < 0.01)
+        {
+            v.insert(v.end(), {RED.x, RED.y, RED.z});
+            return v;
+        }
+        else if (fabs(V4 - desiredSpeed) < 0.01)
+        {
+            v.insert(v.end(), {WOOD.x, WOOD.y, WOOD.z});
+            return v;
+        }
+        else if (fabs(V5 - desiredSpeed) < 0.01)
+        {
+            v.insert(v.end(), {GRAY.x, GRAY.y, GRAY.z});
+            return v;
+        }
+        else
+        {
+            v.insert(v.end(), {BLACK.x, BLACK.y, BLACK.z});
+            return v;
+        }
     }
 }
 

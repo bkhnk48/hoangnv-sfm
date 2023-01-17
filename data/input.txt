@@ -15,7 +15,7 @@
 # AGV: Distance with Agent that AGV will stop
 0.3
 # Percentage of people stopping at the corridor
-10
+5
 # Percentage of pedestrians at different states
 # - No disability, without overtaking behavior
 22

@@ -83,14 +83,14 @@ void Agent::move(vector<Agent *> agents, vector<Wall *> walls, vector<AGV *> agv
     position = position + velocity * stepTime;
 }
 
-Vector3f Agent::getDrivingForce(const Point3f position_target)
+Vector3f Agent::getDrivingForce(const Point3f destination)
 {
     const float T = 0.54F; // Relaxation time based on (Moussaid et al., 2009)
     Vector3f e_i, f_i;
 
     // Compute Desired Direction
-    // Formula: e_i = (position_target - position_i) / ||(position_target - position_i)||
-    e_i = position_target - position;
+    // Formula: e_i = (destination - position_i) / ||(destination - position_i)||
+    e_i = destination - position;
     e_i.normalize();
 
     // Compute Driving Force

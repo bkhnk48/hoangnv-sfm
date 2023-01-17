@@ -27,31 +27,31 @@ public:
     MovingObject();
     ~MovingObject();
 
-    void setColor(float red, float green, float blue);
-
-    void setPosition(float x, float y);
-
-    void setPath(float x, float y, float radius);
-
-    void setDestination(float x, float y);
-
-    void setDesiredSpeed(float speed);
-
-    void setIsMoving(bool isMoving);
-
-    bool getIsMoving() const { return isMoving; }
-
     int getId() const { return id; }
-
-    float getDesiredSpeed() const { return desiredSpeed; }
 
     Color3f getColor() const { return color; }
 
+    void setColor(float red, float green, float blue);
+
     Point3f getPosition() const { return position; }
+
+    void setPosition(float x, float y);
 
     Point3f getPath();
 
+    void setPath(float x, float y, float radius);
+
     Point3f getDestination() const { return destination; };
+
+    void setDestination(float x, float y);
+
+    float getDesiredSpeed() const { return desiredSpeed; }
+
+    void setDesiredSpeed(float speed);
+
+    bool getIsMoving() const { return isMoving; }
+
+    void setIsMoving(bool isMoving);
 
     Vector3f getVelocity() const { return velocity; }
 

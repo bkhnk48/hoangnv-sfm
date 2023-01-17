@@ -1,9 +1,9 @@
 #ifndef SOCIAL_FORCE_H
 #define SOCIAL_FORCE_H
 
-#include "../agv/AGV.h"
-#include "../agent/Agent.h"
-#include "../wall/Wall.h"
+#include "src/agv/AGV.h"
+#include "src/agent/Agent.h"
+#include "src/wall/Wall.h"
 #include <vector>
 #include <algorithm>
 

@@ -22,11 +22,10 @@
 
 #include "model/SocialForce.h"
 #include "utility/Utility.h"
+#include "constant/Constant.h"
 
 using namespace std;
-
-// Global Constant Variables
-const float PI = 3.14159265359F;
+using namespace Constant;
 
 // Global Variables
 GLsizei winWidth = 1080; // Window width (16:10 ratio)
@@ -42,6 +41,8 @@ std::map<std::string, std::vector<float>> mapData;
 std::vector<float> juncData;
 std::string input;
 float walkwayWidth;
+
+int typeGetVelocity = 1;
 
 // int numOfPeople[] = {3, 5, 7, 4, 5, 9, 2, 4, 5, 3, 6, 4};
 std::vector<int> numOfPeople;
@@ -234,7 +235,8 @@ void createWalls()
 
 void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSpeed, int caseJump, int juncType)
 {
-    if(socialForce->getCrowdSize() < threshold) {
+    if (socialForce->getCrowdSize() < threshold)
+    {
         agent->setStopAtCorridor(true);
     }
 
@@ -320,7 +322,7 @@ void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSp
     agent->setPath(desList[0], desList[1], desList[2]);
     agent->setDestination(desList[0], desList[1]);
     agent->setDesiredSpeed(desiredSpeed);
-    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
+    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed(), typeGetVelocity);
     agent->setColor(color[0], color[1], color[2]);
     socialForce->addAgent(agent);
 }
@@ -330,7 +332,6 @@ void createAgents()
     Agent *agent;
 
     numOfPeople = Utility::getNumPedesInFlow(juncData.size(), int(inputData[0]));
-    int typeGetVelocity = 0;
     vector<double> velocityList = Utility::getPedesVelocity(typeGetVelocity, inputData);
     if (typeGetVelocity == 0)
     {
@@ -353,19 +354,20 @@ void createAgents()
     // for (int temp = 0; temp < 3; temp++)
     // {
     //     agent = new Agent;
-    //     setAgentsFlow(agent, 1, maxSpeed, minSpeed, Point3f(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0), 0.0), Point3f(randomFloat(-3.2, -2.8), randomFloat(-2.2, -1.8), 0.0));
-    //     // agent->setPosition(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0));
+    //     // setAgentsFlow(agent, 1, maxSpeed, minSpeed, Point3f(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0), 0.0), Point3f(randomFloat(-3.2, -2.8), randomFloat(-2.2, -1.8), 0.0));
+    //     agent->setPosition(randomFloat(-3.0, -2.0), randomFloat(9.0, 10.0));
     //     // // float x = randomFloat(-13.3F, -6.0);
     //     // // float y = randomFloat(-2.0, 2.0);
-    //     // float x = randomFloat(-3.2, -2.8);
-    //     // float y = randomFloat(-2.2, -1.8);
-    //     // agent->setPath(x, y, 1.0);
-    //     // agent->setDestination(x, y);
+    //     float x = randomFloat(-3.2, -2.8);
+    //     float y = randomFloat(-2.2, -1.8);
+    //     agent->setPath(x, y, 1.0);
+    //     agent->setDestination(x, y);
     //     // // agent->setPath(randomFloat(22.0, 25.0), randomFloat(-3.0, -2.0), 1.0);
-    //     // agent->setDesiredSpeed(1);
-    //     // std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed());
-    //     // agent->setColor(color[0], color[1], color[2]);
-    //     // socialForce->addAgent(agent);
+    //     agent->setDesiredSpeed(1);
+    //     agent->setStopAtCorridor(true);
+    //     std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed(), typeGetVelocity);
+    //     agent->setColor(color[0], color[1], color[2]);
+    //     socialForce->addAgent(agent);
     // }
 
     // test
@@ -657,6 +659,21 @@ void drawWalls()
     glPopMatrix();
 }
 
+void drawSquare(double x1, double y1, double sidelength, Color3f color)
+{
+    double halfside = sidelength / 2;
+
+    glColor3f(color.x / 255, color.y / 255, color.z / 255);
+    glBegin(GL_POLYGON);
+
+    glVertex3f(x1 - halfside, y1 - halfside, 0.0);
+    glVertex3f(x1 + halfside, y1 - halfside, 0.0);
+    glVertex3f(x1 + halfside, y1 + halfside, 0.0);
+    glVertex3f(x1 - halfside, y1 + halfside, 0.0);
+
+    glEnd();
+}
+
 void showInformation()
 {
     Point3f margin;
@@ -690,6 +707,34 @@ void showInformation()
 
     drawText(margin.x + 5.0F, margin.y - 1.8F, // totalAgentsStr
              s.c_str());
+
+    // Appendix
+    if (typeGetVelocity == 0)
+    {
+        drawSquare(margin.x, -margin.y + 5.2, 0.3, GREEN);
+        glColor3f(0.0, 0.0, 0.0);
+        drawText(margin.x + 0.5, -margin.y + 5, "No disability, without overtaking behavior");
+
+        drawSquare(margin.x, -margin.y + 4.2, 0.3, PURPLE);
+        glColor3f(0.0, 0.0, 0.0);
+        drawText(margin.x + 0.5, -margin.y + 4, "No disability, with overtaking behavior");
+
+        drawSquare(margin.x, -margin.y + 3.2, 0.3, RED);
+        glColor3f(0.0, 0.0, 0.0);
+        drawText(margin.x + 0.5, -margin.y + 3, "Walking with crutches");
+
+        drawSquare(margin.x, -margin.y + 2.2, 0.3, WOOD);
+        glColor3f(0.0, 0.0, 0.0);
+        drawText(margin.x + 0.5, -margin.y + 2, "Walking with sticks");
+
+        drawSquare(margin.x, -margin.y + 1.2, 0.3, GRAY);
+        glColor3f(0.0, 0.0, 0.0);
+        drawText(margin.x + 0.5, -margin.y + 1, "Wheelchairs");
+
+        drawSquare(margin.x, -margin.y + 0.2, 0.3, BLACK);
+        glColor3f(0.0, 0.0, 0.0);
+        drawText(margin.x + 0.5, -margin.y, "The blind");
+    }
 }
 
 void drawText(float x, float y, const char text[])
@@ -701,7 +746,7 @@ void drawText(float x, float y, const char text[])
     glPushMatrix();
     glTranslatef(x, y, 0.0);
     glScalef(0.0045F, 0.0045F, 0.0);
-    glLineWidth(1.4F);
+    glLineWidth(0.8F);
 
     int idx = 0;
     while (text[idx] != '\0')
@@ -768,7 +813,7 @@ void update()
         Point3f src = agent->getPosition();
         Point3f des = agent->getDestination();
 
-        if (agent->getVelocity().length() < Utility::LOWER_SPEED_LIMIT + 0.2 &&
+        if (agent->getVelocity().length() < LOWER_SPEED_LIMIT + 0.2 &&
             agent->getMinDistanceToWalls(socialForce->getWalls(), src, agent->getRadius()) < 0.2 &&
             (agent->interDes).size() == 0)
         {
