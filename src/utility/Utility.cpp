@@ -14,14 +14,7 @@
 
 using namespace std;
 using namespace Constant;
-
-Utility::Utility()
-{
-}
-
-Utility::~Utility()
-{
-}
+using namespace Utility;
 
 // random float number between particular range
 float Utility::randomFloat(float lowerBound, float upperBound)
@@ -366,7 +359,8 @@ std::vector<float> Utility::getPedesDestination(int direction, int side, float w
         float latitude;
         if (stopAtCorridor)
         {
-            latitude = Utility::randomFloat(0, rightWidthLimit - 2);
+            // latitude = Utility::randomFloat(0, rightWidthLimit - 2);
+            latitude = Utility::randomInt(leftWidthLimit + 2, rightWidthLimit - 2);
         }
         else
         {
@@ -377,7 +371,8 @@ std::vector<float> Utility::getPedesDestination(int direction, int side, float w
         case 0:
         {
             v.insert(v.end(), {latitude,
-                               Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3, walkwayWidth / 2),
+                               //    Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3, walkwayWidth / 2),
+                               Utility::randomFloat(-walkwayWidth / 2, walkwayWidth / 2),
                                radius});
             return v;
             break;
@@ -1153,6 +1148,43 @@ Point3f Utility::getIntermediateDes(Point3f position, float verWalkwayWidth, flo
     else
     {
         return Point3f(verWalkwayWidth / 3, -horWalkwayWidth / 3, 0.0);
+    }
+}
+
+bool Utility::isPositionErr(Point3f position, float walkwayWidth, int junctionType)
+{
+    float posLimit = walkwayWidth / 2;
+    float negLimit = -walkwayWidth / 2;
+    float x = position.x;
+    float y = position.y;
+    if (junctionType == 4)
+    {
+        bool con1 = x >= posLimit && y >= posLimit;
+        bool con2 = x >= posLimit && y <= negLimit;
+        bool con3 = x <= negLimit && y >= posLimit;
+        bool con4 = x <= negLimit && y <= negLimit;
+        if (con1 || con2 || con3 || con4)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else
+    {
+        bool con1 = y >= posLimit;
+        bool con2 = x >= posLimit && y <= negLimit;
+        bool con3 = x <= negLimit && y <= negLimit;
+        if (con1 || con2 || con3)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
 

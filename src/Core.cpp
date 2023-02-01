@@ -26,6 +26,7 @@
 
 using namespace std;
 using namespace Constant;
+using namespace Utility;
 
 // Global Variables
 GLsizei winWidth = 1080; // Window width (16:10 ratio)
@@ -77,8 +78,6 @@ void drawText(float x, float y, const char text[]);
 void reshape(int width, int height);
 
 void normalKey(unsigned char key, int xMousePos, int yMousePos);
-
-float randomFloat(float lowerBound, float upperBound);
 
 void update();
 
@@ -235,10 +234,10 @@ void createWalls()
 
 void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSpeed, int caseJump, int juncType)
 {
-    if (socialForce->getCrowdSize() < threshold)
-    {
-        agent->setStopAtCorridor(true);
-    }
+    // if (socialForce->getCrowdSize() < threshold)
+    // {
+    //     agent->setStopAtCorridor(true);
+    // }
 
     int codeSrc = 0;
     int codeDes = 0;
@@ -322,7 +321,7 @@ void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSp
     agent->setPath(desList[0], desList[1], desList[2]);
     agent->setDestination(desList[0], desList[1]);
     agent->setDesiredSpeed(desiredSpeed);
-    std::vector<float> color = Utility::getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed(), typeGetVelocity);
+    std::vector<float> color = getPedesColor(maxSpeed, minSpeed, agent->getDesiredSpeed(), typeGetVelocity);
     agent->setColor(color[0], color[1], color[2]);
     socialForce->addAgent(agent);
 }
@@ -360,7 +359,7 @@ void createAgents()
     //     // // float y = randomFloat(-2.0, 2.0);
     //     float x = randomFloat(-3.2, -2.8);
     //     float y = randomFloat(-2.2, -1.8);
-    //     agent->setPath(x, y, 1.0);
+    //     agent->setPath(x, y, 2);
     //     agent->setDestination(x, y);
     //     // // agent->setPath(randomFloat(22.0, 25.0), randomFloat(-3.0, -2.0), 1.0);
     //     agent->setDesiredSpeed(1);
@@ -699,11 +698,11 @@ void showInformation()
     drawText(margin.x, margin.y - 1.8F, "Simulation time:");
     if (animate)
     {
-        s = Utility::convertTime(currTime - startTime);
+        s = convertTime(currTime - startTime);
     }
     else
     {
-        s = Utility::convertTime(0);
+        s = convertTime(0);
     }
 
     drawText(margin.x + 5.0F, margin.y - 1.8F, // totalAgentsStr
@@ -735,6 +734,18 @@ void showInformation()
         drawSquare(margin.x, -margin.y + 0.2, 0.3, BLACK);
         glColor3f(0.0, 0.0, 0.0);
         drawText(margin.x + 0.5, -margin.y, "The blind");
+    } else {
+        drawSquare(margin.x, -margin.y + 2.2, 0.3, GREEN);
+        glColor3f(0.0, 0.0, 0.0);
+        drawText(margin.x + 0.5, -margin.y + 2, "Hospital staff");
+
+        drawSquare(margin.x, -margin.y + 1.2, 0.3, BLACK);
+        glColor3f(0.0, 0.0, 0.0);
+        drawText(margin.x + 0.5, -margin.y + 1, "Patients' relatives");
+
+        drawSquare(margin.x, -margin.y + 0.2, 0.3, RED);
+        glColor3f(0.0, 0.0, 0.0);
+        drawText(margin.x + 0.5, -margin.y, "Patient");
     }
 }
 
@@ -791,12 +802,6 @@ void normalKey(unsigned char key, int xMousePos, int yMousePos)
     }
 }
 
-float randomFloat(float lowerBound, float upperBound)
-{
-    return (lowerBound +
-            (static_cast<float>(rand()) / RAND_MAX) * (upperBound - lowerBound));
-}
-
 void update()
 {
     int frameTime;       // Store time in milliseconds
@@ -813,6 +818,11 @@ void update()
     {
         Point3f src = agent->getPosition();
         Point3f des = agent->getDestination();
+
+        if (Utility::isPositionErr(src, walkwayWidth, juncData.size())){
+            socialForce->removeAgent(agent->getId());
+            continue;
+        }
 
         if (agent->getVelocity().length() < LOWER_SPEED_LIMIT + 0.2 &&
             agent->getMinDistanceToWalls(socialForce->getWalls(), src, agent->getRadius()) < 0.2 &&

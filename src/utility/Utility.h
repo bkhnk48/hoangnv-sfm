@@ -8,50 +8,48 @@
 #include <map>
 #include "src/agv/AGV.h"
 
-class Utility
+#pragma once
+namespace Utility
 {
-public:
-    Utility();
+    float randomFloat(float lowerBound, float upperBound);
 
-    virtual ~Utility();
+    std::map<std::string, std::vector<float>> readMapData(const char *fileName);
 
-    static float randomFloat(float lowerBound, float upperBound);
+    std::vector<double> readInput(const char *fileName);
 
-    static std::map<std::string, std::vector<float>> readMapData(const char *fileName);
+    void writeEnd(const char *fileName, std::string name, int mode, std::vector<AGV *> data);
 
-    static std::vector<double> readInput(const char *fileName);
+    std::vector<int> getNumPedesInFlow(int junctionType, int totalPedestrian);
 
-    static void writeEnd(const char *fileName, std::string name, int mode, std::vector<AGV *> data);
+    std::vector<double> getPedesVelocity(int type, std::vector<double> inputData);
 
-    static std::vector<int> getNumPedesInFlow(int junctionType, int totalPedestrian);
+    std::vector<double> getPedesVelocityBasedTDis(int numPedes, double n_dist);
 
-    static std::vector<double> getPedesVelocity(int type, std::vector<double> inputData);
+    std::vector<double> getPedesVelocityBasedDDis(std::vector<double> inputData);
 
-    static std::vector<double> getPedesVelocityBasedTDis(int numPedes, double n_dist);
+    std::vector<float> getWallCoordinates(float walkwayWidth, std::vector<float> juncData);
 
-    static std::vector<double> getPedesVelocityBasedDDis(std::vector<double> inputData);
+    std::string convertTime(int milliseconds);
 
-    static std::vector<float> getWallCoordinates(float walkwayWidth, std::vector<float> juncData);
+    std::vector<float> getMapLimit(float walkwayWidth, std::vector<float> juncData);
 
-    static std::string convertTime(int milliseconds);
+    std::vector<float> getPedesDestination(int direction, int side, float walkwayWidth, std::vector<float> juncData, bool stopAtCorridor);
 
-    static std::vector<float> getMapLimit(float walkwayWidth, std::vector<float> juncData);
+    std::vector<float> getPedesSource(int direction, float totalLength, float subLength, float caravanWidth, float walkwayWidth, std::vector<float> juncData);
 
-    static std::vector<float> getPedesDestination(int direction, int side, float walkwayWidth, std::vector<float> juncData, bool stopAtCorridor);
+    std::vector<float> getPedesColor(float maxSpeed, float minSpeed, float desiredSpeed, int type);
 
-    static std::vector<float> getPedesSource(int direction, float totalLength, float subLength, float caravanWidth, float walkwayWidth, std::vector<float> juncData);
+    std::vector<Point3f> getRouteAGV(int junctionType, int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
 
-    static std::vector<float> getPedesColor(float maxSpeed, float minSpeed, float desiredSpeed, int type);
+    std::vector<Point3f> getRouteAGVCrossRoad(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
 
-    static std::vector<Point3f> getRouteAGV(int junctionType, int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
+    std::vector<Point3f> getRouteAGVTJunction(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
 
-    static std::vector<Point3f> getRouteAGVCrossRoad(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
+    Point3f getIntermediateDes(Point3f position, float verWalkwayWidth, float horWalkwayWidth);
 
-    static std::vector<Point3f> getRouteAGVTJunction(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
+    bool isPositionErr(Point3f position, float walkwayWidth, int junctionType);
 
-    static Point3f getIntermediateDes(Point3f position, float verWalkwayWidth, float horWalkwayWidth);
-
-    static int randomInt(int from, int to);
+    int randomInt(int from, int to);
 };
 
 #endif
