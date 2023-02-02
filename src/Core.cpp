@@ -734,7 +734,9 @@ void showInformation()
         drawSquare(margin.x, -margin.y + 0.2, 0.3, BLACK);
         glColor3f(0.0, 0.0, 0.0);
         drawText(margin.x + 0.5, -margin.y, "The blind");
-    } else {
+    }
+    else
+    {
         drawSquare(margin.x, -margin.y + 2.2, 0.3, GREEN);
         glColor3f(0.0, 0.0, 0.0);
         drawText(margin.x + 0.5, -margin.y + 2, "Hospital staff");
@@ -819,7 +821,8 @@ void update()
         Point3f src = agent->getPosition();
         Point3f des = agent->getDestination();
 
-        if (Utility::isPositionErr(src, walkwayWidth, juncData.size())){
+        if (Utility::isPositionErr(src, walkwayWidth, juncData.size()))
+        {
             socialForce->removeAgent(agent->getId());
             continue;
         }
@@ -869,6 +872,8 @@ void update()
             {
                 agv->setTravelingTime(glutGet(GLUT_ELAPSED_TIME) - agv->getTravelingTime());
                 agv->setIsMoving(false);
+                socialForce->removeCrowd();
+                createAgents();
             }
             count_agvs = count_agvs + 1;
         }
