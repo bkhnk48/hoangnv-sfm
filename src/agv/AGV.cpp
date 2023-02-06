@@ -148,7 +148,7 @@ void AGV::move(float stepTime, vector<Point3f> position_list)
 
     if (isNearPedes(position_list))
     {
-        if (isCollision)
+        if (!isCollision)
         {
             numOfCollision++;
         }
@@ -166,7 +166,7 @@ void AGV::move(float stepTime, vector<Point3f> position_list)
     }
     else
     {
-        isCollision = true;
+        isCollision = false;
         if (velocity.length() < desiredVelocity.length())
         {
             position = position + velocity * stepTime;
