@@ -35,7 +35,7 @@ void Agent::setRadius(float radius)
 
 void Agent::setImpatient(float impatient)
 {
-    this->impatient = impatient / (1 / exp(-5 / (3.14159265359F)));
+    this->impatient = impatient / (1 / exp(-5)) > 1 ? 1 : impatient / (1 / exp(-5));
 }
 
 void Agent::setStopAtCorridor(bool stopAtCorridor)

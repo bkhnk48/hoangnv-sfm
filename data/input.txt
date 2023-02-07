@@ -1,11 +1,11 @@
 # Number of pedestrians
-180
+40
 # T-Distribution' degree of freedom
 15
 # Walkway width
 6
 # Crowd: total length, head/tail length, width
-200 10 2
+40 10 2
 # Run mode (0/1)
 1
 # Direction of AGV: 0/1/2/3 - Go from Left/Bottom/Right/Top, 0/1/2 - Turn Right/Go straight/Turn Left
@@ -29,3 +29,7 @@
 17
 # - The blind
 17
+# Hallway length
+30
+# AGVs run concurrently
+1

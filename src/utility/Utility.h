@@ -45,6 +45,8 @@ namespace Utility
 
     std::vector<Point3f> getRouteAGVTJunction(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
 
+    std::vector<Point3f> getRouteAGVHallway(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
+
     Point3f getIntermediateDes(Point3f position, float verWalkwayWidth, float horWalkwayWidth);
 
     bool isPositionErr(Point3f position, float walkwayWidth, int junctionType);

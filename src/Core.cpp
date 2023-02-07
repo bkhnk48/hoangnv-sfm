@@ -40,10 +40,10 @@ bool animate = false; // Animate scene flag
 std::vector<double> inputData;
 std::map<std::string, std::vector<float>> mapData;
 std::vector<float> juncData;
-std::string input;
+std::string juncName;
 float walkwayWidth;
 
-int typeGetVelocity = 1;
+int typeGetVelocity = 0;
 
 // int numOfPeople[] = {3, 5, 7, 4, 5, 9, 2, 4, 5, 3, 6, 4};
 std::vector<int> numOfPeople;
@@ -87,24 +87,43 @@ int main(int argc, char **argv)
 {
     inputData = Utility::readInput("data/input.txt");
     mapData = Utility::readMapData("data/map.txt");
+    std::string input1;
 
     do
     {
-        cout << "Please enter the junction you want to emulate" << endl;
-        cout << "(Press enter to randomly select a junction in the map)" << endl;
+        cout << "Select the type of traffic you want to simulate" << endl;
+        cout << "1. Hallway" << endl;
+        cout << "2. Junction" << endl;
         cout << "Your choice: ";
-        getline(cin, input);
-        if (input == "")
+        getline(cin, input1);
+        if (input1 == "1")
         {
-            auto it = mapData.begin();
-            std::advance(it, Utility::randomInt(1, mapData.size() - 3));
-            std::string random_key = it->first;
-            input.assign(random_key);
+            walkwayWidth = inputData[2];
+            float length1Side = (inputData[18] - walkwayWidth) / 2;
+            juncData = {length1Side, length1Side};
         }
+        else if (input1 == "2")
+        {
+            do
+            {
+                cout << "Please enter the junction you want to emulate" << endl;
+                cout << "(Press enter to randomly select a junction in the map)" << endl;
+                cout << "Your choice: ";
+                getline(cin, juncName);
+                if (juncName == "")
+                {
+                    auto it = mapData.begin();
+                    std::advance(it, Utility::randomInt(1, mapData.size() - 3));
+                    std::string random_key = it->first;
+                    juncName.assign(random_key);
+                }
 
-    } while (mapData[input].size() < 3);
-    juncData = mapData[input];
-    walkwayWidth = mapData["walkwayWidth"][0];
+            } while (mapData[juncName].size() < 3);
+            juncData = mapData[juncName];
+            walkwayWidth = mapData["walkwayWidth"][0];
+        }
+    } while (input1 != "1" && input1 != "2");
+
     // Threshold people stopping at the corridor
     threshold = int(inputData[0]) * (float)(inputData[11]) / 100;
 
@@ -189,55 +208,67 @@ void createWalls()
 
     vector<float> coors = Utility::getWallCoordinates(walkwayWidth, juncData);
 
-    // Upper Wall
-    if (juncData.size() == 4)
+    if (juncData.size() == 2)
     {
+        // Upper Wall
         wall = new Wall(coors[0], coors[1], coors[2], coors[3]);
         socialForce->addWall(wall);
-
+        // Lower Wall
         wall = new Wall(coors[4], coors[5], coors[6], coors[7]);
         socialForce->addWall(wall);
     }
-    else if (juncData.size() == 3)
+    else
     {
-        wall = new Wall(coors[0], coors[1], coors[6], coors[7]);
+        // Upper Wall
+        if (juncData.size() == 4)
+        {
+            wall = new Wall(coors[0], coors[1], coors[2], coors[3]);
+            socialForce->addWall(wall);
+
+            wall = new Wall(coors[4], coors[5], coors[6], coors[7]);
+            socialForce->addWall(wall);
+        }
+        else if (juncData.size() == 3)
+        {
+            wall = new Wall(coors[0], coors[1], coors[6], coors[7]);
+            socialForce->addWall(wall);
+        }
+
+        // Lower Wall
+        wall = new Wall(coors[8], coors[9], coors[10], coors[11]);
+        socialForce->addWall(wall);
+
+        wall = new Wall(coors[12], coors[13], coors[14], coors[15]);
+        socialForce->addWall(wall);
+
+        // Left Wall
+        if (juncData.size() == 4)
+        {
+            wall = new Wall(coors[16], coors[17], coors[18], coors[19]);
+            socialForce->addWall(wall);
+        }
+
+        wall = new Wall(coors[20], coors[21], coors[22], coors[23]);
+        socialForce->addWall(wall);
+
+        // Right Wall
+        if (juncData.size() == 4)
+        {
+            wall = new Wall(coors[24], coors[25], coors[26], coors[27]);
+            socialForce->addWall(wall);
+        }
+
+        wall = new Wall(coors[28], coors[29], coors[30], coors[31]);
         socialForce->addWall(wall);
     }
-
-    // Lower Wall
-    wall = new Wall(coors[8], coors[9], coors[10], coors[11]);
-    socialForce->addWall(wall);
-
-    wall = new Wall(coors[12], coors[13], coors[14], coors[15]);
-    socialForce->addWall(wall);
-
-    // Left Wall
-    if (juncData.size() == 4)
-    {
-        wall = new Wall(coors[16], coors[17], coors[18], coors[19]);
-        socialForce->addWall(wall);
-    }
-
-    wall = new Wall(coors[20], coors[21], coors[22], coors[23]);
-    socialForce->addWall(wall);
-
-    // Right Wall
-    if (juncData.size() == 4)
-    {
-        wall = new Wall(coors[24], coors[25], coors[26], coors[27]);
-        socialForce->addWall(wall);
-    }
-
-    wall = new Wall(coors[28], coors[29], coors[30], coors[31]);
-    socialForce->addWall(wall);
 }
 
 void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSpeed, int caseJump, int juncType)
 {
-    // if (socialForce->getCrowdSize() < threshold)
-    // {
-    //     agent->setStopAtCorridor(true);
-    // }
+    if (socialForce->getCrowdSize() < threshold)
+    {
+        agent->setStopAtCorridor(true);
+    }
 
     int codeSrc = 0;
     int codeDes = 0;
@@ -300,11 +331,22 @@ void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSp
             }
         }
     }
+    else if (juncType == 2)
+    {
+        if (caseJump < 3)
+        {
+            codeSrc = 0;
+        }
+        else
+        {
+            codeSrc = 1;
+        }
+    }
 
     vector<float> position = Utility::getPedesSource(codeSrc, (float)inputData[3], (float)inputData[4],
                                                      (float)inputData[5], walkwayWidth, juncData);
     vector<float> desList;
-    if (juncType == 4)
+    if (juncType == 4 || juncType == 2)
     {
         desList = Utility::getPedesDestination(codeSrc, caseJump % 3, walkwayWidth, juncData, agent->getStopAtCorridor());
     }
@@ -371,7 +413,19 @@ void createAgents()
 
     // test
 
-    if (juncData.size() == 3)
+    if (juncData.size() == 2)
+    {
+        for (int idx = 0; idx < 6; idx++)
+        {
+            for (int temp = 0; temp < numOfPeople[idx]; temp++)
+            {
+                agent = new Agent;
+                setAgentsFlow(agent, velocityList[pedesCount], maxSpeed, minSpeed, idx, juncData.size());
+                pedesCount = pedesCount + 1;
+            }
+        }
+    }
+    else if (juncData.size() == 3)
     {
         for (int idx = 0; idx < 18; idx++)
         {
@@ -438,7 +492,7 @@ void createAGVs()
         {
             array = {0, 1, 2};
         }
-        else
+        else if (juncData.size() == 3)
         {
             if (i == 0)
             {
@@ -452,6 +506,10 @@ void createAGVs()
             {
                 array = {0, 1};
             }
+        }
+        else if (juncData.size() == 2)
+        {
+            array = {1};
         }
 
         for (int j : array)
@@ -880,7 +938,7 @@ void update()
     }
     if (count_agvs == agvs.size())
     {
-        Utility::writeEnd("data/end.txt", input, inputData[6], agvs);
+        Utility::writeEnd("data/end.txt", juncName, inputData[6], agvs);
         std::cout << "Maximum speed: " << maxSpeed << " - Minimum speed: " << minSpeed << endl;
         std::cout << "Finish in: " << Utility::convertTime(currTime - startTime) << endl;
         delete socialForce;

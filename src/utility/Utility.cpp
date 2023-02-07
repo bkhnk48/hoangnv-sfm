@@ -137,7 +137,11 @@ void Utility::writeEnd(const char *fileName, string name, int mode, std::vector<
 std::vector<int> Utility::getNumPedesInFlow(int junctionType, int totalPedestrian)
 {
     int numFlow = 0;
-    if (junctionType == 3)
+    if (junctionType == 2)
+    {
+        numFlow = 6;
+    }
+    else if (junctionType == 3)
     {
         numFlow = 18;
     }
@@ -285,6 +289,15 @@ std::vector<float> Utility::getWallCoordinates(float walkwayWidth, std::vector<f
     float lowerHeightLimit = mapLimit[2];
     float upperHeightLimit = mapLimit[3];
 
+    if (juncData.size() == 2)
+    {
+        // Upper Wall
+        v.insert(v.end(), {leftWidthLimit, temp, rightWidthLimit, temp});
+        // Lower Wall
+        v.insert(v.end(), {leftWidthLimit, -temp, rightWidthLimit, -temp});
+        return v;
+    }
+
     // Upper Wall
     v.insert(v.end(), {leftWidthLimit, temp, -temp, temp});
     v.insert(v.end(), {temp, temp, rightWidthLimit, temp});
@@ -324,14 +337,26 @@ std::string Utility::convertTime(int ms)
 std::vector<float> Utility::getMapLimit(float walkwayWidth, std::vector<float> juncData)
 {
     std::vector<float> v;
+    float leftWidthLimit = -1;
+    float rightWidthLimit = -1;
+    float lowerHeightLimit = -1;
+    float upperHeightLimit = -1;
 
     float temp = walkwayWidth / 2;
 
-    float leftWidthLimit = -juncData[0] - temp;
-    float rightWidthLimit = juncData[2] + temp;
+    if (juncData.size() == 2)
+    {
+        leftWidthLimit = -juncData[0] - temp;
+        rightWidthLimit = juncData[1] + temp;
+    }
+    else
+    {
+        leftWidthLimit = -juncData[0] - temp;
+        rightWidthLimit = juncData[2] + temp;
 
-    float lowerHeightLimit = -juncData[1] - temp;
-    float upperHeightLimit = juncData[3] + temp;
+        lowerHeightLimit = -juncData[1] - temp;
+        upperHeightLimit = juncData[3] + temp;
+    }
 
     v.insert(v.end(), {leftWidthLimit, rightWidthLimit, lowerHeightLimit, upperHeightLimit});
 
@@ -751,7 +776,11 @@ float getCoor(float x, float verAsymtote, float horAsymtote)
 std::vector<Point3f> Utility::getRouteAGV(int junctionType, int src, int turningDirection, float walkwayWidth, std::vector<float> juncData)
 {
     std::vector<Point3f> v;
-    if (junctionType == 3)
+    if (junctionType == 2)
+    {
+        v = getRouteAGVHallway(src, turningDirection, walkwayWidth, juncData);
+    }
+    else if (junctionType == 3)
     {
         v = getRouteAGVTJunction(src, turningDirection, walkwayWidth, juncData);
     }
@@ -759,6 +788,33 @@ std::vector<Point3f> Utility::getRouteAGV(int junctionType, int src, int turning
     {
         v = getRouteAGVCrossRoad(src, turningDirection, walkwayWidth, juncData);
     }
+    return v;
+}
+
+// src = {0, 1, 2} ~ Go from Left, Bottom, Right side
+// turningDirection = {0, 1, 2} - Turn Left, Go Straight, Turn Right
+std::vector<Point3f> Utility::getRouteAGVHallway(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData)
+{
+    std::vector<Point3f> v;
+
+    float leftWidthLimit = -juncData[0] - walkwayWidth / 2;
+    float rightWidthLimit = juncData[1] + walkwayWidth / 2;
+
+    if (src == 0)
+    {
+        v.insert(v.end(), {Point3f(leftWidthLimit - 1, -walkwayWidth / 3, 0.0),
+                           Point3f(rightWidthLimit + 1, -walkwayWidth / 3, 0.0)});
+        v.insert(v.end(), {Point3f(rightWidthLimit + 2, -walkwayWidth / 3, 0.0)});
+        return v;
+    }
+    else
+    {
+        v.insert(v.end(), {Point3f(rightWidthLimit + 1, walkwayWidth / 3, 0.0),
+                           Point3f(leftWidthLimit - 1, walkwayWidth / 3, 0.0)});
+        v.insert(v.end(), {Point3f(leftWidthLimit - 2, walkwayWidth / 3, 0.0)});
+        return v;
+    }
+
     return v;
 }
 

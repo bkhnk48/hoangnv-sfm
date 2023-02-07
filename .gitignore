@@ -9,6 +9,7 @@ bin/*
 out.dSYM
 !mKF
 !Makefile
-example.cpp
+test/example.cpp
 a.out
 end.txt
+map2.txt
