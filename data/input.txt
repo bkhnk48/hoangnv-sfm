@@ -32,4 +32,4 @@
 # Hallway length
 30
 # AGVs run concurrently
-1
+0

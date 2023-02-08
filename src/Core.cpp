@@ -584,76 +584,120 @@ void drawAGVs()
 {
     vector<AGV *> agvs = socialForce->getAGVs();
     Vector3f e_ij;
-    AGV *agv = NULL;
-    int i;
-    vector<int> j;
-
-    for (i = 0; i < agvs.size(); i++)
+    if (juncData.size() == 2 && (int)inputData[19] == 1)
     {
-        if (agvs[i]->getIsMoving() && agvs[i]->getTravelingTime() != 0)
+        for (AGV *agv : agvs)
         {
-            agv = agvs[i];
-            break;
-        }
-        else if (!agvs[i]->getIsMoving() && agvs[i]->getTravelingTime() == 0)
-        {
-            j.push_back(i);
+            agv->setIsMoving(true);
+            if (agv->getTravelingTime() == 0)
+            {
+                agv->setTravelingTime(glutGet(GLUT_ELAPSED_TIME));
+            }
+            // Draw AGVs
+            glColor3f(agv->getColor().x, agv->getColor().y, agv->getColor().z);
+            float w, l;
+            Vector3f a, b;
+            Point3f top, bottom, pointA, pointB, pointC, pointD;
+            w = agv->getWidth();
+            l = agv->getLength();
+            e_ij = agv->getPath() - agv->getPosition();
+            e_ij.normalize();
+            top = agv->getPosition() + e_ij * l * 0.5F;
+            bottom = agv->getPosition() - e_ij * l * 0.5F;
+
+            a = Vector3f(e_ij.y, -e_ij.x, 0.0F);
+            a.normalize();
+            b = Vector3f(-e_ij.y, e_ij.x, 0.0F);
+            b.normalize();
+
+            pointA = top + a * w * 0.5F;
+            pointB = top + b * w * 0.5F;
+            pointC = bottom + b * w * 0.5F;
+            pointD = bottom + a * w * 0.5F;
+
+            agv->setPoints(pointA, pointB, pointC, pointD);
+
+            glBegin(GL_QUADS);
+            glVertex3f(pointA.x, pointA.y, 0);
+            glVertex3f(pointB.x, pointB.y, 0);
+            glVertex3f(pointC.x, pointC.y, 0);
+            glVertex3f(pointD.x, pointD.y, 0);
+            glEnd();
         }
     }
-
-    if (i == agvs.size())
+    else
     {
-        agv = agvs[j.front()];
-        float distance = (agv->getWidth() > agv->getLength()) ? agv->getWidth() : agv->getLength();
-        for (Agent *agent : socialForce->getCrowd())
+        AGV *agv = NULL;
+        int i;
+        vector<int> j;
+
+        for (i = 0; i < agvs.size(); i++)
         {
-            if (agent->getPosition().distance(agv->getPosition()) < distance / 2)
+            if (agvs[i]->getIsMoving() && agvs[i]->getTravelingTime() != 0)
             {
-                do
-                {
-                    agent->setPosition(agent->getPosition().x - 0.1F, agent->getPosition().y - 0.1F);
-                } while (agent->getPosition().distance(agv->getPosition()) < distance / 2);
+                agv = agvs[i];
+                break;
+            }
+            else if (!agvs[i]->getIsMoving() && agvs[i]->getTravelingTime() == 0)
+            {
+                j.push_back(i);
             }
         }
-    }
 
-    if (agv)
-    {
-        agv->setIsMoving(true);
-        if (agv->getTravelingTime() == 0)
+        if (i == agvs.size())
         {
-            agv->setTravelingTime(glutGet(GLUT_ELAPSED_TIME));
+            agv = agvs[j.front()];
+            float distance = (agv->getWidth() > agv->getLength()) ? agv->getWidth() : agv->getLength();
+            for (Agent *agent : socialForce->getCrowd())
+            {
+                if (agent->getPosition().distance(agv->getPosition()) < distance / 2)
+                {
+                    do
+                    {
+                        agent->setPosition(agent->getPosition().x - 0.1F, agent->getPosition().y - 0.1F);
+                    } while (agent->getPosition().distance(agv->getPosition()) < distance / 2);
+                }
+            }
         }
-        // Draw AGVs
-        glColor3f(agv->getColor().x, agv->getColor().y, agv->getColor().z);
-        float w, l;
-        Vector3f a, b;
-        Point3f top, bottom, pointA, pointB, pointC, pointD;
-        w = agv->getWidth();
-        l = agv->getLength();
-        e_ij = agv->getPath() - agv->getPosition();
-        e_ij.normalize();
-        top = agv->getPosition() + e_ij * l * 0.5F;
-        bottom = agv->getPosition() - e_ij * l * 0.5F;
 
-        a = Vector3f(e_ij.y, -e_ij.x, 0.0F);
-        a.normalize();
-        b = Vector3f(-e_ij.y, e_ij.x, 0.0F);
-        b.normalize();
+        if (agv)
+        {
+            agv->setIsMoving(true);
+            if (agv->getTravelingTime() == 0)
+            {
+                agv->setTravelingTime(glutGet(GLUT_ELAPSED_TIME));
+            }
+            // Draw AGVs
+            glColor3f(agv->getColor().x, agv->getColor().y, agv->getColor().z);
+            float w, l;
+            Vector3f a, b;
+            Point3f top, bottom, pointA, pointB, pointC, pointD;
+            w = agv->getWidth();
+            l = agv->getLength();
+            e_ij = agv->getPath() - agv->getPosition();
+            e_ij.normalize();
+            top = agv->getPosition() + e_ij * l * 0.5F;
+            bottom = agv->getPosition() - e_ij * l * 0.5F;
 
-        pointA = top + a * w * 0.5F;
-        pointB = top + b * w * 0.5F;
-        pointC = bottom + b * w * 0.5F;
-        pointD = bottom + a * w * 0.5F;
+            a = Vector3f(e_ij.y, -e_ij.x, 0.0F);
+            a.normalize();
+            b = Vector3f(-e_ij.y, e_ij.x, 0.0F);
+            b.normalize();
 
-        agv->setPoints(pointA, pointB, pointC, pointD);
+            pointA = top + a * w * 0.5F;
+            pointB = top + b * w * 0.5F;
+            pointC = bottom + b * w * 0.5F;
+            pointD = bottom + a * w * 0.5F;
 
-        glBegin(GL_QUADS);
-        glVertex3f(pointA.x, pointA.y, 0);
-        glVertex3f(pointB.x, pointB.y, 0);
-        glVertex3f(pointC.x, pointC.y, 0);
-        glVertex3f(pointD.x, pointD.y, 0);
-        glEnd();
+            agv->setPoints(pointA, pointB, pointC, pointD);
+
+            glBegin(GL_QUADS);
+            glVertex3f(pointA.x, pointA.y, 0);
+            glVertex3f(pointB.x, pointB.y, 0);
+            glVertex3f(pointC.x, pointC.y, 0);
+            glVertex3f(pointD.x, pointD.y, 0);
+            glEnd();
+        }
     }
 }
 
