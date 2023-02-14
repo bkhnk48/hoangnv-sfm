@@ -1,0 +1,86 @@
+{
+  "runMode": {
+    "description": "Run mode (1 - Statistical calculation, 0 - Test)",
+    "value": 1
+  },
+  "noRunPerHallway": {
+    "description": "Number of times the AGV runs for each hallway",
+    "value": 1
+  },
+  "graphicsMode": {
+    "description": "Graphics mode (1 - Graphics, 0 - No Graphics)",
+    "value": 1
+  },
+  "numOfAgents": {
+    "description": "Number of agents",
+    "value": 50
+  },
+  "TDDegree": {
+    "description": "T-Distribution' degree of freedom",
+    "value": 15
+  },
+  "totalCrowdLength": {
+    "description": "Crowd total length",
+    "value": 40
+  },
+  "headCrowdLength": {
+    "description": "Crowd head/tail length",
+    "value": 10
+  },
+  "crowdWidth": {
+    "description": "Crowd width",
+    "value": 2
+  },
+  "acceleration": {
+    "description": "Acceleration of AGV",
+    "value": 0.25
+  },
+  "thresDistance": {
+    "description": "Threshold distance for agv to stop when colliding with a person",
+    "value": 0.3
+  },
+  "stopAtHallway": {
+    "description": "Percentage of people stopping at the hallway",
+    "value": 2
+  },
+  "p1": {
+    "description": "Percentage of agents (No disability, without overtaking behavior)",
+    "value": 22
+  },
+  "p2": {
+    "description": "Percentage of agents (No disability, with overtaking behavior)",
+    "value": 5
+  },
+  "p3": {
+    "description": "Percentage of agents (Walking with crutches)",
+    "value": 17
+  },
+  "p4": {
+    "description": "Percentage of agents (Walking with sticks)",
+    "value": 22
+  },
+  "p5": {
+    "description": "Percentage of agents (Wheelchairs)",
+    "value": 17
+  },
+  "p6": {
+    "description": "Percentage of agents (The blind)",
+    "value": 17
+  },
+  "hallwayLength": {
+    "description": "Hallway length",
+    "value": 30
+  },
+  "hallwayWidth": {
+    "description": "Hallway width",
+    "value": 6
+  },
+  "runConcurrently": {
+    "description": "AGV run concurrently",
+    "value": 0
+  },
+  "experimentalDeviation": {
+    "description": "Experimental deviation (percent)",
+    "value": 10
+  }
+}

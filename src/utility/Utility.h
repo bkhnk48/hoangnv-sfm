@@ -4,9 +4,12 @@
 #include <vector>
 #include <iostream>
 #include <array>
+#include <lib/nlohmann/json.hpp>
 #include "lib/vecmath/vecmath.h"
 #include <map>
 #include "src/agv/AGV.h"
+
+using json = nlohmann::json;
 
 #pragma once
 namespace Utility
@@ -15,17 +18,26 @@ namespace Utility
 
     std::map<std::string, std::vector<float>> readMapData(const char *fileName);
 
-    std::vector<double> readInput(const char *fileName);
+    std::vector<json> convertMapData(std::map<std::string, std::vector<float>> mapData);
 
-    void writeEnd(const char *fileName, std::string name, int mode, std::vector<AGV *> data);
+    bool hallwaySameCharExists(float hallwayLength, std::vector<json> data);
+
+    json readInputData(const char *fileName);
+
+    void writeResult(
+        const char *fileName, std::string name, int mode, std::vector<AGV *> data,
+        std::vector<json> juncDataList,
+        int agvRunConcurrently,
+        int runMode,
+        int numRunPerHallway);
 
     std::vector<int> getNumPedesInFlow(int junctionType, int totalPedestrian);
 
-    std::vector<double> getPedesVelocity(int type, std::vector<double> inputData);
+    std::vector<double> getPedesVelocity(int type, json inputData);
 
     std::vector<double> getPedesVelocityBasedTDis(int numPedes, double n_dist);
 
-    std::vector<double> getPedesVelocityBasedDDis(std::vector<double> inputData);
+    std::vector<double> getPedesVelocityBasedDDis(json inputData);
 
     std::vector<float> getWallCoordinates(float walkwayWidth, std::vector<float> juncData);
 
@@ -39,17 +51,19 @@ namespace Utility
 
     std::vector<float> getPedesColor(float maxSpeed, float minSpeed, float desiredSpeed, int type);
 
-    std::vector<Point3f> getRouteAGV(int junctionType, int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
+    std::vector<Point3f> getRouteAGV(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
 
     std::vector<Point3f> getRouteAGVCrossRoad(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
 
     std::vector<Point3f> getRouteAGVTJunction(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
 
-    std::vector<Point3f> getRouteAGVHallway(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
+    std::vector<Point3f> getRouteAGVHallway(int src, float walkwayWidth, std::vector<float> juncData);
 
     Point3f getIntermediateDes(Point3f position, float verWalkwayWidth, float horWalkwayWidth);
 
-    bool isPositionErr(Point3f position, float walkwayWidth, int junctionType);
+    bool isPositionErr(Point3f position, float walkwayWidth, int junctionType, std::vector<AGV *> agvs);
+
+    int getNumAGVCompleted(std::vector<AGV *> agvs);
 
     int randomInt(int from, int to);
 };

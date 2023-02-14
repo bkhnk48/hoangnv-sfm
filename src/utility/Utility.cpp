@@ -11,6 +11,7 @@
 #include <ctime>
 #include <chrono>
 #include "src/constant/Constant.h"
+#include <numeric>
 
 using namespace std;
 using namespace Constant;
@@ -23,7 +24,6 @@ float Utility::randomFloat(float lowerBound, float upperBound)
 }
 
 // read map data file
-// std::map<std::string, float[]> Utility::readMapData(const char * fileName) {
 std::map<std::string, std::vector<float>> Utility::readMapData(const char *fileName)
 {
     map<std::string, std::vector<float>> map;
@@ -80,54 +80,113 @@ std::map<std::string, std::vector<float>> Utility::readMapData(const char *fileN
     return map;
 }
 
-// read input file
-std::vector<double> Utility::readInput(const char *fileName)
+std::vector<json> Utility::convertMapData(std::map<std::string, std::vector<float>> mapData)
 {
-    vector<double> v;
-    ifstream input(fileName);
-
-    std::string delimiter = " ";
-
-    for (std::string line; getline(input, line);)
+    std::vector<json> data;
+    for (auto elem : mapData)
     {
-        if (line.rfind("#", 0) == 0) // pos=0 limits the search to the prefix
+        if (elem.first == "numI" || elem.first == "walkwayWidth")
         {
             continue;
         }
-        // cout << "Line: " <<line << endl;
-        size_t pos = 0;
-        std::string token;
-        while ((pos = line.find(delimiter)) != std::string::npos)
+        int numOfHallway = elem.second.size();
+        for (int i = 0; i < numOfHallway; i++)
         {
-            token = line.substr(0, pos);
-            // std::cout << token << std::endl;
-            v.push_back(stod(token));
-            line.erase(0, pos + delimiter.length());
+            if (!hallwaySameCharExists(elem.second[i], data))
+            {
+                json temp;
+                temp[elem.first + "_" + std::to_string(i)] = elem.second[i];
+                data.push_back(temp);
+            }
         }
-        // cout << line << endl;
-        v.push_back(stod(line));
     }
+    return data;
+}
 
-    return v;
+bool Utility::hallwaySameCharExists(float hallwayLength, std::vector<json> data)
+{
+    for (auto elem : data)
+    {
+        if (fabs(hallwayLength - (float)(elem.items().begin().value())) < 0.1)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+// read input file
+json Utility::readInputData(const char *fileName)
+{
+    std::ifstream f(fileName);
+    json data = json::parse(f);
+
+    return data;
 }
 
 // write end file
-void Utility::writeEnd(const char *fileName, string name, int mode, std::vector<AGV *> data)
+void Utility::writeResult(const char *fileName, string name, int mode, std::vector<AGV *> agvs, std::vector<json> juncDataList, int agvRunConcurrently, int runMode, int numRunPerHallway)
 {
-    vector<double> v;
     ofstream output(fileName, ios::app);
 
-    std::string delimiter = " ";
+    std::string delimiter = " - ";
     std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-    output << "#" << name << " run completed on " << std::ctime(&now);
-
-    for (AGV *agv : data)
+    if (runMode == 0)
     {
-        string array1[] = {"Left", "Bottom", "Right", "Top"};
-        string array2[] = {"Turn Right", "Go straight", "Turn Left"};
-        string direction = array1[(int)(agv->getDirection().x)] + "-" + array2[(int)(agv->getDirection().y)];
-        output << name << delimiter << mode << delimiter << direction << delimiter << convertTime(agv->getTravelingTime()) << delimiter << agv->getNumOfCollision() << endl;
+        output << "#" << name << " run completed on " << std::ctime(&now);
+
+        for (AGV *agv : agvs)
+        {
+            string array1[] = {"From Left", "From Bottom", "From Right", "From Top"};
+            string array2[] = {"Turn Right", "Go straight", "Turn Left"};
+            string direction = array1[(int)(agv->getDirection().x)] + "-" + array2[(int)(agv->getDirection().y)];
+            output << name << delimiter << mode << delimiter << direction << delimiter << convertTime(agv->getTravelingTime()) << delimiter << agv->getNumOfCollision() << endl;
+        }
+    }
+    else
+    {
+        output << "*#* Completed on " << std::ctime(&now);
+
+        string hallwayName;
+        int hallwayLength;
+        vector<int> travelingTimeList;
+
+        int juncIndexTemp = 0;
+
+        for (AGV *agv : agvs)
+        {
+            int marker = numRunPerHallway * (juncIndexTemp + 1) - 1;
+            if (agvRunConcurrently == 1)
+            {
+                marker = numRunPerHallway * 2 * (juncIndexTemp + 1) - 1;
+            }
+            travelingTimeList.push_back(agv->getTravelingTime());
+
+            if (juncIndexTemp < juncDataList.size())
+            {
+                hallwayName = juncDataList[juncIndexTemp].items().begin().key();
+                hallwayLength = juncDataList[juncIndexTemp].items().begin().value();
+            }
+            output << hallwayName << delimiter << hallwayLength << ": AGV ID " << agv->getId() << delimiter << convertTime(agv->getTravelingTime()) << delimiter << "Collisions " << agv->getNumOfCollision() << endl;
+            
+            if (agv->getId() > 0 && agv->getId() == marker)
+            {
+                juncIndexTemp = juncIndexTemp + 1;
+            }
+        }
+        int minValue = *std::min_element(travelingTimeList.begin(), travelingTimeList.end());
+        int maxValue = *std::max_element(travelingTimeList.begin(), travelingTimeList.end());
+        output << "The shortest time is " << convertTime(minValue) << endl;
+        output << "The longest time is " << convertTime(maxValue) << endl;
+        int sum = std::accumulate(travelingTimeList.begin(), travelingTimeList.end(), 0);
+        double avgTime = static_cast<double>(sum) / travelingTimeList.size();
+        output << "Average time to travel through the hallway is " << convertTime((int)avgTime) << endl;
+
+        cout << "***** Statistical data *****" << endl;
+        cout << "The shortest time is " << convertTime(minValue) << endl;
+        cout << "The longest time is " << convertTime(maxValue) << endl;
+        cout << "Average time to travel through the hallway is " << convertTime((int)avgTime) << endl;
     }
 
     output.close();
@@ -165,7 +224,7 @@ std::vector<int> Utility::getNumPedesInFlow(int junctionType, int totalPedestria
 }
 
 // get list velocity of all pedestrians: type 0 - Discrete distribution, type 1 - T distribution
-std::vector<double> Utility::getPedesVelocity(int type, std::vector<double> inputData)
+std::vector<double> Utility::getPedesVelocity(int type, json inputData)
 {
     if (type == 0)
     {
@@ -173,22 +232,22 @@ std::vector<double> Utility::getPedesVelocity(int type, std::vector<double> inpu
     }
     else
     {
-        return getPedesVelocityBasedTDis(int(inputData[0]), inputData[1]);
+        return getPedesVelocityBasedTDis(int(inputData["numOfAgents"]["value"]), inputData["TDDegree"]["value"]);
     }
 }
 
-std::vector<double> Utility::getPedesVelocityBasedDDis(std::vector<double> inputData)
+std::vector<double> Utility::getPedesVelocityBasedDDis(json inputData)
 {
     vector<double> v;
-    float perNoDisabilityWithoutOvertaking = inputData[12];
-    float perNoDisabilityWithOvertaking = inputData[13];
-    float perWalkingWithCrutches = inputData[14];
-    float perWalkingWithSticks = inputData[15];
-    float perWheelchairs = inputData[16];
-    float perTheBlind = inputData[17];
+    float perNoDisabilityWithoutOvertaking = inputData["p1"]["value"];
+    float perNoDisabilityWithOvertaking = inputData["p2"]["value"];
+    float perWalkingWithCrutches = inputData["p3"]["value"];
+    float perWalkingWithSticks = inputData["p4"]["value"];
+    float perWheelchairs = inputData["p5"]["value"];
+    float perTheBlind = inputData["p6"]["value"];
 
-    const int nrolls = 10000;               // number of experiments
-    const int numPedes = int(inputData[0]); // maximum number of pedes to distribute
+    const int nrolls = 10000;                                    // number of experiments
+    const int numPedes = int(inputData["numOfAgents"]["value"]); // maximum number of pedes to distribute
 
     std::default_random_engine generator;
     std::discrete_distribution<int> distribution{
@@ -773,12 +832,13 @@ float getCoor(float x, float verAsymtote, float horAsymtote)
     return horAsymtote * x / (x - verAsymtote);
 }
 
-std::vector<Point3f> Utility::getRouteAGV(int junctionType, int src, int turningDirection, float walkwayWidth, std::vector<float> juncData)
+std::vector<Point3f> Utility::getRouteAGV(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData)
 {
     std::vector<Point3f> v;
+    int junctionType = juncData.size();
     if (junctionType == 2)
     {
-        v = getRouteAGVHallway(src, turningDirection, walkwayWidth, juncData);
+        v = getRouteAGVHallway(src, walkwayWidth, juncData);
     }
     else if (junctionType == 3)
     {
@@ -792,8 +852,7 @@ std::vector<Point3f> Utility::getRouteAGV(int junctionType, int src, int turning
 }
 
 // src = {0, 1, 2} ~ Go from Left, Bottom, Right side
-// turningDirection = {0, 1, 2} - Turn Left, Go Straight, Turn Right
-std::vector<Point3f> Utility::getRouteAGVHallway(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData)
+std::vector<Point3f> Utility::getRouteAGVHallway(int src, float walkwayWidth, std::vector<float> juncData)
 {
     std::vector<Point3f> v;
 
@@ -1207,10 +1266,10 @@ Point3f Utility::getIntermediateDes(Point3f position, float verWalkwayWidth, flo
     }
 }
 
-bool Utility::isPositionErr(Point3f position, float walkwayWidth, int junctionType)
+bool Utility::isPositionErr(Point3f position, float hallwayWidth, int junctionType, std::vector<AGV *> agvs)
 {
-    float posLimit = walkwayWidth / 2;
-    float negLimit = -walkwayWidth / 2;
+    float posLimit = hallwayWidth / 2;
+    float negLimit = -hallwayWidth / 2;
     float x = position.x;
     float y = position.y;
     if (junctionType == 4)
@@ -1223,12 +1282,8 @@ bool Utility::isPositionErr(Point3f position, float walkwayWidth, int junctionTy
         {
             return true;
         }
-        else
-        {
-            return false;
-        }
     }
-    else
+    else if (junctionType == 3)
     {
         bool con1 = y >= posLimit;
         bool con2 = x >= posLimit && y <= negLimit;
@@ -1237,11 +1292,42 @@ bool Utility::isPositionErr(Point3f position, float walkwayWidth, int junctionTy
         {
             return true;
         }
-        else
+    }
+    else if (junctionType == 2)
+    {
+        if (y >= posLimit || y <= negLimit)
         {
-            return false;
+            return true;
         }
     }
+
+    for (AGV *agv : agvs)
+    {
+        if (!agv->getIsMoving())
+        {
+            continue;
+        }
+        float distance = (agv->getWidth() > agv->getLength()) ? agv->getWidth() : agv->getLength();
+        if (position.distance(agv->getPosition()) < distance / 2)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+int Utility::getNumAGVCompleted(std::vector<AGV *> agvs)
+{
+    int count = 0;
+    for (AGV *agv : agvs)
+    {
+        if (!agv->getIsMoving() && agv->getTravelingTime() != 0)
+        {
+            count = count + 1;
+        }
+    }
+    return count;
 }
 
 int Utility::randomInt(int from, int to)

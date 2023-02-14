@@ -19,62 +19,39 @@ void Renderer::drawAgents(SocialForce *socialForce)
 void Renderer::drawAGVs(
     SocialForce *socialForce,
     std::vector<float> juncData,
-    std::vector<double> inputData)
+    int agvRunConcurrently,
+    int runMode)
 {
     vector<AGV *> agvs = socialForce->getAGVs();
     Vector3f e_ij;
-    if (juncData.size() == 2 && (int)inputData[19] == 1)
+
+    if (runMode == 1)
+    // if (false)
     {
-        for (AGV *agv : agvs)
-        {
-            agv->setIsMoving(true);
-            if (agv->getTravelingTime() == 0)
-            {
-                agv->setTravelingTime(glutGet(GLUT_ELAPSED_TIME));
-            }
-            // Draw AGVs
-            glColor3f(agv->getColor().x, agv->getColor().y, agv->getColor().z);
-            float w, l;
-            Vector3f a, b;
-            Point3f top, bottom, pointA, pointB, pointC, pointD;
-            w = agv->getWidth();
-            l = agv->getLength();
-            e_ij = agv->getPath() - agv->getPosition();
-            e_ij.normalize();
-            top = agv->getPosition() + e_ij * l * 0.5F;
-            bottom = agv->getPosition() - e_ij * l * 0.5F;
-
-            a = Vector3f(e_ij.y, -e_ij.x, 0.0F);
-            a.normalize();
-            b = Vector3f(-e_ij.y, e_ij.x, 0.0F);
-            b.normalize();
-
-            pointA = top + a * w * 0.5F;
-            pointB = top + b * w * 0.5F;
-            pointC = bottom + b * w * 0.5F;
-            pointD = bottom + a * w * 0.5F;
-
-            agv->setPoints(pointA, pointB, pointC, pointD);
-
-            glBegin(GL_QUADS);
-            glVertex3f(pointA.x, pointA.y, 0);
-            glVertex3f(pointB.x, pointB.y, 0);
-            glVertex3f(pointC.x, pointC.y, 0);
-            glVertex3f(pointD.x, pointD.y, 0);
-            glEnd();
-        }
-    }
-    else
-    {
-        AGV *agv = NULL;
+        AGV *agv1 = NULL;
+        AGV *agv2 = NULL;
         int i;
         vector<int> j;
+
+        vector<AGV *> runningAGV;
 
         for (i = 0; i < agvs.size(); i++)
         {
             if (agvs[i]->getIsMoving() && agvs[i]->getTravelingTime() != 0)
             {
-                agv = agvs[i];
+                agv1 = agvs[i];
+                if (i < agvs.size() - 1 && agvRunConcurrently == 1)
+                {
+                    agv2 = agvs[i + 1];
+                    runningAGV.clear();
+                    runningAGV.insert(runningAGV.end(), {agv1, agv2});
+                }
+                else
+                {
+                    runningAGV.clear();
+                    runningAGV.insert(runningAGV.end(), {agv1});
+                }
+
                 break;
             }
             else if (!agvs[i]->getIsMoving() && agvs[i]->getTravelingTime() == 0)
@@ -85,21 +62,69 @@ void Renderer::drawAGVs(
 
         if (i == agvs.size())
         {
-            agv = agvs[j.front()];
-            float distance = (agv->getWidth() > agv->getLength()) ? agv->getWidth() : agv->getLength();
-            for (Agent *agent : socialForce->getCrowd())
+            if (j.size() > 0)
             {
-                if (agent->getPosition().distance(agv->getPosition()) < distance / 2)
+                agv1 = agvs[j.front()];
+                if (agvRunConcurrently == 1)
                 {
-                    do
-                    {
-                        agent->setPosition(agent->getPosition().x - 0.1F, agent->getPosition().y - 0.1F);
-                    } while (agent->getPosition().distance(agv->getPosition()) < distance / 2);
+                    agv2 = agvs[agv1->getId() + 1];
+                    runningAGV.clear();
+                    runningAGV.insert(runningAGV.end(), {agv1, agv2});
+                }
+                else
+                {
+                    runningAGV.clear();
+                    runningAGV.insert(runningAGV.end(), {agv1});
                 }
             }
         }
 
-        if (agv)
+        if (runningAGV.size() > 0)
+        {
+            for (AGV *agv : runningAGV)
+            {
+                agv->setIsMoving(true);
+                if (agv->getTravelingTime() == 0)
+                {
+                    cout << "AGV ID " << agv->getId() << " is running..."<< endl;
+                    agv->setTravelingTime(glutGet(GLUT_ELAPSED_TIME));
+                }
+                // Draw AGVs
+                glColor3f(agv->getColor().x, agv->getColor().y, agv->getColor().z);
+                float w, l;
+                Vector3f a, b;
+                Point3f top, bottom, pointA, pointB, pointC, pointD;
+                w = agv->getWidth();
+                l = agv->getLength();
+                e_ij = agv->getPath() - agv->getPosition();
+                e_ij.normalize();
+                top = agv->getPosition() + e_ij * l * 0.5F;
+                bottom = agv->getPosition() - e_ij * l * 0.5F;
+
+                a = Vector3f(e_ij.y, -e_ij.x, 0.0F);
+                a.normalize();
+                b = Vector3f(-e_ij.y, e_ij.x, 0.0F);
+                b.normalize();
+
+                pointA = top + a * w * 0.5F;
+                pointB = top + b * w * 0.5F;
+                pointC = bottom + b * w * 0.5F;
+                pointD = bottom + a * w * 0.5F;
+
+                agv->setPoints(pointA, pointB, pointC, pointD);
+
+                glBegin(GL_QUADS);
+                glVertex3f(pointA.x, pointA.y, 0);
+                glVertex3f(pointB.x, pointB.y, 0);
+                glVertex3f(pointC.x, pointC.y, 0);
+                glVertex3f(pointD.x, pointD.y, 0);
+                glEnd();
+            }
+        }
+    }
+    else if (juncData.size() == 2 && agvRunConcurrently == 1)
+    {
+        for (AGV *agv : agvs)
         {
             agv->setIsMoving(true);
             if (agv->getTravelingTime() == 0)
