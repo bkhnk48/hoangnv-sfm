@@ -110,8 +110,9 @@ int main(int argc, char **argv)
         juncData = {length1Side, length1Side};
     }
 
+    float deviationParam = randomFloat(1 - (float)inputData["experimentalDeviation"]["value"] / 100, 1 + (float)inputData["experimentalDeviation"]["value"] / 100);
     // Threshold people stopping at the corridor
-    threshold = int(inputData["numOfAgents"]["value"]) * (float)(inputData["stopAtHallway"]["value"]) / 100;
+    threshold = int(inputData["numOfAgents"]["value"]) * deviationParam * (float)(inputData["stopAtHallway"]["value"]) / 100;
 
     glutInit(&argc, argv); // Initialize GLUT
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA |
@@ -365,8 +366,10 @@ void createAgents()
 {
     Agent *agent;
 
-    numOfPeople = Utility::getNumPedesInFlow(juncData.size(), int(inputData["numOfAgents"]["value"]));
-    vector<double> velocityList = Utility::getPedesVelocity(classificationType, inputData);
+    float deviationParam = randomFloat(1 - (float)inputData["experimentalDeviation"]["value"] / 100, 1 + (float)inputData["experimentalDeviation"]["value"] / 100);
+    // cout << "Deviation: "<< deviationParam <<" - Num agents: "<< int(int(inputData["numOfAgents"]["value"]) * deviationParam) << endl;
+    numOfPeople = Utility::getNumPedesInFlow(juncData.size(), int(int(inputData["numOfAgents"]["value"]) * deviationParam));
+    vector<double> velocityList = Utility::getPedesVelocity(classificationType, inputData, deviationParam);
     if (classificationType == 0)
     {
         minSpeed = 0.52;

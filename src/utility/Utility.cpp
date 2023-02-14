@@ -20,7 +20,10 @@ using namespace Utility;
 // random float number between particular range
 float Utility::randomFloat(float lowerBound, float upperBound)
 {
-    return (lowerBound + (static_cast<float>(rand()) / RAND_MAX) * (upperBound - lowerBound));
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(lowerBound, upperBound);
+    return dis(gen);
 }
 
 // read map data file
@@ -146,7 +149,7 @@ void Utility::writeResult(const char *fileName, string name, int mode, std::vect
     }
     else
     {
-        output << "*#* Completed on " << std::ctime(&now);
+        output << "\n*#* Completed on " << std::ctime(&now);
 
         string hallwayName;
         int hallwayLength;
@@ -169,7 +172,7 @@ void Utility::writeResult(const char *fileName, string name, int mode, std::vect
                 hallwayLength = juncDataList[juncIndexTemp].items().begin().value();
             }
             output << hallwayName << delimiter << hallwayLength << ": AGV ID " << agv->getId() << delimiter << convertTime(agv->getTravelingTime()) << delimiter << "Collisions " << agv->getNumOfCollision() << endl;
-            
+
             if (agv->getId() > 0 && agv->getId() == marker)
             {
                 juncIndexTemp = juncIndexTemp + 1;
@@ -183,7 +186,7 @@ void Utility::writeResult(const char *fileName, string name, int mode, std::vect
         double avgTime = static_cast<double>(sum) / travelingTimeList.size();
         output << "Average time to travel through the hallway is " << convertTime((int)avgTime) << endl;
 
-        cout << "***** Statistical data *****" << endl;
+        cout << "\n***** Statistical data *****" << endl;
         cout << "The shortest time is " << convertTime(minValue) << endl;
         cout << "The longest time is " << convertTime(maxValue) << endl;
         cout << "Average time to travel through the hallway is " << convertTime((int)avgTime) << endl;
@@ -224,11 +227,11 @@ std::vector<int> Utility::getNumPedesInFlow(int junctionType, int totalPedestria
 }
 
 // get list velocity of all pedestrians: type 0 - Discrete distribution, type 1 - T distribution
-std::vector<double> Utility::getPedesVelocity(int type, json inputData)
+std::vector<double> Utility::getPedesVelocity(int type, json inputData, float deviationParam)
 {
     if (type == 0)
     {
-        return getPedesVelocityBasedDDis(inputData);
+        return getPedesVelocityBasedDDis(inputData, deviationParam);
     }
     else
     {
@@ -236,18 +239,20 @@ std::vector<double> Utility::getPedesVelocity(int type, json inputData)
     }
 }
 
-std::vector<double> Utility::getPedesVelocityBasedDDis(json inputData)
+std::vector<double> Utility::getPedesVelocityBasedDDis(json inputData, float deviationParam)
 {
     vector<double> v;
-    float perNoDisabilityWithoutOvertaking = inputData["p1"]["value"];
-    float perNoDisabilityWithOvertaking = inputData["p2"]["value"];
-    float perWalkingWithCrutches = inputData["p3"]["value"];
-    float perWalkingWithSticks = inputData["p4"]["value"];
-    float perWheelchairs = inputData["p5"]["value"];
-    float perTheBlind = inputData["p6"]["value"];
+    float perNoDisabilityWithoutOvertaking = float(inputData["p1"]["value"]) * deviationParam;
+    float perNoDisabilityWithOvertaking = float(inputData["p2"]["value"]) * deviationParam;
+    float perWalkingWithCrutches = float(inputData["p3"]["value"]) * deviationParam;
+    float perWalkingWithSticks = float(inputData["p4"]["value"]) * deviationParam;
+    float perWheelchairs = float(inputData["p5"]["value"]) * deviationParam;
+    // float perTheBlind = inputData["p6"]["value"];
+    float perTheBlind =
+        100 - (perNoDisabilityWithoutOvertaking + perNoDisabilityWithOvertaking + perWalkingWithCrutches + perWalkingWithSticks + perWheelchairs);
 
-    const int nrolls = 10000;                                    // number of experiments
-    const int numPedes = int(inputData["numOfAgents"]["value"]); // maximum number of pedes to distribute
+    const int nrolls = 10000;                                                     // number of experiments
+    const int numPedes = int(int(inputData["numOfAgents"]["value"]) * deviationParam); // maximum number of pedes to distribute
 
     std::default_random_engine generator;
     std::discrete_distribution<int> distribution{
