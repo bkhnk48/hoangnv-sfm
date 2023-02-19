@@ -40,7 +40,7 @@ void Renderer::drawAGVs(
             if (agvs[i]->getIsMoving() && agvs[i]->getTravelingTime() != 0)
             {
                 agv1 = agvs[i];
-                if (i < agvs.size() - 1 && agvRunConcurrently == 1)
+                if (i < agvs.size() - 1 && agvRunConcurrently == 1 && i % 2 == 0)
                 {
                     agv2 = agvs[i + 1];
                     runningAGV.clear();
@@ -83,10 +83,10 @@ void Renderer::drawAGVs(
         {
             for (AGV *agv : runningAGV)
             {
-                agv->setIsMoving(true);
                 if (agv->getTravelingTime() == 0)
                 {
-                    cout << "AGV ID " << agv->getId() << " is running..."<< endl;
+                    agv->setIsMoving(true);
+                    cout << "AGV ID " << agv->getId() << " is running..." << endl;
                     agv->setTravelingTime(glutGet(GLUT_ELAPSED_TIME));
                 }
                 // Draw AGVs

@@ -563,7 +563,7 @@ void createAGVs()
                 agv->setPosition(route[0].x, route[0].y);
 
                 agv->setDestination(route[route.size() - 1].x, route[route.size() - 1].y);
-                agv->setDesiredSpeed(0.6F);
+                agv->setDesiredSpeed((float)inputData["agvDesiredSpeed"]["value"]);
                 agv->setAcceleration(inputData["acceleration"]["value"]);
                 agv->setThresholdDisToPedes((float)inputData["thresDistance"]["value"]);
                 for (int i = 1; i < route.size(); i++)
@@ -580,12 +580,13 @@ void createAGVs()
                 if (agv->getId() == marker)
                 {
                     juncIndexTemp = juncIndexTemp + 1;
-                    if (juncIndexTemp < juncDataList.size())
+                    if (juncIndexTemp == juncDataList.size())
                     {
-                        hallwayLength = juncDataList[juncIndexTemp].items().begin().value();
-                        length1Side = (hallwayLength) / 2;
-                        juncDataTemp = {length1Side, length1Side};
+                        juncIndexTemp = 0;
                     }
+                    hallwayLength = juncDataList[juncIndexTemp].items().begin().value();
+                    length1Side = (hallwayLength) / 2;
+                    juncDataTemp = {length1Side, length1Side};
                 }
             }
         }
@@ -718,26 +719,28 @@ void update()
                 agv->setTravelingTime(glutGet(GLUT_ELAPSED_TIME) - agv->getTravelingTime());
                 agv->setIsMoving(false);
 
-                int marker = 1;
+                int marker = (int)inputData["noRunPerHallway"]["value"];
                 if ((int)inputData["runConcurrently"]["value"] == 1)
                 {
-                    marker = 2;
+                    marker = (int)inputData["noRunPerHallway"]["value"] * 2;
                 }
                 int numAGVCompleted = getNumAGVCompleted(socialForce->getAGVs());
                 if (numAGVCompleted > 0 && numAGVCompleted % marker == 0)
                 {
                     socialForce->removeCrowd();
                     juncIndex = juncIndex + 1;
-                    if (juncIndex < juncDataList.size())
+                    if (juncIndex == juncDataList.size())
                     {
-                        socialForce->removeWalls();
-                        float hallwayLength = juncDataList[juncIndex].items().begin().value();
-                        cout << "*****=> " << juncDataList[juncIndex].items().begin().key() << ": " << hallwayLength << endl;
-                        float length1Side = (hallwayLength) / 2;
-                        juncData = {length1Side, length1Side};
-                        createWalls();
+                        juncIndex = 0;
                     }
+                    socialForce->removeWalls();
+                    float hallwayLength = juncDataList[juncIndex].items().begin().value();
+                    cout << "*****=> " << juncDataList[juncIndex].items().begin().key() << ": " << hallwayLength << endl;
+                    float length1Side = (hallwayLength) / 2;
+                    juncData = {length1Side, length1Side};
+                    createWalls();
                     createAgents();
+                    // cout << agv->getId() << " - Remove and re-create agent" << endl;
                 }
             }
             count_agvs = count_agvs + 1;

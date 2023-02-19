@@ -35,6 +35,10 @@
     "description": "Acceleration of AGV",
     "value": 0.25
   },
+  "agvDesiredSpeed": {
+    "description": "Desired speed of AGV (m/s)",
+    "value": 0.6
+  },
   "thresDistance": {
     "description": "Threshold distance for agv to stop when colliding with a person",
     "value": 0.3

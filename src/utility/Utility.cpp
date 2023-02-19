@@ -152,7 +152,7 @@ void Utility::writeResult(const char *fileName, string name, int mode, std::vect
         output << "\n*#* Completed on " << std::ctime(&now);
 
         string hallwayName;
-        int hallwayLength;
+        float hallwayLength;
         vector<int> travelingTimeList;
 
         int juncIndexTemp = 0;
@@ -173,7 +173,7 @@ void Utility::writeResult(const char *fileName, string name, int mode, std::vect
             }
             output << hallwayName << delimiter << hallwayLength << ": AGV ID " << agv->getId() << delimiter << convertTime(agv->getTravelingTime()) << delimiter << "Collisions " << agv->getNumOfCollision() << endl;
 
-            if (agv->getId() > 0 && agv->getId() == marker)
+            if (agv->getId() == marker)
             {
                 juncIndexTemp = juncIndexTemp + 1;
             }
