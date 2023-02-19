@@ -24,6 +24,7 @@ float fps = 0; // Frames per second
 int currTime = 0;
 int startTime = 0;
 bool animate = false; // Animate scene flag
+float speedConsiderAsStop = 0.2;
 
 json inputData;
 std::map<std::string, std::vector<float>> mapData;
@@ -252,10 +253,10 @@ void createWalls()
 
 void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSpeed, int caseJump)
 {
-    if (socialForce->getCrowdSize() < threshold)
-    {
-        agent->setStopAtCorridor(true);
-    }
+    // if (socialForce->getCrowdSize() < threshold)
+    // {
+    //     agent->setStopAtCorridor(true);
+    // }
 
     int codeSrc = 0;
     int codeDes = 0;
@@ -708,6 +709,20 @@ void update()
     std::vector<AGV *> agvs = socialForce->getAGVs();
     for (AGV *agv : agvs)
     {
+        if (agv->getCollisionStartTime() == 0 && agv->getVelocity().length() < speedConsiderAsStop && agv->getIsMoving())
+        {
+            agv->setCollisionStartTime(glutGet(GLUT_ELAPSED_TIME));
+            // cout << "- Start collision: " << convertTime(agv->getCollisionStartTime()) << endl;
+        }
+
+        if (agv->getCollisionStartTime() != 0 && agv->getVelocity().length() > speedConsiderAsStop && agv->getIsMoving())
+        {
+            agv->setTotalStopTime(agv->getTotalStopTime() + glutGet(GLUT_ELAPSED_TIME) - agv->getCollisionStartTime());
+            // cout << "- Stop collision: " << convertTime(glutGet(GLUT_ELAPSED_TIME)) << endl;
+            // cout << "=> Total collision: " << convertTime(agv->getTotalStopTime()) << endl;
+            agv->setCollisionStartTime(0);
+        }
+
         Point3f src = agv->getPosition();
         Point3f des = agv->getDestination();
 
@@ -719,15 +734,26 @@ void update()
                 agv->setTravelingTime(glutGet(GLUT_ELAPSED_TIME) - agv->getTravelingTime());
                 agv->setIsMoving(false);
 
+                int numAGVCompleted = getNumAGVCompleted(socialForce->getAGVs());
+
                 int marker = (int)inputData["noRunPerHallway"]["value"];
                 if ((int)inputData["runConcurrently"]["value"] == 1)
                 {
                     marker = (int)inputData["noRunPerHallway"]["value"] * 2;
+                    if (numAGVCompleted % 2 == 0)
+                    {
+                        socialForce->removeCrowd();
+                        createAgents();
+                    }
                 }
-                int numAGVCompleted = getNumAGVCompleted(socialForce->getAGVs());
-                if (numAGVCompleted > 0 && numAGVCompleted % marker == 0)
+                else
                 {
                     socialForce->removeCrowd();
+                    createAgents();
+                }
+
+                if (numAGVCompleted > 0 && numAGVCompleted % marker == 0)
+                {
                     juncIndex = juncIndex + 1;
                     if (juncIndex == juncDataList.size())
                     {
@@ -735,11 +761,13 @@ void update()
                     }
                     socialForce->removeWalls();
                     float hallwayLength = juncDataList[juncIndex].items().begin().value();
-                    cout << "*****=> " << juncDataList[juncIndex].items().begin().key() << ": " << hallwayLength << endl;
+                    if (numAGVCompleted + 1 < agvs.size())
+                    {
+                        cout << "*****=> " << juncDataList[juncIndex].items().begin().key() << ": " << hallwayLength << endl;
+                    }
                     float length1Side = (hallwayLength) / 2;
                     juncData = {length1Side, length1Side};
                     createWalls();
-                    createAgents();
                     // cout << agv->getId() << " - Remove and re-create agent" << endl;
                 }
             }
@@ -748,15 +776,17 @@ void update()
     }
     if (count_agvs == agvs.size())
     {
+        int totalRunningTime = currTime - startTime;
         Utility::writeResult(
             "data/end.txt", juncName, inputData["graphicsMode"]["value"], agvs,
             juncDataList,
             (int)inputData["runConcurrently"]["value"],
             (int)inputData["runMode"]["value"],
-            (int)inputData["noRunPerHallway"]["value"]);
+            (int)inputData["noRunPerHallway"]["value"],
+            totalRunningTime);
 
         std::cout << "Maximum speed: " << maxSpeed << " - Minimum speed: " << minSpeed << endl;
-        std::cout << "Finish in: " << Utility::convertTime(currTime - startTime) << endl;
+        std::cout << "Finish in: " << Utility::convertTime(totalRunningTime) << endl;
         delete socialForce;
         socialForce = 0;
 

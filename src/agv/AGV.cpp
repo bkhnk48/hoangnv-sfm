@@ -15,6 +15,8 @@ AGV::AGV()
     thresholdDisToPedes = 0;
     isMoving = false;
     velocity.set(0.0, 0.0, 0.0);
+    collisionStartTime = 0;
+    totalStopTime = 0;
 }
 
 AGV::~AGV()
@@ -47,6 +49,16 @@ void AGV::setThresholdDisToPedes(float thresholdDisToPedes)
 {
     this->thresholdDisToPedes = thresholdDisToPedes;
 }
+
+void AGV::setTotalStopTime(int totalStopTime)
+{
+    this->totalStopTime = totalStopTime;
+};
+
+void AGV::setCollisionStartTime(int collisionStartTime)
+{
+    this->collisionStartTime = collisionStartTime;
+};
 
 void AGV::setPoints(Point3f pointA, Point3f pointB, Point3f pointC, Point3f pointD)
 {

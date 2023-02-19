@@ -18,6 +18,8 @@ private:
     Point3f pointA, pointB, pointC, pointD;
     Vector3f direction;
     bool isCollision;
+    int totalStopTime;
+    int collisionStartTime;
 
 public:
     AGV();
@@ -45,6 +47,14 @@ public:
     void setThresholdDisToPedes(float thresholdDisToPedes);
 
     float getThresholdDisToPedes() const { return thresholdDisToPedes; }
+
+    int getTotalStopTime() const { return totalStopTime; }
+
+    void setTotalStopTime(int totalStopTime);
+
+    int getCollisionStartTime() const { return collisionStartTime; }
+
+    void setCollisionStartTime(int collisionStartTime);
 
     void setPoints(Point3f pointA, Point3f pointB, Point3f pointC, Point3f pointD);
 

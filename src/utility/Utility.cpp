@@ -1,17 +1,19 @@
 #include "Utility.h"
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
+
 #include <bits/stdc++.h>
-#include <iomanip>
-#include <string>
-#include <random>
+
+#include <chrono>
 #include <cmath>
 #include <ctime>
-#include <chrono>
-#include "src/constant/Constant.h"
+#include <fstream>
+#include <iomanip>
+#include <iostream>
 #include <numeric>
+#include <random>
+#include <string>
+#include <vector>
+
+#include "src/constant/Constant.h"
 
 using namespace std;
 using namespace Constant;
@@ -27,7 +29,8 @@ float Utility::randomFloat(float lowerBound, float upperBound)
 }
 
 // read map data file
-std::map<std::string, std::vector<float>> Utility::readMapData(const char *fileName)
+std::map<std::string, std::vector<float>> Utility::readMapData(
+    const char *fileName)
 {
     map<std::string, std::vector<float>> map;
     ifstream input(fileName);
@@ -83,7 +86,8 @@ std::map<std::string, std::vector<float>> Utility::readMapData(const char *fileN
     return map;
 }
 
-std::vector<json> Utility::convertMapData(std::map<std::string, std::vector<float>> mapData)
+std::vector<json> Utility::convertMapData(
+    std::map<std::string, std::vector<float>> mapData)
 {
     std::vector<json> data;
     for (auto elem : mapData)
@@ -106,7 +110,8 @@ std::vector<json> Utility::convertMapData(std::map<std::string, std::vector<floa
     return data;
 }
 
-bool Utility::hallwaySameCharExists(float hallwayLength, std::vector<json> data)
+bool Utility::hallwaySameCharExists(float hallwayLength,
+                                    std::vector<json> data)
 {
     for (auto elem : data)
     {
@@ -128,12 +133,17 @@ json Utility::readInputData(const char *fileName)
 }
 
 // write end file
-void Utility::writeResult(const char *fileName, string name, int mode, std::vector<AGV *> agvs, std::vector<json> juncDataList, int agvRunConcurrently, int runMode, int numRunPerHallway)
+void Utility::writeResult(const char *fileName, string name, int mode,
+                          std::vector<AGV *> agvs,
+                          std::vector<json> juncDataList,
+                          int agvRunConcurrently, int runMode,
+                          int numRunPerHallway, int totalRunningTime)
 {
     ofstream output(fileName, ios::app);
 
     std::string delimiter = " - ";
-    std::time_t now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::time_t now =
+        std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
     if (runMode == 0)
     {
@@ -143,13 +153,16 @@ void Utility::writeResult(const char *fileName, string name, int mode, std::vect
         {
             string array1[] = {"From Left", "From Bottom", "From Right", "From Top"};
             string array2[] = {"Turn Right", "Go straight", "Turn Left"};
-            string direction = array1[(int)(agv->getDirection().x)] + "-" + array2[(int)(agv->getDirection().y)];
-            output << name << delimiter << mode << delimiter << direction << delimiter << convertTime(agv->getTravelingTime()) << delimiter << agv->getNumOfCollision() << endl;
+            string direction = array1[(int)(agv->getDirection().x)] + "-" +
+                               array2[(int)(agv->getDirection().y)];
+            output << name << delimiter << mode << delimiter << direction << delimiter
+                   << convertTime(agv->getTravelingTime()) << delimiter
+                   << agv->getNumOfCollision() << endl;
         }
     }
     else
     {
-        output << "\n*#* Completed on " << std::ctime(&now);
+        output << "\n\t*#* Completed on " << std::ctime(&now);
 
         string hallwayName;
         float hallwayLength;
@@ -159,6 +172,10 @@ void Utility::writeResult(const char *fileName, string name, int mode, std::vect
 
         for (AGV *agv : agvs)
         {
+            if (agv->getNumOfCollision() == 0)
+            {
+                agv->setTotalStopTime(0);
+            }
             int marker = numRunPerHallway * (juncIndexTemp + 1) - 1;
             if (agvRunConcurrently == 1)
             {
@@ -170,33 +187,42 @@ void Utility::writeResult(const char *fileName, string name, int mode, std::vect
             {
                 hallwayName = juncDataList[juncIndexTemp].items().begin().key();
                 hallwayLength = juncDataList[juncIndexTemp].items().begin().value();
+                output << hallwayName << delimiter << hallwayLength << ": AGV ID "
+                       << agv->getId() << delimiter
+                       << convertTime(agv->getTravelingTime()) << delimiter
+                       << "Collisions " << agv->getNumOfCollision() << delimiter
+                       << "Total stop time " << convertTime(agv->getTotalStopTime()) << endl;
             }
-            output << hallwayName << delimiter << hallwayLength << ": AGV ID " << agv->getId() << delimiter << convertTime(agv->getTravelingTime()) << delimiter << "Collisions " << agv->getNumOfCollision() << endl;
 
             if (agv->getId() == marker)
             {
+                int minValue = *std::min_element(travelingTimeList.begin(),
+                                                 travelingTimeList.end());
+                int maxValue = *std::max_element(travelingTimeList.begin(),
+                                                 travelingTimeList.end());
+                output << "Shortest: " << convertTime(minValue)
+                       << " - Longest: " << convertTime(maxValue) << endl;
+                int sum = std::accumulate(travelingTimeList.begin(),
+                                          travelingTimeList.end(), 0);
+                double avgTime = static_cast<double>(sum) / travelingTimeList.size();
+                output << "Average time to travel through the hallway " << hallwayName
+                       << " is " << convertTime((int)avgTime) << "\n"
+                       << endl;
+
+                travelingTimeList.clear();
                 juncIndexTemp = juncIndexTemp + 1;
             }
         }
-        int minValue = *std::min_element(travelingTimeList.begin(), travelingTimeList.end());
-        int maxValue = *std::max_element(travelingTimeList.begin(), travelingTimeList.end());
-        output << "The shortest time is " << convertTime(minValue) << endl;
-        output << "The longest time is " << convertTime(maxValue) << endl;
-        int sum = std::accumulate(travelingTimeList.begin(), travelingTimeList.end(), 0);
-        double avgTime = static_cast<double>(sum) / travelingTimeList.size();
-        output << "Average time to travel through the hallway is " << convertTime((int)avgTime) << endl;
-
-        cout << "\n***** Statistical data *****" << endl;
-        cout << "The shortest time is " << convertTime(minValue) << endl;
-        cout << "The longest time is " << convertTime(maxValue) << endl;
-        cout << "Average time to travel through the hallway is " << convertTime((int)avgTime) << endl;
     }
+
+    output << "\t==> Total running time:  " << convertTime(totalRunningTime) << endl;
 
     output.close();
 }
 
 // calculate number of people in each flow
-std::vector<int> Utility::getNumPedesInFlow(int junctionType, int totalPedestrian)
+std::vector<int> Utility::getNumPedesInFlow(int junctionType,
+                                            int totalPedestrian)
 {
     int numFlow = 0;
     if (junctionType == 2)
@@ -226,8 +252,10 @@ std::vector<int> Utility::getNumPedesInFlow(int junctionType, int totalPedestria
     return v;
 }
 
-// get list velocity of all pedestrians: type 0 - Discrete distribution, type 1 - T distribution
-std::vector<double> Utility::getPedesVelocity(int type, json inputData, float deviationParam)
+// get list velocity of all pedestrians: type 0 - Discrete distribution, type 1
+// - T distribution
+std::vector<double> Utility::getPedesVelocity(int type, json inputData,
+                                              float deviationParam)
 {
     if (type == 0)
     {
@@ -235,33 +263,40 @@ std::vector<double> Utility::getPedesVelocity(int type, json inputData, float de
     }
     else
     {
-        return getPedesVelocityBasedTDis(int(inputData["numOfAgents"]["value"]), inputData["TDDegree"]["value"]);
+        return getPedesVelocityBasedTDis(int(inputData["numOfAgents"]["value"]),
+                                         inputData["TDDegree"]["value"]);
     }
 }
 
-std::vector<double> Utility::getPedesVelocityBasedDDis(json inputData, float deviationParam)
+std::vector<double> Utility::getPedesVelocityBasedDDis(json inputData,
+                                                       float deviationParam)
 {
     vector<double> v;
-    float perNoDisabilityWithoutOvertaking = float(inputData["p1"]["value"]) * deviationParam;
-    float perNoDisabilityWithOvertaking = float(inputData["p2"]["value"]) * deviationParam;
-    float perWalkingWithCrutches = float(inputData["p3"]["value"]) * deviationParam;
+    float perNoDisabilityWithoutOvertaking =
+        float(inputData["p1"]["value"]) * deviationParam;
+    float perNoDisabilityWithOvertaking =
+        float(inputData["p2"]["value"]) * deviationParam;
+    float perWalkingWithCrutches =
+        float(inputData["p3"]["value"]) * deviationParam;
     float perWalkingWithSticks = float(inputData["p4"]["value"]) * deviationParam;
     float perWheelchairs = float(inputData["p5"]["value"]) * deviationParam;
     // float perTheBlind = inputData["p6"]["value"];
     float perTheBlind =
-        100 - (perNoDisabilityWithoutOvertaking + perNoDisabilityWithOvertaking + perWalkingWithCrutches + perWalkingWithSticks + perWheelchairs);
+        100 - (perNoDisabilityWithoutOvertaking + perNoDisabilityWithOvertaking +
+               perWalkingWithCrutches + perWalkingWithSticks + perWheelchairs);
 
-    const int nrolls = 10000;                                                     // number of experiments
-    const int numPedes = int(int(inputData["numOfAgents"]["value"]) * deviationParam); // maximum number of pedes to distribute
+    const int nrolls = 10000; // number of experiments
+    const int numPedes =
+        int(int(inputData["numOfAgents"]["value"]) *
+            deviationParam); // maximum number of pedes to distribute
 
     std::default_random_engine generator;
-    std::discrete_distribution<int> distribution{
-        perNoDisabilityWithoutOvertaking,
-        perNoDisabilityWithOvertaking,
-        perWalkingWithCrutches,
-        perWalkingWithSticks,
-        perWheelchairs,
-        perTheBlind};
+    std::discrete_distribution<int> distribution{perNoDisabilityWithoutOvertaking,
+                                                 perNoDisabilityWithOvertaking,
+                                                 perWalkingWithCrutches,
+                                                 perWalkingWithSticks,
+                                                 perWheelchairs,
+                                                 perTheBlind};
 
     int p[6] = {};
 
@@ -282,7 +317,8 @@ std::vector<double> Utility::getPedesVelocityBasedDDis(json inputData, float dev
     for (int i = 0; i < 6; ++i)
     {
         // std::cout << i << ": " << p[i] * numPedes / nrolls << std::endl;
-        // std::cout << i << ": " << std::string(p[i] * numPedes / nrolls, '*') << std::endl;
+        // std::cout << i << ": " << std::string(p[i] * numPedes / nrolls, '*') <<
+        // std::endl;
         for (int j = 0; j < p[i] * numPedes / nrolls; j++)
         {
             v.push_back(map[i]);
@@ -297,7 +333,8 @@ std::vector<double> Utility::getPedesVelocityBasedDDis(json inputData, float dev
     return v;
 }
 
-std::vector<double> Utility::getPedesVelocityBasedTDis(int numPedes, double n_dist)
+std::vector<double> Utility::getPedesVelocityBasedTDis(int numPedes,
+                                                       double n_dist)
 {
     vector<double> v;
     double std = sqrt(n_dist / (n_dist + 2));
@@ -308,7 +345,8 @@ std::vector<double> Utility::getPedesVelocityBasedTDis(int numPedes, double n_di
 
     // std::cout << "min() == " << distr.min() << std::endl;
     // std::cout << "max() == " << distr.max() << std::endl;
-    // std::cout << "n() == " << std::fixed << std::setw(11) << std::setprecision(10) << distr.n() << std::endl;
+    // std::cout << "n() == " << std::fixed << std::setw(11) <<
+    // std::setprecision(10) << distr.n() << std::endl;
 
     // generate the distribution as a histogram
     std::map<double, int> histogram;
@@ -322,7 +360,8 @@ std::vector<double> Utility::getPedesVelocityBasedTDis(int numPedes, double n_di
     for (const auto &elem : histogram)
     {
         // std::cout << std::fixed << std::setw(11) << ++counter << ": "
-        //           << std::setw(14) << std::setprecision(3) << elem.first << std::endl;
+        //           << std::setw(14) << std::setprecision(3) << elem.first <<
+        //           std::endl;
         double velocity = std * elem.first * 0.1 + MEAN;
         if (velocity > 1.8)
         {
@@ -339,7 +378,8 @@ std::vector<double> Utility::getPedesVelocityBasedTDis(int numPedes, double n_di
     return v;
 }
 
-std::vector<float> Utility::getWallCoordinates(float walkwayWidth, std::vector<float> juncData)
+std::vector<float> Utility::getWallCoordinates(float walkwayWidth,
+                                               std::vector<float> juncData)
 {
     std::vector<float> v;
 
@@ -393,12 +433,14 @@ std::string Utility::convertTime(int ms)
     long sec = ms / 1000;
     ms = ms - 1000 * sec;
 
-    return std::to_string(hr) + std::string("h ") + std::to_string(min) + std::string("m ") + std::to_string(sec) +
-           std::string("s ") + std::to_string(ms) + std::string("ms");
+    return std::to_string(hr) + std::string("h ") + std::to_string(min) +
+           std::string("m ") + std::to_string(sec) + std::string("s ") +
+           std::to_string(ms) + std::string("ms");
 }
 
 // Position 0/1/2/3: Left/Right/Lower/Upper Limit
-std::vector<float> Utility::getMapLimit(float walkwayWidth, std::vector<float> juncData)
+std::vector<float> Utility::getMapLimit(float walkwayWidth,
+                                        std::vector<float> juncData)
 {
     std::vector<float> v;
     float leftWidthLimit = -1;
@@ -422,14 +464,18 @@ std::vector<float> Utility::getMapLimit(float walkwayWidth, std::vector<float> j
         upperHeightLimit = juncData[3] + temp;
     }
 
-    v.insert(v.end(), {leftWidthLimit, rightWidthLimit, lowerHeightLimit, upperHeightLimit});
+    v.insert(v.end(), {leftWidthLimit, rightWidthLimit, lowerHeightLimit,
+                       upperHeightLimit});
 
     return v;
 }
 
 // direction: 0 To Right, 1 To Left, 2 To Bottom, 3 To Top
 // side: 0 Left side, 1 Center, 2 Right side
-std::vector<float> Utility::getPedesDestination(int direction, int side, float walkwayWidth, std::vector<float> juncData, bool stopAtCorridor)
+std::vector<float> Utility::getPedesDestination(int direction, int side,
+                                                float walkwayWidth,
+                                                std::vector<float> juncData,
+                                                bool stopAtCorridor)
 {
     std::vector<float> v;
 
@@ -453,33 +499,39 @@ std::vector<float> Utility::getPedesDestination(int direction, int side, float w
         }
         else
         {
-            latitude = Utility::randomFloat(rightWidthLimit + 1, rightWidthLimit + 2);
+            latitude =
+                Utility::randomFloat(rightWidthLimit + 1, rightWidthLimit + 2);
         }
         switch (side)
         {
         case 0:
         {
-            v.insert(v.end(), {latitude,
-                               //    Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3, walkwayWidth / 2),
-                               Utility::randomFloat(-walkwayWidth / 2, walkwayWidth / 2),
-                               radius});
+            v.insert(v.end(),
+                     {latitude,
+                      //    Utility::randomFloat(walkwayWidth / 2 - walkwayWidth /
+                      //    3, walkwayWidth / 2),
+                      Utility::randomFloat(-walkwayWidth / 2, walkwayWidth / 2),
+                      radius});
             return v;
             break;
         }
         case 1:
         {
-            v.insert(v.end(), {latitude,
-                               Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3,
-                                                    walkwayWidth / 2 - walkwayWidth / 3),
-                               radius});
+            v.insert(v.end(),
+                     {latitude,
+                      Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3,
+                                           walkwayWidth / 2 - walkwayWidth / 3),
+                      radius});
             return v;
             break;
         }
         case 2:
         {
-            v.insert(v.end(), {latitude,
-                               Utility::randomFloat(-walkwayWidth / 2, -walkwayWidth / 2 + walkwayWidth / 3),
-                               radius});
+            v.insert(v.end(),
+                     {latitude,
+                      Utility::randomFloat(-walkwayWidth / 2,
+                                           -walkwayWidth / 2 + walkwayWidth / 3),
+                      radius});
             return v;
             break;
         }
@@ -504,26 +556,31 @@ std::vector<float> Utility::getPedesDestination(int direction, int side, float w
         {
         case 0:
         {
-            v.insert(v.end(), {latitude,
-                               Utility::randomFloat(-walkwayWidth / 2, -walkwayWidth / 2 + walkwayWidth / 3),
-                               radius});
+            v.insert(v.end(),
+                     {latitude,
+                      Utility::randomFloat(-walkwayWidth / 2,
+                                           -walkwayWidth / 2 + walkwayWidth / 3),
+                      radius});
             return v;
             break;
         }
         case 1:
         {
-            v.insert(v.end(), {latitude,
-                               Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3,
-                                                    walkwayWidth / 2 - walkwayWidth / 3),
-                               radius});
+            v.insert(v.end(),
+                     {latitude,
+                      Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3,
+                                           walkwayWidth / 2 - walkwayWidth / 3),
+                      radius});
             return v;
             break;
         }
         case 2:
         {
-            v.insert(v.end(), {latitude,
-                               Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3, walkwayWidth / 2),
-                               radius});
+            v.insert(v.end(),
+                     {latitude,
+                      Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3,
+                                           walkwayWidth / 2),
+                      radius});
             return v;
             break;
         }
@@ -542,32 +599,35 @@ std::vector<float> Utility::getPedesDestination(int direction, int side, float w
         }
         else
         {
-            longitude = Utility::randomFloat(lowerHeightLimit - 2, lowerHeightLimit - 1);
+            longitude =
+                Utility::randomFloat(lowerHeightLimit - 2, lowerHeightLimit - 1);
         }
         switch (side)
         {
         case 0:
         {
-            v.insert(v.end(), {Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3, walkwayWidth / 2),
-                               longitude,
-                               radius});
+            v.insert(v.end(),
+                     {Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3,
+                                           walkwayWidth / 2),
+                      longitude, radius});
             return v;
             break;
         }
         case 1:
         {
-            v.insert(v.end(), {Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3,
-                                                    walkwayWidth / 2 - walkwayWidth / 3),
-                               longitude,
-                               radius});
+            v.insert(v.end(),
+                     {Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3,
+                                           walkwayWidth / 2 - walkwayWidth / 3),
+                      longitude, radius});
             return v;
             break;
         }
         case 2:
         {
-            v.insert(v.end(), {Utility::randomFloat(-walkwayWidth / 2, -walkwayWidth / 2 + walkwayWidth / 3),
-                               longitude,
-                               radius});
+            v.insert(v.end(),
+                     {Utility::randomFloat(-walkwayWidth / 2,
+                                           -walkwayWidth / 2 + walkwayWidth / 3),
+                      longitude, radius});
             return v;
             break;
         }
@@ -586,29 +646,35 @@ std::vector<float> Utility::getPedesDestination(int direction, int side, float w
         }
         else
         {
-            longitude = Utility::randomFloat(upperHeightLimit + 1, upperHeightLimit + 2);
+            longitude =
+                Utility::randomFloat(upperHeightLimit + 1, upperHeightLimit + 2);
         }
         switch (side)
         {
         case 0:
         {
-            v.insert(v.end(), {Utility::randomFloat(-walkwayWidth / 2, -walkwayWidth / 2 + walkwayWidth / 3),
-                               longitude, radius});
+            v.insert(v.end(),
+                     {Utility::randomFloat(-walkwayWidth / 2,
+                                           -walkwayWidth / 2 + walkwayWidth / 3),
+                      longitude, radius});
             return v;
             break;
         }
         case 1:
         {
-            v.insert(v.end(), {Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3,
-                                                    walkwayWidth / 2 - walkwayWidth / 3),
-                               longitude, radius});
+            v.insert(v.end(),
+                     {Utility::randomFloat(-walkwayWidth / 2 + walkwayWidth / 3,
+                                           walkwayWidth / 2 - walkwayWidth / 3),
+                      longitude, radius});
             return v;
             break;
         }
         case 2:
         {
-            v.insert(v.end(), {Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3, walkwayWidth / 2),
-                               longitude, radius});
+            v.insert(v.end(),
+                     {Utility::randomFloat(walkwayWidth / 2 - walkwayWidth / 3,
+                                           walkwayWidth / 2),
+                      longitude, radius});
             return v;
             break;
         }
@@ -625,7 +691,10 @@ std::vector<float> Utility::getPedesDestination(int direction, int side, float w
 }
 
 // direction: 0 From Left, 1 From Right, 2 From Top, 3 From Bottom
-std::vector<float> Utility::getPedesSource(int direction, float totalLength, float subLength, float caravanWidth, float walkwayWidth, std::vector<float> juncData)
+std::vector<float> Utility::getPedesSource(int direction, float totalLength,
+                                           float subLength, float caravanWidth,
+                                           float walkwayWidth,
+                                           std::vector<float> juncData)
 {
     std::vector<float> v;
     float totalArea = totalLength * caravanWidth;
@@ -664,19 +733,22 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength, flo
         {
         case 0:
             v.insert(v.end(),
-                     {Utility::randomFloat(-horLandmark + centerLength / 2, -horLandmark + totalLength / 2),
+                     {Utility::randomFloat(-horLandmark + centerLength / 2,
+                                           -horLandmark + totalLength / 2),
                       Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
             return v;
             break;
         case 1:
             v.insert(v.end(),
-                     {Utility::randomFloat(-horLandmark - centerLength / 2, -horLandmark + centerLength / 2),
+                     {Utility::randomFloat(-horLandmark - centerLength / 2,
+                                           -horLandmark + centerLength / 2),
                       Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
             return v;
             break;
         case 2:
             v.insert(v.end(),
-                     {Utility::randomFloat(-horLandmark - totalLength / 2, -horLandmark - centerLength / 2),
+                     {Utility::randomFloat(-horLandmark - totalLength / 2,
+                                           -horLandmark - centerLength / 2),
                       Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
             return v;
             break;
@@ -691,19 +763,22 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength, flo
         {
         case 0:
             v.insert(v.end(),
-                     {Utility::randomFloat(horLandmark - totalLength / 2, horLandmark - centerLength / 2),
+                     {Utility::randomFloat(horLandmark - totalLength / 2,
+                                           horLandmark - centerLength / 2),
                       Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
             return v;
             break;
         case 1:
             v.insert(v.end(),
-                     {Utility::randomFloat(horLandmark - centerLength / 2, horLandmark + centerLength / 2),
+                     {Utility::randomFloat(horLandmark - centerLength / 2,
+                                           horLandmark + centerLength / 2),
                       Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
             return v;
             break;
         case 2:
             v.insert(v.end(),
-                     {Utility::randomFloat(horLandmark + centerLength / 2, horLandmark + totalLength / 2),
+                     {Utility::randomFloat(horLandmark + centerLength / 2,
+                                           horLandmark + totalLength / 2),
                       Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2)});
             return v;
             break;
@@ -717,21 +792,24 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength, flo
         switch (sampled_value)
         {
         case 0:
-            v.insert(v.end(), {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                               Utility::randomFloat(verLandmark - totalLength / 2,
-                                                    verLandmark - centerLength / 2)});
+            v.insert(v.end(),
+                     {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
+                      Utility::randomFloat(verLandmark - totalLength / 2,
+                                           verLandmark - centerLength / 2)});
             return v;
             break;
         case 1:
-            v.insert(v.end(), {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                               Utility::randomFloat(verLandmark - centerLength / 2,
-                                                    verLandmark + centerLength / 2)});
+            v.insert(v.end(),
+                     {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
+                      Utility::randomFloat(verLandmark - centerLength / 2,
+                                           verLandmark + centerLength / 2)});
             return v;
             break;
         case 2:
-            v.insert(v.end(), {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                               Utility::randomFloat(verLandmark + centerLength / 2,
-                                                    verLandmark + totalLength / 2)});
+            v.insert(v.end(),
+                     {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
+                      Utility::randomFloat(verLandmark + centerLength / 2,
+                                           verLandmark + totalLength / 2)});
             return v;
             break;
         default:
@@ -744,21 +822,24 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength, flo
         switch (sampled_value)
         {
         case 0:
-            v.insert(v.end(), {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                               Utility::randomFloat(-verLandmark + centerLength / 2,
-                                                    -verLandmark + totalLength / 2)});
+            v.insert(v.end(),
+                     {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
+                      Utility::randomFloat(-verLandmark + centerLength / 2,
+                                           -verLandmark + totalLength / 2)});
             return v;
             break;
         case 1:
-            v.insert(v.end(), {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                               Utility::randomFloat(-verLandmark - centerLength / 2,
-                                                    -verLandmark + centerLength / 2)});
+            v.insert(v.end(),
+                     {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
+                      Utility::randomFloat(-verLandmark - centerLength / 2,
+                                           -verLandmark + centerLength / 2)});
             return v;
             break;
         case 2:
-            v.insert(v.end(), {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
-                               Utility::randomFloat(-verLandmark - totalLength / 2,
-                                                    -verLandmark - centerLength / 2)});
+            v.insert(v.end(),
+                     {Utility::randomFloat(-caravanWidth / 2, caravanWidth / 2),
+                      Utility::randomFloat(-verLandmark - totalLength / 2,
+                                           -verLandmark - centerLength / 2)});
             return v;
             break;
         default:
@@ -772,7 +853,8 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength, flo
     return v;
 }
 
-std::vector<float> Utility::getPedesColor(float maxSpeed, float minSpeed, float desiredSpeed, int type)
+std::vector<float> Utility::getPedesColor(float maxSpeed, float minSpeed,
+                                          float desiredSpeed, int type)
 {
     std::vector<float> v;
 
@@ -785,7 +867,8 @@ std::vector<float> Utility::getPedesColor(float maxSpeed, float minSpeed, float 
             v.insert(v.end(), {GREEN.x, GREEN.y, GREEN.z}); // Green
             return v;
         }
-        else if (desiredSpeed < MEAN && desiredSpeed >= minSpeed + oneThirdVeloRange)
+        else if (desiredSpeed < MEAN &&
+                 desiredSpeed >= minSpeed + oneThirdVeloRange)
         {
             v.insert(v.end(), {BLACK.x, BLACK.y, BLACK.z}); // Black
             return v;
@@ -837,7 +920,9 @@ float getCoor(float x, float verAsymtote, float horAsymtote)
     return horAsymtote * x / (x - verAsymtote);
 }
 
-std::vector<Point3f> Utility::getRouteAGV(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData)
+std::vector<Point3f> Utility::getRouteAGV(int src, int turningDirection,
+                                          float walkwayWidth,
+                                          std::vector<float> juncData)
 {
     std::vector<Point3f> v;
     int junctionType = juncData.size();
@@ -857,7 +942,8 @@ std::vector<Point3f> Utility::getRouteAGV(int src, int turningDirection, float w
 }
 
 // src = {0, 1, 2} ~ Go from Left, Bottom, Right side
-std::vector<Point3f> Utility::getRouteAGVHallway(int src, float walkwayWidth, std::vector<float> juncData)
+std::vector<Point3f> Utility::getRouteAGVHallway(int src, float walkwayWidth,
+                                                 std::vector<float> juncData)
 {
     std::vector<Point3f> v;
 
@@ -884,7 +970,9 @@ std::vector<Point3f> Utility::getRouteAGVHallway(int src, float walkwayWidth, st
 
 // src = {0, 1, 2} ~ Go from Left, Bottom, Right side
 // turningDirection = {0, 1, 2} - Turn Left, Go Straight, Turn Right
-std::vector<Point3f> Utility::getRouteAGVTJunction(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData)
+std::vector<Point3f> Utility::getRouteAGVTJunction(
+    int src, int turningDirection, float walkwayWidth,
+    std::vector<float> juncData)
 {
     std::vector<Point3f> v;
 
@@ -913,21 +1001,26 @@ std::vector<Point3f> Utility::getRouteAGVTJunction(int src, int turningDirection
             // Go Straight
         case 1:
         {
-            v.insert(v.end(), {Point3f(leftWidthLimit - 1, -horWalkwayWidth / 3, 0.0),
-                               Point3f(rightWidthLimit + 1, -horWalkwayWidth / 3, 0.0)});
-            v.insert(v.end(), {Point3f(rightWidthLimit + 2, -horWalkwayWidth / 3, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(leftWidthLimit - 1, -horWalkwayWidth / 3, 0.0),
+                      Point3f(rightWidthLimit + 1, -horWalkwayWidth / 3, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(rightWidthLimit + 2, -horWalkwayWidth / 3, 0.0)});
             return v;
             break;
         }
             // Turn Right
         case 2:
         {
-            v.insert(v.end(), {Point3f(leftWidthLimit - 1, -horWalkwayWidth / 3, 0.0),
-                               Point3f(-verWalkwayWidth / 2, -horWalkwayWidth / 3, 0.0),
-                               Point3f(-verWalkwayWidth / 3.5, -horWalkwayWidth / 2.5, 0.0),
-                               Point3f(-verWalkwayWidth / 3.5, -horWalkwayWidth / 2, 0.0)});
-            v.insert(v.end(), {Point3f(-verWalkwayWidth / 3, lowerHeightLimit - 1, 0.0),
-                               Point3f(-verWalkwayWidth / 3, lowerHeightLimit - 2, 0.0)});
+            v.insert(
+                v.end(),
+                {Point3f(leftWidthLimit - 1, -horWalkwayWidth / 3, 0.0),
+                 Point3f(-verWalkwayWidth / 2, -horWalkwayWidth / 3, 0.0),
+                 Point3f(-verWalkwayWidth / 3.5, -horWalkwayWidth / 2.5, 0.0),
+                 Point3f(-verWalkwayWidth / 3.5, -horWalkwayWidth / 2, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(-verWalkwayWidth / 3, lowerHeightLimit - 1, 0.0),
+                      Point3f(-verWalkwayWidth / 3, lowerHeightLimit - 2, 0.0)});
             return v;
             break;
         }
@@ -966,12 +1059,14 @@ std::vector<Point3f> Utility::getRouteAGVTJunction(int src, int turningDirection
             // Turn Right
         case 2:
         {
-            v.insert(v.end(), {Point3f(verWalkwayWidth / 3, lowerHeightLimit - 1, 0.0),
-                               Point3f(verWalkwayWidth / 3, -horWalkwayWidth / 2, 0.0),
-                               Point3f(verWalkwayWidth / 2.5, -horWalkwayWidth / 3.5, 0.0),
-                               Point3f(verWalkwayWidth / 2, -horWalkwayWidth / 3.5, 0.0)});
-            v.insert(v.end(), {Point3f(rightWidthLimit + 1, -horWalkwayWidth / 3, 0.0),
-                               Point3f(rightWidthLimit + 2, -horWalkwayWidth / 3, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(verWalkwayWidth / 3, lowerHeightLimit - 1, 0.0),
+                      Point3f(verWalkwayWidth / 3, -horWalkwayWidth / 2, 0.0),
+                      Point3f(verWalkwayWidth / 2.5, -horWalkwayWidth / 3.5, 0.0),
+                      Point3f(verWalkwayWidth / 2, -horWalkwayWidth / 3.5, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(rightWidthLimit + 1, -horWalkwayWidth / 3, 0.0),
+                      Point3f(rightWidthLimit + 2, -horWalkwayWidth / 3, 0.0)});
             return v;
             break;
         }
@@ -1007,9 +1102,11 @@ std::vector<Point3f> Utility::getRouteAGVTJunction(int src, int turningDirection
             // Go Straight
         case 1:
         {
-            v.insert(v.end(), {Point3f(rightWidthLimit + 1, horWalkwayWidth / 3, 0.0),
-                               Point3f(leftWidthLimit - 1, horWalkwayWidth / 3, 0.0)});
-            v.insert(v.end(), {Point3f(leftWidthLimit - 2, horWalkwayWidth / 3, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(rightWidthLimit + 1, horWalkwayWidth / 3, 0.0),
+                      Point3f(leftWidthLimit - 1, horWalkwayWidth / 3, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(leftWidthLimit - 2, horWalkwayWidth / 3, 0.0)});
             return v;
             break;
         }
@@ -1026,7 +1123,9 @@ std::vector<Point3f> Utility::getRouteAGVTJunction(int src, int turningDirection
 
 // src = {0, 1, 2, 3} ~ Go from Left, Bottom, Right, Top side
 // turningDirection = {0, 1, 2} - Turn Left, Go Straight, Turn Right
-std::vector<Point3f> Utility::getRouteAGVCrossRoad(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData)
+std::vector<Point3f> Utility::getRouteAGVCrossRoad(
+    int src, int turningDirection, float walkwayWidth,
+    std::vector<float> juncData)
 {
     float horWalkwayWidth = walkwayWidth;
     float verWalkwayWidth = walkwayWidth;
@@ -1073,21 +1172,26 @@ std::vector<Point3f> Utility::getRouteAGVCrossRoad(int src, int turningDirection
             // Go Straight
         case 1:
         {
-            v.insert(v.end(), {Point3f(leftWidthLimit - 1, -horWalkwayWidth / 3, 0.0),
-                               Point3f(rightWidthLimit + 1, -horWalkwayWidth / 3, 0.0)});
-            v.insert(v.end(), {Point3f(rightWidthLimit + 2, -horWalkwayWidth / 3, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(leftWidthLimit - 1, -horWalkwayWidth / 3, 0.0),
+                      Point3f(rightWidthLimit + 1, -horWalkwayWidth / 3, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(rightWidthLimit + 2, -horWalkwayWidth / 3, 0.0)});
             return v;
             break;
         }
             // Turn Right
         case 2:
         {
-            v.insert(v.end(), {Point3f(leftWidthLimit - 1, -horWalkwayWidth / 3, 0.0),
-                               Point3f(-verWalkwayWidth / 2, -horWalkwayWidth / 3, 0.0),
-                               Point3f(-verWalkwayWidth / 3.5, -horWalkwayWidth / 2.5, 0.0),
-                               Point3f(-verWalkwayWidth / 3.5, -horWalkwayWidth / 2, 0.0)});
-            v.insert(v.end(), {Point3f(-verWalkwayWidth / 3, lowerHeightLimit - 1, 0.0),
-                               Point3f(-verWalkwayWidth / 3, lowerHeightLimit - 2, 0.0)});
+            v.insert(
+                v.end(),
+                {Point3f(leftWidthLimit - 1, -horWalkwayWidth / 3, 0.0),
+                 Point3f(-verWalkwayWidth / 2, -horWalkwayWidth / 3, 0.0),
+                 Point3f(-verWalkwayWidth / 3.5, -horWalkwayWidth / 2.5, 0.0),
+                 Point3f(-verWalkwayWidth / 3.5, -horWalkwayWidth / 2, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(-verWalkwayWidth / 3, lowerHeightLimit - 1, 0.0),
+                      Point3f(-verWalkwayWidth / 3, lowerHeightLimit - 2, 0.0)});
             return v;
             break;
         }
@@ -1123,21 +1227,25 @@ std::vector<Point3f> Utility::getRouteAGVCrossRoad(int src, int turningDirection
             // Go Straight
         case 1:
         {
-            v.insert(v.end(), {Point3f(verWalkwayWidth / 3, lowerHeightLimit - 1, 0.0),
-                               Point3f(verWalkwayWidth / 3, upperHeightLimit + 1, 0.0)});
-            v.insert(v.end(), {Point3f(verWalkwayWidth / 3, upperHeightLimit + 2, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(verWalkwayWidth / 3, lowerHeightLimit - 1, 0.0),
+                      Point3f(verWalkwayWidth / 3, upperHeightLimit + 1, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(verWalkwayWidth / 3, upperHeightLimit + 2, 0.0)});
             return v;
             break;
         }
             // Turn Right
         case 2:
         {
-            v.insert(v.end(), {Point3f(verWalkwayWidth / 3, lowerHeightLimit - 1, 0.0),
-                               Point3f(verWalkwayWidth / 3, -horWalkwayWidth / 2, 0.0),
-                               Point3f(verWalkwayWidth / 2.5, -horWalkwayWidth / 3.5, 0.0),
-                               Point3f(verWalkwayWidth / 2, -horWalkwayWidth / 3.5, 0.0)});
-            v.insert(v.end(), {Point3f(rightWidthLimit + 1, -horWalkwayWidth / 3, 0.0),
-                               Point3f(rightWidthLimit + 2, -horWalkwayWidth / 3, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(verWalkwayWidth / 3, lowerHeightLimit - 1, 0.0),
+                      Point3f(verWalkwayWidth / 3, -horWalkwayWidth / 2, 0.0),
+                      Point3f(verWalkwayWidth / 2.5, -horWalkwayWidth / 3.5, 0.0),
+                      Point3f(verWalkwayWidth / 2, -horWalkwayWidth / 3.5, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(rightWidthLimit + 1, -horWalkwayWidth / 3, 0.0),
+                      Point3f(rightWidthLimit + 2, -horWalkwayWidth / 3, 0.0)});
             return v;
             break;
         }
@@ -1173,21 +1281,25 @@ std::vector<Point3f> Utility::getRouteAGVCrossRoad(int src, int turningDirection
             // Go Straight
         case 1:
         {
-            v.insert(v.end(), {Point3f(rightWidthLimit + 1, horWalkwayWidth / 3, 0.0),
-                               Point3f(leftWidthLimit - 1, horWalkwayWidth / 3, 0.0)});
-            v.insert(v.end(), {Point3f(leftWidthLimit - 2, horWalkwayWidth / 3, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(rightWidthLimit + 1, horWalkwayWidth / 3, 0.0),
+                      Point3f(leftWidthLimit - 1, horWalkwayWidth / 3, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(leftWidthLimit - 2, horWalkwayWidth / 3, 0.0)});
             return v;
             break;
         }
             // Turn Right
         case 2:
         {
-            v.insert(v.end(), {Point3f(rightWidthLimit + 1, horWalkwayWidth / 3, 0.0),
-                               Point3f(verWalkwayWidth / 2, horWalkwayWidth / 3, 0.0),
-                               Point3f(verWalkwayWidth / 3.5, horWalkwayWidth / 2.5, 0.0),
-                               Point3f(verWalkwayWidth / 3.5, horWalkwayWidth / 2, 0.0)});
-            v.insert(v.end(), {Point3f(verWalkwayWidth / 3, upperHeightLimit + 1, 0.0),
-                               Point3f(verWalkwayWidth / 3, upperHeightLimit + 2, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(rightWidthLimit + 1, horWalkwayWidth / 3, 0.0),
+                      Point3f(verWalkwayWidth / 2, horWalkwayWidth / 3, 0.0),
+                      Point3f(verWalkwayWidth / 3.5, horWalkwayWidth / 2.5, 0.0),
+                      Point3f(verWalkwayWidth / 3.5, horWalkwayWidth / 2, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(verWalkwayWidth / 3, upperHeightLimit + 1, 0.0),
+                      Point3f(verWalkwayWidth / 3, upperHeightLimit + 2, 0.0)});
             return v;
             break;
         }
@@ -1223,21 +1335,25 @@ std::vector<Point3f> Utility::getRouteAGVCrossRoad(int src, int turningDirection
             // Go Straight
         case 1:
         {
-            v.insert(v.end(), {Point3f(-verWalkwayWidth / 3, upperHeightLimit + 1, 0.0),
-                               Point3f(-verWalkwayWidth / 3, lowerHeightLimit - 1, 0.0)});
-            v.insert(v.end(), {Point3f(-verWalkwayWidth / 3, lowerHeightLimit - 2, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(-verWalkwayWidth / 3, upperHeightLimit + 1, 0.0),
+                      Point3f(-verWalkwayWidth / 3, lowerHeightLimit - 1, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(-verWalkwayWidth / 3, lowerHeightLimit - 2, 0.0)});
             return v;
             break;
         }
             // Turn Right
         case 2:
         {
-            v.insert(v.end(), {Point3f(-verWalkwayWidth / 3, upperHeightLimit + 1, 0.0),
-                               Point3f(-verWalkwayWidth / 3, horWalkwayWidth / 2, 0.0),
-                               Point3f(-verWalkwayWidth / 2.5, horWalkwayWidth / 3.5, 0.0),
-                               Point3f(-verWalkwayWidth / 2, horWalkwayWidth / 3.5, 0.0)});
-            v.insert(v.end(), {Point3f(leftWidthLimit - 1, horWalkwayWidth / 3, 0.0),
-                               Point3f(leftWidthLimit - 2, horWalkwayWidth / 3, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(-verWalkwayWidth / 3, upperHeightLimit + 1, 0.0),
+                      Point3f(-verWalkwayWidth / 3, horWalkwayWidth / 2, 0.0),
+                      Point3f(-verWalkwayWidth / 2.5, horWalkwayWidth / 3.5, 0.0),
+                      Point3f(-verWalkwayWidth / 2, horWalkwayWidth / 3.5, 0.0)});
+            v.insert(v.end(),
+                     {Point3f(leftWidthLimit - 1, horWalkwayWidth / 3, 0.0),
+                      Point3f(leftWidthLimit - 2, horWalkwayWidth / 3, 0.0)});
             return v;
             break;
         }
@@ -1251,7 +1367,8 @@ std::vector<Point3f> Utility::getRouteAGVCrossRoad(int src, int turningDirection
     return v;
 }
 
-Point3f Utility::getIntermediateDes(Point3f position, float verWalkwayWidth, float horWalkwayWidth)
+Point3f Utility::getIntermediateDes(Point3f position, float verWalkwayWidth,
+                                    float horWalkwayWidth)
 {
     if (position.x > 0 && position.y > 0)
     {
@@ -1271,7 +1388,8 @@ Point3f Utility::getIntermediateDes(Point3f position, float verWalkwayWidth, flo
     }
 }
 
-bool Utility::isPositionErr(Point3f position, float hallwayWidth, int junctionType, std::vector<AGV *> agvs)
+bool Utility::isPositionErr(Point3f position, float hallwayWidth,
+                            int junctionType, std::vector<AGV *> agvs)
 {
     float posLimit = hallwayWidth / 2;
     float negLimit = -hallwayWidth / 2;
@@ -1312,7 +1430,8 @@ bool Utility::isPositionErr(Point3f position, float hallwayWidth, int junctionTy
         {
             continue;
         }
-        float distance = (agv->getWidth() > agv->getLength()) ? agv->getWidth() : agv->getLength();
+        float distance = (agv->getWidth() > agv->getLength()) ? agv->getWidth()
+                                                              : agv->getLength();
         if (position.distance(agv->getPosition()) < distance / 2)
         {
             return true;

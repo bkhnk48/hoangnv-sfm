@@ -29,7 +29,8 @@ namespace Utility
         std::vector<json> juncDataList,
         int agvRunConcurrently,
         int runMode,
-        int numRunPerHallway);
+        int numRunPerHallway,
+        int totalRunningTime);
 
     std::vector<int> getNumPedesInFlow(int junctionType, int totalPedestrian);
 
