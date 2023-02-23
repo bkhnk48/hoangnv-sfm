@@ -761,7 +761,7 @@ void update()
                     }
                     socialForce->removeWalls();
                     float hallwayLength = juncDataList[juncIndex].items().begin().value();
-                    if (numAGVCompleted + 1 < agvs.size())
+                    if (numAGVCompleted + 1 <= agvs.size())
                     {
                         cout << "*****=> " << juncDataList[juncIndex].items().begin().key() << ": " << hallwayLength << endl;
                     }
