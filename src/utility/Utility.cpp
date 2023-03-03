@@ -141,6 +141,7 @@ void Utility::writeResult(const char *fileName, string name, int mode,
 {
     ofstream output(fileName, ios::app);
 
+    int easyReadingMode = 1;
     std::string delimiter = " - ";
     std::time_t now =
         std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
@@ -162,7 +163,10 @@ void Utility::writeResult(const char *fileName, string name, int mode,
     }
     else
     {
-        output << "\n\t*#* Completed on " << std::ctime(&now);
+        if (easyReadingMode == 1)
+        {
+            output << "\n\t*#* Completed on " << std::ctime(&now);
+        }
 
         string hallwayName;
         float hallwayLength;
@@ -187,11 +191,15 @@ void Utility::writeResult(const char *fileName, string name, int mode,
             {
                 hallwayName = juncDataList[juncIndexTemp].items().begin().key();
                 hallwayLength = juncDataList[juncIndexTemp].items().begin().value();
-                output << hallwayName << delimiter << hallwayLength << ": AGV ID "
-                       << agv->getId() << delimiter
-                       << convertTime(agv->getTravelingTime()) << delimiter
-                       << "Collisions " << agv->getNumOfCollision() << delimiter
-                       << "Total stop time " << convertTime(agv->getTotalStopTime()) << endl;
+
+                if (easyReadingMode == 1)
+                {
+                    output << hallwayName << delimiter << hallwayLength << ": AGV ID "
+                           << agv->getId() << delimiter
+                           << convertTime(agv->getTravelingTime()) << delimiter
+                           << "Collisions " << agv->getNumOfCollision() << delimiter
+                           << "Total stop time " << convertTime(agv->getTotalStopTime()) << endl;
+                }
             }
 
             if (agv->getId() == marker)
@@ -200,14 +208,21 @@ void Utility::writeResult(const char *fileName, string name, int mode,
                                                  travelingTimeList.end());
                 int maxValue = *std::max_element(travelingTimeList.begin(),
                                                  travelingTimeList.end());
-                output << "Shortest: " << convertTime(minValue)
-                       << " - Longest: " << convertTime(maxValue) << endl;
+
                 int sum = std::accumulate(travelingTimeList.begin(),
                                           travelingTimeList.end(), 0);
                 double avgTime = static_cast<double>(sum) / travelingTimeList.size();
-                output << "Average time to travel through the hallway " << hallwayName
-                       << " is " << convertTime((int)avgTime) << "\n"
-                       << endl;
+
+                if (easyReadingMode == 1)
+                {
+                    output << "Shortest: " << convertTime(minValue)
+                           << " - Longest: " << convertTime(maxValue) << endl;
+                    output << "Average time to travel through the hallway " << hallwayName
+                           << " is " << convertTime((int)avgTime) << "\n"
+                           << endl;
+                } else {
+                    output << hallwayLength << " " << minValue << " " << maxValue << " " << avgTime << endl;
+                }
 
                 travelingTimeList.clear();
                 juncIndexTemp = juncIndexTemp + 1;
@@ -215,7 +230,10 @@ void Utility::writeResult(const char *fileName, string name, int mode,
         }
     }
 
-    output << "\t==> Total running time:  " << convertTime(totalRunningTime) << endl;
+    if (easyReadingMode == 1)
+    {
+        output << "\t==> Total running time:  " << convertTime(totalRunningTime) << endl;
+    }
 
     output.close();
 }

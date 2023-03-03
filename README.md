@@ -1,78 +1,39 @@
-# Social Force Model in C++
+# Simulator measures the influence of people on AGVs using Social Force Model
 
-The *social force model* was originally introduced
-by [Helbing and Molnár (1995)](https://doi.org/10.1103/PhysRevE.51.4282), and is one of the microscopic technique in
-crowd simulation. It presents an idea that the agents’ internal motivation to perform certain movements affects their
-motion. Throughout the years, many improvements were made to the original model. One of the latest improvement was made
+## Social Force Model
+The Social Force Model (SFM) is a mathematical model used to describe the movement of individuals in crowded spaces. It was first proposed by Dirk Helbing and Péter Molnár in 1995. 
+
+The model assumes that individuals move based on two types of forces: physical forces and social forces. Physical forces are those that are governed by laws of physics, such as inertia, friction, and gravity. Social forces, on the other hand, are those that are influenced by the behavior of other individuals in the crowd
+
+The SFM model also takes into account the personal preferences of individuals, such as their desired walking speed and preferred direction of movement. These preferences are included in the model as parameters that can be adjusted to simulate different scenarios.
+
+Throughout the years, many improvements were made to the original model. One of the latest improvement was made
 by [Moussaïd *et al.* (2009)](https://doi.org/10.1098/rspb.2009.0405). In their research, the model parameters were
-calibrated to match the results of the experiment they have conducted on the real-world crowd. The *Social Force Model
-in C++* project is created based on this research.
+calibrated to match the results of the experiment they have conducted on the real-world crowd. This simulator is created based on this research.
 
 ## Getting Started
 
-This project consists of three header files and four source files. *Core.cpp* is used to setup the scene and display the
-position of all agents and obstacle walls, while the remaining header and source files are used to store the
-characteristics of agents and obstacle walls, and perform calculations.
-
 ### Prerequisites
 
-This project requires the following libraries.
-
-- [C++ Port of the *vecmath* Package](http://objectclub.jp/download/vecmath_e)
+This project requires the following library.
 - [Open Graphics Library (OpenGL)](https://www.opengl.org/)
 
 This project also requires users to use compilers that support C++ 11.
 
-## Creating a Simple Scene
+### Run simulation
 
-*Core.cpp* will create for you a corridor with 400 agents. Pressing the key <kbd>a</kbd> will start the simulation.
-However, if you wish to create your own scene, kindly follow the steps below.
+**The emulator is run with the following input:**
+- input.json: The configuration of the emulator scenarios
+- map.txt: Map data (extracted from the OMNeT++ simulator map)
 
-**Create a Pointer to the <code>SocialForce</code> Object**
+<!-- **Create a Pointer to the <code>SocialForce</code> Object** -->
+**Main commands** <br/>
+To compile program
+```cpp
+make
+```
+To run simulator
 
 ```cpp
-SocialForce *socialForce;
+./app
 ```
-
-**Create an Obstacle Wall**
-
-```cpp
-Wall *wall = new Wall(x1, y1, x2, y2);  // Step 1: Create wall and define its coordinates
-socialForce->addWall(wall);             // Step 2: Add wall to SFM
-```
-
-**Add an Agent**
-
-```cpp
-Agent *agent = new Agent;            // Step 1: Create agent
-agent->setPosition(x, y);            // Step 2: Set initial position
-agent->setPath(x, y, targetRadius);  // Step 3: Set target position
-```
-
-You can set multiple targets by repeating step 3. Adding multiple targets will automatically loop the agent between all
-targets
-
-**Retrieve Obstacle Wall Position**
-
-```cpp
-vector<Wall *> walls = socialForce->getWalls();
-
-for (Wall *wall : walls) {
-    wall->getStartPoint();
-    wall->getEndPoint();
-}
-```
-
-**Retrive Agent Position**
-
-```cpp
-Agent *agents = socialForce->getCrowd();
-
-for (Agent *agent : agents)
-    agent->getPosition();
-```
-
-## Authors
-
-- Fawwaz Mohd Nasir
-- Shamsul Mohamad
