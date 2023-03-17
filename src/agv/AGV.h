@@ -20,6 +20,7 @@ private:
     bool isCollision;
     int totalStopTime;
     int collisionStartTime;
+    std::vector<float> hallwayCharcs;
 
 public:
     AGV();
@@ -55,6 +56,10 @@ public:
     int getCollisionStartTime() const { return collisionStartTime; }
 
     void setCollisionStartTime(int collisionStartTime);
+
+    vector<float> getHallwayCharcs() const { return hallwayCharcs; }
+
+    void setHallwayCharcs(vector<float> hallwayCharcs);
 
     void setPoints(Point3f pointA, Point3f pointB, Point3f pointC, Point3f pointD);
 

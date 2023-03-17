@@ -10,6 +10,7 @@
 #include "model/SocialForce.h"
 #include "constant/Constant.h"
 #include "renderer/Renderer.h"
+// #include </opt/homebrew/Cellar/libomp/15.0.7/include/omp.h>
 
 using namespace std;
 using namespace Constant;
@@ -29,12 +30,14 @@ float speedConsiderAsStop = 0.2;
 json inputData;
 std::map<std::string, std::vector<float>> mapData;
 std::vector<json> juncDataList;
-std::vector<float> juncData;
+std::vector<float> juncDataGraphMode;
 std::string juncName;
 int juncIndex = 0;
 float walkwayWidth;
 
 int classificationType = 0;
+std::chrono::time_point<std::chrono::high_resolution_clock> startTiming;
+std::vector<AGV *> listOfAGVs;
 
 std::vector<int> numOfPeople;
 float minSpeed = -1;
@@ -42,11 +45,11 @@ float maxSpeed = -1;
 int threshold = 0;
 
 // Function Prototypes
-void init();
+void init(std::vector<float> juncData);
 
-void createWalls();
+void createWalls(SocialForce *socialForce, std::vector<float> juncData);
 
-void createAgents();
+void createAgents(SocialForce *socialForce, std::vector<float> juncData);
 
 void createAGVs();
 
@@ -58,10 +61,13 @@ void normalKey(unsigned char key, int xMousePos, int yMousePos);
 
 void update();
 
+bool updateNoGraphics(SocialForce *socialForce, AGV *agv);
+
 int main(int argc, char **argv)
 {
     inputData = Utility::readInputData("data/input.json");
     mapData = Utility::readMapData("data/map.txt");
+
     std::string input1;
 
     if ((int)inputData["runMode"]["value"] == 0)
@@ -77,7 +83,7 @@ int main(int argc, char **argv)
             {
                 walkwayWidth = (float)inputData["hallwayWidth"]["value"];
                 float length1Side = ((float)inputData["hallwayLength"]["value"]) / 2;
-                juncData = {length1Side, length1Side};
+                juncDataGraphMode = {length1Side, length1Side};
             }
             else if (input1 == "2")
             {
@@ -96,7 +102,7 @@ int main(int argc, char **argv)
                     }
 
                 } while (mapData[juncName].size() < 3);
-                juncData = mapData[juncName];
+                juncDataGraphMode = mapData[juncName];
                 walkwayWidth = mapData["walkwayWidth"][0];
             }
         } while (input1 != "1" && input1 != "2");
@@ -108,42 +114,90 @@ int main(int argc, char **argv)
 
         walkwayWidth = (float)inputData["hallwayWidth"]["value"];
         float length1Side = (hallwayLength) / 2;
-        juncData = {length1Side, length1Side};
+        juncDataGraphMode = {length1Side, length1Side};
     }
 
     float deviationParam = randomFloat(1 - (float)inputData["experimentalDeviation"]["value"] / 100, 1 + (float)inputData["experimentalDeviation"]["value"] / 100);
     // Threshold people stopping at the corridor
     threshold = int(inputData["numOfAgents"]["value"]) * deviationParam * (float)(inputData["stopAtHallway"]["value"]) / 100;
 
-    glutInit(&argc, argv); // Initialize GLUT
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA |
-                        GLUT_DEPTH);         // Set display mode  Default mode used
-    glutInitWindowSize(winWidth, winHeight); // Set window width and height
-    glutInitWindowPosition(90, 90);          // Set window position
-    glutCreateWindow(
-        "Crowd Simulation using Social Force"); // Set window title and create
-    // display window
-
-    animate = true;
-    startTime = currTime;
     if ((int)inputData["graphicsMode"]["value"] == 0)
     {
-        glutHideWindow();
+        // Run simulation without graphics
+        std::cout << "Running simulation without graphics" << std::endl;
+
+        createAGVs();
+        startTiming = chrono::high_resolution_clock::now();
+        std::cout << "Total number of AGVs: " << listOfAGVs.size() << std::endl;
+
+        // #pragma omp parallel for
+        for (AGV *agv : listOfAGVs)
+        {
+            SocialForce *socialForceNoGraphics = new SocialForce;
+            socialForceNoGraphics->addAGV(agv);
+
+            if (agv->getTravelingTime() == 0)
+            {
+                agv->setIsMoving(true);
+                cout << "AGV ID " << agv->getId() << " is running on hallway with length " << agv->getHallwayCharcs()[0] * 2 << endl;
+                auto elapsedTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - startTiming);
+                agv->setTravelingTime(static_cast<int>(elapsedTime.count()));
+            }
+
+            createWalls(socialForceNoGraphics, agv->getHallwayCharcs());
+            createAgents(socialForceNoGraphics, agv->getHallwayCharcs());
+
+            while (updateNoGraphics(socialForceNoGraphics, agv))
+            {
+            };
+            socialForceNoGraphics->removeWalls();
+            socialForceNoGraphics->removeCrowd();
+            delete socialForceNoGraphics;
+            socialForceNoGraphics = 0;
+        }
+        auto elapsedTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - startTiming);
+        int totalRunningTime = static_cast<int>(elapsedTime.count());
+        Utility::writeResult(
+            "data/end.txt", juncName, inputData["graphicsMode"]["value"], listOfAGVs,
+            juncDataList,
+            (int)inputData["runConcurrently"]["value"],
+            (int)inputData["runMode"]["value"],
+            (int)inputData["noRunPerHallway"]["value"],
+            totalRunningTime);
+
+        std::cout << "Maximum speed: " << maxSpeed << " - Minimum speed: " << minSpeed << endl;
+        std::cout << "Finish in: " << Utility::convertTime(totalRunningTime) << endl;
+
+        // glutHideWindow();
     }
+    else
+    {
 
-    init();                   // Initialization
-    glutDisplayFunc(display); // Send graphics to display window
-    glutReshapeFunc(reshape); // Maintain aspect ratio when window first created,
-    // resized and moved
+        glutInit(&argc, argv); // Initialize GLUT
+        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA |
+                            GLUT_DEPTH);         // Set display mode  Default mode used
+        glutInitWindowSize(winWidth, winHeight); // Set window width and height
+        glutInitWindowPosition(90, 90);          // Set window position
+        glutCreateWindow(
+            "Crowd Simulation using Social Force"); // Set window title and create
+        // display window
 
-    glutKeyboardFunc(normalKey);
-    glutIdleFunc(update); // Continuously execute 'update()'
-    glutMainLoop();       // Enter GLUT's main loop
+        animate = true;
+        startTime = currTime;
 
+        init(juncDataGraphMode);  // Initialization
+        glutDisplayFunc(display); // Send graphics to display window
+        glutReshapeFunc(reshape); // Maintain aspect ratio when window first created,
+        // resized and moved
+
+        glutKeyboardFunc(normalKey);
+        glutIdleFunc(update); // Continuously execute 'update()'
+        glutMainLoop();       // Enter GLUT's main loop
+    }
     return 0;
 }
 
-void init()
+void init(std::vector<float> juncData)
 {
     // General Light Intensity
     GLfloat gnrlAmbient[] = {
@@ -185,12 +239,12 @@ void init()
     srand(1604010629); // Seed to generate random numbers
 
     socialForce = new SocialForce;
-    createWalls();
-    createAgents();
+    createWalls(socialForce, juncData);
+    createAgents(socialForce, juncData);
     createAGVs();
 }
 
-void createWalls()
+void createWalls(SocialForce *socialForce, std::vector<float> juncData)
 {
     Wall *wall;
 
@@ -251,7 +305,7 @@ void createWalls()
     }
 }
 
-void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSpeed, int caseJump)
+void setAgentsFlow(SocialForce *socialForce, Agent *agent, float desiredSpeed, float maxSpeed, float minSpeed, int caseJump, std::vector<float> juncData)
 {
     // if (socialForce->getCrowdSize() < threshold)
     // {
@@ -363,7 +417,7 @@ void setAgentsFlow(Agent *agent, float desiredSpeed, float maxSpeed, float minSp
     socialForce->addAgent(agent);
 }
 
-void createAgents()
+void createAgents(SocialForce *socialForce, std::vector<float> juncData)
 {
     Agent *agent;
 
@@ -417,7 +471,7 @@ void createAgents()
             for (int temp = 0; temp < numOfPeople[idx]; temp++)
             {
                 agent = new Agent;
-                setAgentsFlow(agent, velocityList[pedesCount], maxSpeed, minSpeed, idx);
+                setAgentsFlow(socialForce, agent, velocityList[pedesCount], maxSpeed, minSpeed, idx, juncData);
                 pedesCount = pedesCount + 1;
             }
         }
@@ -429,7 +483,7 @@ void createAgents()
             for (int temp = 0; temp < numOfPeople[idx]; temp++)
             {
                 agent = new Agent;
-                setAgentsFlow(agent, velocityList[pedesCount], maxSpeed, minSpeed, idx);
+                setAgentsFlow(socialForce, agent, velocityList[pedesCount], maxSpeed, minSpeed, idx, juncData);
                 pedesCount = pedesCount + 1;
             }
         }
@@ -441,7 +495,7 @@ void createAgents()
             for (int temp = 0; temp < numOfPeople[idx]; temp++)
             {
                 agent = new Agent;
-                setAgentsFlow(agent, velocityList[pedesCount], maxSpeed, minSpeed, idx);
+                setAgentsFlow(socialForce, agent, velocityList[pedesCount], maxSpeed, minSpeed, idx, juncData);
                 pedesCount = pedesCount + 1;
             }
         }
@@ -484,13 +538,13 @@ void createAGVs()
     // test
     if ((int)inputData["runMode"]["value"] == 0)
     {
-        for (int i = 0; i < juncData.size(); i++)
+        for (int i = 0; i < juncDataGraphMode.size(); i++)
         {
-            if (juncData.size() == 4)
+            if (juncDataGraphMode.size() == 4)
             {
                 array = {0, 1, 2};
             }
-            else if (juncData.size() == 3)
+            else if (juncDataGraphMode.size() == 3)
             {
                 if (i == 0)
                 {
@@ -505,7 +559,7 @@ void createAGVs()
                     array = {0, 1};
                 }
             }
-            else if (juncData.size() == 2)
+            else if (juncDataGraphMode.size() == 2)
             {
                 array = {1};
             }
@@ -513,7 +567,7 @@ void createAGVs()
             for (int j : array)
             {
                 agv = new AGV();
-                vector<Point3f> route = Utility::getRouteAGV(i, j, walkwayWidth, juncData);
+                vector<Point3f> route = Utility::getRouteAGV(i, j, walkwayWidth, juncDataGraphMode);
                 agv->setDirection(i, j);
                 agv->setPosition(route[0].x, route[0].y);
 
@@ -546,7 +600,10 @@ void createAGVs()
         int numRunPerHallway = (int)inputData["noRunPerHallway"]["value"];
         int juncIndexTemp = 0;
         float hallwayLength = juncDataList[juncIndexTemp].items().begin().value();
-        cout << "*****=> " << juncDataList[juncIndex].items().begin().key() << ": " << hallwayLength << endl;
+        if ((int)inputData["graphicsMode"]["value"] == 1)
+        {
+            cout << "*****=> " << juncDataList[juncIndexTemp].items().begin().key() << ": " << hallwayLength << endl;
+        }
         float length1Side = (hallwayLength) / 2;
         vector<float> juncDataTemp = {length1Side, length1Side};
         int numAGVPerRun = 1;
@@ -562,16 +619,23 @@ void createAGVs()
                 vector<Point3f> route = Utility::getRouteAGV(j, 1, walkwayWidth, juncDataTemp); // Just need the source
                 agv->setDirection(j, 1);
                 agv->setPosition(route[0].x, route[0].y);
-
                 agv->setDestination(route[route.size() - 1].x, route[route.size() - 1].y);
                 agv->setDesiredSpeed((float)inputData["agvDesiredSpeed"]["value"]);
                 agv->setAcceleration(inputData["acceleration"]["value"]);
                 agv->setThresholdDisToPedes((float)inputData["thresDistance"]["value"]);
+                agv->setHallwayCharcs(juncDataTemp);
                 for (int i = 1; i < route.size(); i++)
                 {
                     agv->setPath(route[i].x, route[i].y, 1.0);
                 }
-                socialForce->addAGV(agv);
+                if ((int)inputData["graphicsMode"]["value"] == 1)
+                {
+                    socialForce->addAGV(agv);
+                }
+                else
+                {
+                    listOfAGVs.push_back(agv);
+                }
 
                 int marker = numRunPerHallway * (juncIndexTemp + 1) - 1;
                 if ((int)inputData["runConcurrently"]["value"] == 1)
@@ -609,7 +673,7 @@ void display()
     glScalef(1.0, 1.0, 1.0);
 
     drawAgents(socialForce);
-    drawAGVs(socialForce, juncData, (int)inputData["runConcurrently"]["value"], (int)inputData["runMode"]["value"]);
+    drawAGVs(socialForce, juncDataGraphMode, (int)inputData["runConcurrently"]["value"], (int)inputData["runMode"]["value"]);
     drawWalls(socialForce);
     glPopMatrix();
 
@@ -660,7 +724,7 @@ void update()
     frameTime = currTime - prevTime;
     prevTime = currTime;
 
-    int count_agents = 0, count_agvs = 0;
+    int count_agvs = 0;
 
     std::vector<Agent *> agents = socialForce->getCrowd();
     for (Agent *agent : agents)
@@ -668,7 +732,7 @@ void update()
         Point3f src = agent->getPosition();
         Point3f des = agent->getDestination();
 
-        if (Utility::isPositionErr(src, walkwayWidth, juncData.size(), socialForce->getAGVs()))
+        if (Utility::isPositionErr(src, walkwayWidth, juncDataGraphMode.size(), socialForce->getAGVs()))
         {
             socialForce->removeAgent(agent->getId());
             continue;
@@ -702,7 +766,6 @@ void update()
             {
                 socialForce->removeAgent(agent->getId());
             }
-            count_agents = count_agents + 1;
         }
     }
 
@@ -712,14 +775,14 @@ void update()
         if (agv->getCollisionStartTime() == 0 && agv->getVelocity().length() < speedConsiderAsStop && agv->getIsMoving())
         {
             agv->setCollisionStartTime(glutGet(GLUT_ELAPSED_TIME));
-            // cout << "- Start collision: " << convertTime(agv->getCollisionStartTime()) << endl;
+            // cout << "AGV ID: " << agv->getId() << " - Start collision: " << convertTime(agv->getCollisionStartTime()) << endl;
         }
 
         if (agv->getCollisionStartTime() != 0 && agv->getVelocity().length() > speedConsiderAsStop && agv->getIsMoving())
         {
             agv->setTotalStopTime(agv->getTotalStopTime() + glutGet(GLUT_ELAPSED_TIME) - agv->getCollisionStartTime());
-            // cout << "- Stop collision: " << convertTime(glutGet(GLUT_ELAPSED_TIME)) << endl;
-            // cout << "=> Total collision: " << convertTime(agv->getTotalStopTime()) << endl;
+            // cout << "AGV ID: " << agv->getId() << "- Stop collision: " << convertTime(glutGet(GLUT_ELAPSED_TIME)) << endl;
+            // cout << "AGV ID: " << agv->getId() << "=> Total collision: " << convertTime(agv->getTotalStopTime()) << endl;
             agv->setCollisionStartTime(0);
         }
 
@@ -743,13 +806,13 @@ void update()
                     if (numAGVCompleted % 2 == 0)
                     {
                         socialForce->removeCrowd();
-                        createAgents();
+                        createAgents(socialForce, juncDataGraphMode);
                     }
                 }
                 else
                 {
                     socialForce->removeCrowd();
-                    createAgents();
+                    createAgents(socialForce, juncDataGraphMode);
                 }
 
                 if (numAGVCompleted > 0 && numAGVCompleted % marker == 0)
@@ -766,8 +829,9 @@ void update()
                         cout << "*****=> " << juncDataList[juncIndex].items().begin().key() << ": " << hallwayLength << endl;
                     }
                     float length1Side = (hallwayLength) / 2;
-                    juncData = {length1Side, length1Side};
-                    createWalls();
+                    // juncData = {length1Side, length1Side};
+                    juncDataGraphMode = {length1Side, length1Side};
+                    createWalls(socialForce, juncDataGraphMode);
                     // cout << agv->getId() << " - Remove and re-create agent" << endl;
                 }
             }
@@ -801,4 +865,101 @@ void update()
     computeFPS(&fps);
     glutPostRedisplay();
     glutIdleFunc(update); // Continuously execute 'update()'
+}
+
+// return true if the agv is still moving
+bool updateNoGraphics(SocialForce *socialForce, AGV *agv)
+{
+
+    int frameTime;       // Store time in milliseconds
+    static int prevTime; // Stores time in milliseconds
+
+    auto elapsedTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - startTiming);
+    currTime = static_cast<int>(elapsedTime.count());
+
+    frameTime = currTime - prevTime;
+    prevTime = currTime;
+
+    std::vector<Agent *> agents = socialForce->getCrowd();
+    for (Agent *agent : agents)
+    {
+        Point3f src = agent->getPosition();
+        Point3f des = agent->getDestination();
+
+        if (Utility::isPositionErr(src, walkwayWidth, juncDataGraphMode.size(), socialForce->getAGVs()))
+        {
+            socialForce->removeAgent(agent->getId());
+            continue;
+        }
+
+        if (agent->getVelocity().length() < LOWER_SPEED_LIMIT + 0.2 &&
+            agent->getMinDistanceToWalls(socialForce->getWalls(), src, agent->getRadius()) < 0.2 &&
+            (agent->interDes).size() == 0)
+        {
+            Point3f intermediateDes = Utility::getIntermediateDes(src, walkwayWidth, walkwayWidth);
+
+            (agent->interDes).push_back(intermediateDes);
+            agent->setPath(intermediateDes.x, intermediateDes.y, 1.0);
+            agent->setPath(des.x, des.y, 1.0);
+        }
+
+        if ((agent->interDes).size() > 0)
+        {
+            float distanceToInterDes = src.distance((agent->interDes).front());
+            if (distanceToInterDes <= 1)
+            {
+                (agent->interDes).clear();
+            }
+        }
+
+        float distanceToTarget = src.distance(des);
+        if (distanceToTarget <= 1 || isnan(distanceToTarget))
+        {
+            agent->setIsMoving(false);
+            if (!agent->getStopAtCorridor())
+            {
+                socialForce->removeAgent(agent->getId());
+            }
+        }
+    }
+
+    // AGV processing
+    if (agv->getCollisionStartTime() == 0 && agv->getVelocity().length() < speedConsiderAsStop && agv->getIsMoving())
+    {
+        agv->setCollisionStartTime(currTime);
+        cout << "AGV ID: " << agv->getId() << " - Start collision: " << convertTime(agv->getCollisionStartTime()) << endl;
+    }
+
+    if (agv->getCollisionStartTime() != 0 && agv->getVelocity().length() > speedConsiderAsStop && agv->getIsMoving())
+    {
+        agv->setTotalStopTime(agv->getTotalStopTime() + currTime - agv->getCollisionStartTime());
+        cout << "AGV ID: " << agv->getId() << " - Stop collision: " << convertTime(glutGet(GLUT_ELAPSED_TIME)) << endl;
+        cout << "AGV ID: " << agv->getId() << "=> Total collision: " << convertTime(agv->getTotalStopTime()) << endl;
+        agv->setCollisionStartTime(0);
+    }
+
+    Point3f src = agv->getPosition();
+    Point3f des = agv->getDestination();
+
+    float distance = src.distance(des);
+    // if (currTime % 1000 == 0)
+    // {
+    //     cout << "Time: " << convertTime(currTime) << " - " << currTime << endl;
+    //     // std::cout << "AGV " << agv->getId() << " - Distance to target: " << distance << endl;
+    //     // std::cout << "frame time " << frameTime << endl;
+    // }
+    if (distance <= 1 || isnan(distance))
+    {
+        if (agv->getIsMoving())
+        {
+            agv->setTravelingTime(currTime - agv->getTravelingTime());
+            agv->setIsMoving(false);
+            std::cout << "AGV " << agv->getId() << " completed in " << Utility::convertTime(agv->getTravelingTime()) << endl;
+            return false;
+        }
+    }
+
+    socialForce->moveCrowd(static_cast<float>(frameTime) / 1000); // Perform calculations and move agents
+    socialForce->moveAGVs(static_cast<float>(frameTime) / 1000);
+    return true;
 }

@@ -60,6 +60,11 @@ void AGV::setCollisionStartTime(int collisionStartTime)
     this->collisionStartTime = collisionStartTime;
 };
 
+void AGV::setHallwayCharcs(vector<float> hallwayCharcs)
+{
+    this->hallwayCharcs = hallwayCharcs;
+}
+
 void AGV::setPoints(Point3f pointA, Point3f pointB, Point3f pointC, Point3f pointD)
 {
     this->pointA = pointA;
