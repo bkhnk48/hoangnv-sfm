@@ -149,6 +149,7 @@ int main(int argc, char **argv)
         auto elapsedTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - startTiming);
         int agvStartTime = static_cast<int>(elapsedTime.count());
         agv->setTravelingTime(agvStartTime);
+        agv->setPrevTime(agvStartTime);
         string message = "AGV ID " + std::to_string(agv->getId()) + " is running on hallway with length " + std::to_string(agv->getHallwayCharcs()[0] * 2) + " at " + Utility::convertTime(agvStartTime);
         cout << message << endl;
       }
