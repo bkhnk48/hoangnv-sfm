@@ -20,6 +20,7 @@ private:
     bool isCollision;
     int totalStopTime;
     int collisionStartTime;
+    int prevTime;
     std::vector<float> hallwayCharcs;
 
 public:
@@ -56,6 +57,10 @@ public:
     int getCollisionStartTime() const { return collisionStartTime; }
 
     void setCollisionStartTime(int collisionStartTime);
+
+    int getPrevTime() const { return prevTime; }
+
+    void setPrevTime(int prevTime);
 
     vector<float> getHallwayCharcs() const { return hallwayCharcs; }
 

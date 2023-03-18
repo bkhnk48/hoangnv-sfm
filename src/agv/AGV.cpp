@@ -17,6 +17,7 @@ AGV::AGV()
     velocity.set(0.0, 0.0, 0.0);
     collisionStartTime = 0;
     totalStopTime = 0;
+    prevTime = 0;
 }
 
 AGV::~AGV()
@@ -58,6 +59,11 @@ void AGV::setTotalStopTime(int totalStopTime)
 void AGV::setCollisionStartTime(int collisionStartTime)
 {
     this->collisionStartTime = collisionStartTime;
+};
+
+void AGV::setPrevTime(int prevTime)
+{
+    this->prevTime = prevTime;
 };
 
 void AGV::setHallwayCharcs(vector<float> hallwayCharcs)

@@ -4,11 +4,11 @@ BUILDDIR := build
 TARGET := app
 
 SRCEXT := cpp
-CFLAGS := -g -Wno-deprecated -std=c++17 -Wall
+CFLAGS := -g -Wno-deprecated -std=c++17 -Wall -fopenmp
 INC := -I .
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
-	LIB := -lglut -lGLU -lGL
+	LIB := -lglut -lGLU -lGL -fopenmp
 	SOURCES := $(shell find $(SRCDIR) -type f -name *.$(SRCEXT))
 else
 	LIB := -framework OpenGL -framework GLUT
