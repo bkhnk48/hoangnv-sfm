@@ -122,9 +122,8 @@ int main(int argc, char **argv)
     juncDataGraphMode = {length1Side, length1Side};
   }
 
-  float deviationParam = randomFloat(1 - (float)inputData["experimentalDeviation"]["value"] / 100, 1 + (float)inputData["experimentalDeviation"]["value"] / 100);
   // Threshold people stopping at the corridor
-  threshold = int(inputData["numOfAgents"]["value"]) * deviationParam * (float)(inputData["stopAtHallway"]["value"]) / 100;
+  threshold = getNoAgents((int)inputData["minNoAgents"]["value"], (int)inputData["maxNoAgents"]["value"]) * (float)(inputData["stopAtHallway"]["value"]) / 100;
 
   if ((int)inputData["graphicsMode"]["value"] == 0)
   {
@@ -317,10 +316,10 @@ void createWalls(SocialForce *socialForce, std::vector<float> juncData)
 
 void setAgentsFlow(SocialForce *socialForce, Agent *agent, float desiredSpeed, float maxSpeed, float minSpeed, int caseJump, std::vector<float> juncData)
 {
-  // if (socialForce->getCrowdSize() < threshold)
-  // {
-  //     agent->setStopAtCorridor(true);
-  // }
+  if (socialForce->getCrowdSize() < threshold)
+  {
+    agent->setStopAtCorridor(true);
+  }
 
   int codeSrc = 0;
   int codeDes = 0;
