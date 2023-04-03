@@ -1472,6 +1472,21 @@ int Utility::getNumAGVCompleted(std::vector<AGV *> agvs)
     return count;
 }
 
+int Utility::getNoAgents(int min, int max) {
+    int initValue = randomInt(min, max);
+    std::cout << "initValue: " << initValue << std::endl;
+    float randomFactor1 = randomFloat(0.2, 0.8);
+    int minNoAgents = (int) (1 - randomFactor1) * initValue;
+    float randomFactor2 = randomFloat(0.2, 0.8);
+    int maxNoAgents = (int) (1 + randomFactor2) * initValue;
+    int side = randomInt(0, 1);
+    if (side == 0) {
+        return randomInt((minNoAgents + initValue) / 2, initValue);
+    } else {
+        return randomInt(initValue, (maxNoAgents + initValue) / 2);
+    }
+}
+
 int Utility::randomInt(int from, int to)
 {
     std::random_device rd;  // obtain a random number from hardware

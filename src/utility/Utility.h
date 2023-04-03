@@ -66,6 +66,8 @@ namespace Utility
 
     int getNumAGVCompleted(std::vector<AGV *> agvs);
 
+    int getNoAgents(int min, int max);
+
     int randomInt(int from, int to);
 };
 

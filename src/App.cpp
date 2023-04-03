@@ -42,6 +42,7 @@ float walkwayWidth;
 int classificationType = 0;
 std::chrono::time_point<std::chrono::high_resolution_clock> startTiming;
 std::vector<AGV *> listOfAGVs;
+std::map<int, int> agvToNoAgents;
 
 std::vector<int> numOfPeople;
 float minSpeed = -1;
@@ -53,7 +54,7 @@ void init(std::vector<float> juncData);
 
 void createWalls(SocialForce *socialForce, std::vector<float> juncData);
 
-void createAgents(SocialForce *socialForce, std::vector<float> juncData);
+void createAgents(SocialForce *socialForce, std::vector<float> juncData, int noAgents);
 
 void createAGVs();
 
@@ -134,7 +135,6 @@ int main(int argc, char **argv)
     startTiming = chrono::high_resolution_clock::now();
     std::cout << "Total number of AGVs: " << listOfAGVs.size() << std::endl;
 
-
     #if RUN_IN_PARALLEL
     #pragma omp parallel for
     #endif
@@ -150,12 +150,12 @@ int main(int argc, char **argv)
         int agvStartTime = static_cast<int>(elapsedTime.count());
         agv->setTravelingTime(agvStartTime);
         agv->setPrevTime(agvStartTime);
-        string message = "AGV ID " + std::to_string(agv->getId()) + " is running on hallway with length " + std::to_string(agv->getHallwayCharcs()[0] * 2) + " at " + Utility::convertTime(agvStartTime);
+        string message = "AGV ID " + std::to_string(agv->getId()) + " is running on hallway with length " + std::to_string(agv->getHallwayCharcs()[0] * 2) + " with " + std::to_string(agvToNoAgents[agv->getId()]) + " agents " + " at " + Utility::convertTime(agvStartTime);
         cout << message << endl;
       }
 
       createWalls(socialForceNoGraphics, agv->getHallwayCharcs());
-      createAgents(socialForceNoGraphics, agv->getHallwayCharcs());
+      createAgents(socialForceNoGraphics, agv->getHallwayCharcs(), agvToNoAgents[agv->getId()]);
 
       while (updateNoGraphics(socialForceNoGraphics, agv))
       {
@@ -250,7 +250,7 @@ void init(std::vector<float> juncData)
 
   socialForce = new SocialForce;
   createWalls(socialForce, juncData);
-  createAgents(socialForce, juncData);
+  createAgents(socialForce, juncData, getNoAgents((int)inputData["minNoAgents"]["value"], (int)inputData["maxNoAgents"]["value"]));
   createAGVs();
 }
 
@@ -427,13 +427,13 @@ void setAgentsFlow(SocialForce *socialForce, Agent *agent, float desiredSpeed, f
   socialForce->addAgent(agent);
 }
 
-void createAgents(SocialForce *socialForce, std::vector<float> juncData)
+void createAgents(SocialForce *socialForce, std::vector<float> juncData, int noAgents)
 {
   Agent *agent;
 
   float deviationParam = randomFloat(1 - (float)inputData["experimentalDeviation"]["value"] / 100, 1 + (float)inputData["experimentalDeviation"]["value"] / 100);
   // cout << "Deviation: "<< deviationParam <<" - Num agents: "<< int(int(inputData["numOfAgents"]["value"]) * deviationParam) << endl;
-  numOfPeople = Utility::getNumPedesInFlow(juncData.size(), int(int(inputData["numOfAgents"]["value"]) * deviationParam));
+  numOfPeople = Utility::getNumPedesInFlow(juncData.size(), noAgents);
   vector<double> velocityList = Utility::getPedesVelocity(classificationType, inputData, deviationParam);
   if (classificationType == 0)
   {
@@ -634,6 +634,11 @@ void createAGVs()
         agv->setAcceleration(inputData["acceleration"]["value"]);
         agv->setThresholdDisToPedes((float)inputData["thresDistance"]["value"]);
         agv->setHallwayCharcs(juncDataTemp);
+        if ((int)inputData["graphicsMode"]["value"] == 0)
+        {
+          agvToNoAgents[agv->getId()] = getNoAgents((int)inputData["minNoAgents"]["value"], (int)inputData["maxNoAgents"]["value"]);
+        }
+
         for (int i = 1; i < route.size(); i++)
         {
           agv->setPath(route[i].x, route[i].y, 1.0);
@@ -816,13 +821,13 @@ void update()
           if (numAGVCompleted % 2 == 0)
           {
             socialForce->removeCrowd();
-            createAgents(socialForce, juncDataGraphMode);
+            createAgents(socialForce, juncDataGraphMode, getNoAgents((int)inputData["minNoAgents"]["value"], (int)inputData["maxNoAgents"]["value"]));
           }
         }
         else
         {
           socialForce->removeCrowd();
-          createAgents(socialForce, juncDataGraphMode);
+          createAgents(socialForce, juncDataGraphMode, getNoAgents((int)inputData["minNoAgents"]["value"], (int)inputData["maxNoAgents"]["value"]));
         }
 
         if (numAGVCompleted > 0 && numAGVCompleted % marker == 0)

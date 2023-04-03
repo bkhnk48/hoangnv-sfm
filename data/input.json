@@ -15,6 +15,14 @@
     "description": "Number of agents",
     "value": 50
   },
+  "minNoAgents": {
+    "description": "Min number of agents (uniform distribution)",
+    "value": 40
+  },
+  "maxNoAgents": {
+    "description": "Max number of agents (uniform distribution)",
+    "value": 70
+  },
   "TDDegree": {
     "description": "T-Distribution' degree of freedom",
     "value": 15
