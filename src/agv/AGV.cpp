@@ -17,6 +17,10 @@ AGV::AGV()
     velocity.set(0.0, 0.0, 0.0);
     collisionStartTime = 0;
     totalStopTime = 0;
+    pointA.set(0.0, 0.0, 0.0);
+    pointB.set(0.0, 0.0, 0.0);
+    pointC.set(0.0, 0.0, 0.0);
+    pointD.set(0.0, 0.0, 0.0);
 }
 
 AGV::~AGV()

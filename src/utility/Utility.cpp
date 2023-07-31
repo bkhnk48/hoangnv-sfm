@@ -1497,6 +1497,32 @@ int Utility::getNumAGVCompleted(std::vector<AGV *> agvs)
     return count;
 }
 
+void Utility::updateAGVPoints(AGV *agv)
+{
+    Vector3f e_ij;
+    float w, l;
+    Vector3f a, b;
+    Point3f top, bottom, pointA, pointB, pointC, pointD;
+    w = agv->getWidth();
+    l = agv->getLength();
+    e_ij = agv->getPath() - agv->getPosition();
+    e_ij.normalize();
+    top = agv->getPosition() + e_ij * l * 0.5F;
+    bottom = agv->getPosition() - e_ij * l * 0.5F;
+
+    a = Vector3f(e_ij.y, -e_ij.x, 0.0F);
+    a.normalize();
+    b = Vector3f(-e_ij.y, e_ij.x, 0.0F);
+    b.normalize();
+
+    pointA = top + a * w * 0.5F;
+    pointB = top + b * w * 0.5F;
+    pointC = bottom + b * w * 0.5F;
+    pointD = bottom + a * w * 0.5F;
+
+    agv->setPoints(pointA, pointB, pointC, pointD);
+}
+
 int Utility::getNumTotalAgents(int min, int max)
 {
     int initValue = randomInt(min, max);

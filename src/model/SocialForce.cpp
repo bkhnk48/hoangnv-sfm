@@ -88,6 +88,7 @@ void SocialForce::moveAGVs(float stepTime)
         if (agv->getIsMoving())
         {
             agv->move(stepTime, position_list);
+            Utility::updateAGVPoints(agv);
         }
     }
 }

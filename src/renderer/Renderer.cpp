@@ -23,7 +23,6 @@ void Renderer::drawAGVs(
     int statsMode)
 {
     vector<AGV *> agvs = socialForce->getAGVs();
-    Vector3f e_ij;
 
     if (juncData.size() == 2 && agvRunConcurrently == 1)
     {
@@ -36,33 +35,16 @@ void Renderer::drawAGVs(
             }
             // Draw AGVs
             glColor3f(agv->getColor().x, agv->getColor().y, agv->getColor().z);
-            float w, l;
-            Vector3f a, b;
-            Point3f top, bottom, pointA, pointB, pointC, pointD;
-            w = agv->getWidth();
-            l = agv->getLength();
-            e_ij = agv->getPath() - agv->getPosition();
-            e_ij.normalize();
-            top = agv->getPosition() + e_ij * l * 0.5F;
-            bottom = agv->getPosition() - e_ij * l * 0.5F;
-
-            a = Vector3f(e_ij.y, -e_ij.x, 0.0F);
-            a.normalize();
-            b = Vector3f(-e_ij.y, e_ij.x, 0.0F);
-            b.normalize();
-
-            pointA = top + a * w * 0.5F;
-            pointB = top + b * w * 0.5F;
-            pointC = bottom + b * w * 0.5F;
-            pointD = bottom + a * w * 0.5F;
-
-            agv->setPoints(pointA, pointB, pointC, pointD);
+            if (agv->getPointA().x == 0 && agv->getPointA().y == 0 && agv->getPointB().x == 0 && agv->getPointB().y == 0)
+            {
+                updateAGVPoints(agv);
+            }
 
             glBegin(GL_QUADS);
-            glVertex3f(pointA.x, pointA.y, 0);
-            glVertex3f(pointB.x, pointB.y, 0);
-            glVertex3f(pointC.x, pointC.y, 0);
-            glVertex3f(pointD.x, pointD.y, 0);
+            glVertex3f(agv->getPointA().x, agv->getPointA().y, 0);
+            glVertex3f(agv->getPointB().x, agv->getPointB().y, 0);
+            glVertex3f(agv->getPointC().x, agv->getPointC().y, 0);
+            glVertex3f(agv->getPointD().x, agv->getPointD().y, 0);
             glEnd();
         }
     }
@@ -131,33 +113,16 @@ void Renderer::drawAGVs(
                 }
                 // Draw AGVs
                 glColor3f(agv->getColor().x, agv->getColor().y, agv->getColor().z);
-                float w, l;
-                Vector3f a, b;
-                Point3f top, bottom, pointA, pointB, pointC, pointD;
-                w = agv->getWidth();
-                l = agv->getLength();
-                e_ij = agv->getPath() - agv->getPosition();
-                e_ij.normalize();
-                top = agv->getPosition() + e_ij * l * 0.5F;
-                bottom = agv->getPosition() - e_ij * l * 0.5F;
-
-                a = Vector3f(e_ij.y, -e_ij.x, 0.0F);
-                a.normalize();
-                b = Vector3f(-e_ij.y, e_ij.x, 0.0F);
-                b.normalize();
-
-                pointA = top + a * w * 0.5F;
-                pointB = top + b * w * 0.5F;
-                pointC = bottom + b * w * 0.5F;
-                pointD = bottom + a * w * 0.5F;
-
-                agv->setPoints(pointA, pointB, pointC, pointD);
+                if (agv->getPointA().x == 0 && agv->getPointA().y == 0 && agv->getPointB().x == 0 && agv->getPointB().y == 0)
+                {
+                    updateAGVPoints(agv);
+                }
 
                 glBegin(GL_QUADS);
-                glVertex3f(pointA.x, pointA.y, 0);
-                glVertex3f(pointB.x, pointB.y, 0);
-                glVertex3f(pointC.x, pointC.y, 0);
-                glVertex3f(pointD.x, pointD.y, 0);
+                glVertex3f(agv->getPointA().x, agv->getPointA().y, 0);
+                glVertex3f(agv->getPointB().x, agv->getPointB().y, 0);
+                glVertex3f(agv->getPointC().x, agv->getPointC().y, 0);
+                glVertex3f(agv->getPointD().x, agv->getPointD().y, 0);
                 glEnd();
             }
         }

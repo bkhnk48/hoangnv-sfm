@@ -90,7 +90,6 @@ int main(int argc, char **argv)
         walkwayWidth = (float)inputData["hallwayWidth"]["value"];
         float length1Side = ((float)inputData["hallwayLength"]["value"]) / 2;
         juncDataGraphMode = {length1Side, length1Side};
-        std::cout << "test: " << inputData["hallwayWidth"]["aaa"] << std::endl;
       }
       else if (input1 == "2")
       {
@@ -150,6 +149,7 @@ int main(int argc, char **argv)
     for (AGV *agv : listOfAGVs)
     {
       SocialForce *socialForceNoGraphics = new SocialForce;
+      Utility::updateAGVPoints(agv);
       socialForceNoGraphics->addAGV(agv);
 
       if (agv->getTravelingTime() == 0)
@@ -842,6 +842,11 @@ bool updateNoGraphics(SocialForce *socialForce, AGV *agv)
   }
 
   std::vector<Agent *> agents = socialForce->getCrowd();
+  // if (currTime % 1000 == 0)
+  // {
+  //   cout << "Time: " << convertTime(currTime) << " - " << currTime << endl;
+  //   std::cout << "Number of agents: " << agents.size() << endl;
+  // }
   for (Agent *agent : agents)
   {
     Point3f src = agent->getPosition();
@@ -906,8 +911,8 @@ bool updateNoGraphics(SocialForce *socialForce, AGV *agv)
   // if (currTime % 1000 == 0)
   // {
   //     cout << "Time: " << convertTime(currTime) << " - " << currTime << endl;
-  //     // std::cout << "AGV " << agv->getId() << " - Distance to target: " << distance << endl;
-  //     // std::cout << "frame time " << frameTime << endl;
+  //     std::cout << "AGV " << agv->getId() << " - Distance to target: " << distance << endl;
+  //     std::cout << "frame time " << frameTime << endl;
   // }
   if (distance <= 1 || isnan(distance))
   {

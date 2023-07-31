@@ -4,10 +4,12 @@
 #include "src/agv/AGV.h"
 #include "src/agent/Agent.h"
 #include "src/wall/Wall.h"
+#include "src/utility/Utility.h"
 #include <vector>
 #include <algorithm>
 
-class SocialForce {
+class SocialForce
+{
 private:
     std::vector<Agent *> crowd;
     std::vector<Wall *> walls;

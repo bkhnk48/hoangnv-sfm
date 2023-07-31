@@ -66,6 +66,14 @@ public:
 
     void setHallwayCharcs(vector<float> hallwayCharcs);
 
+    Point3f getPointA() const { return pointA; }
+
+    Point3f getPointB() const { return pointB; }
+
+    Point3f getPointC() const { return pointC; }
+
+    Point3f getPointD() const { return pointD; }
+
     void setPoints(Point3f pointA, Point3f pointB, Point3f pointC, Point3f pointD);
 
     void setDirection(float x, float y);
