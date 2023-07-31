@@ -28,17 +28,17 @@ namespace Utility
         const char *fileName, std::string name, int mode, std::vector<AGV *> data,
         std::vector<json> juncDataList,
         int agvRunConcurrently,
-        int runMode,
+        int statsMode,
         int numRunPerHallway,
         int totalRunningTime);
 
-    std::vector<int> getNumPedesInFlow(int junctionType, int totalPedestrian);
+    std::vector<int> getNumAgentsFlow(int junctionType, int totalPedestrian);
 
-    std::vector<double> getPedesVelocity(int type, json inputData, float deviationParam);
+    std::vector<double> getAgentsSpeed(int type, json inputData, int noAgents, float deviationParam);
 
-    std::vector<double> getPedesVelocityBasedTDis(int numPedes, double n_dist);
+    std::vector<double> getAgentsSpeedBasedTDis(int numPedes, double n_dist);
 
-    std::vector<double> getPedesVelocityBasedDDis(json inputData, float deviationParam);
+    std::vector<double> getAgentsSpeedBasedDDis(json inputData, int noAgents, float deviationParam);
 
     std::vector<float> getWallCoordinates(float walkwayWidth, std::vector<float> juncData);
 
@@ -46,11 +46,13 @@ namespace Utility
 
     std::vector<float> getMapLimit(float walkwayWidth, std::vector<float> juncData);
 
-    std::vector<float> getPedesDestination(int direction, int side, float walkwayWidth, std::vector<float> juncData, bool stopAtCorridor);
+    std::vector<float> getAgentDest(int direction, int side, float walkwayWidth, std::vector<float> juncData, bool stopAtCorridor);
 
-    std::vector<float> getPedesSource(int direction, float totalLength, float subLength, float caravanWidth, float walkwayWidth, std::vector<float> juncData);
+    std::vector<float> getAgentSrc(int direction, float totalLength, float subLength, float caravanWidth, float walkwayWidth, std::vector<float> juncData);
 
-    std::vector<float> getPedesColor(float maxSpeed, float minSpeed, float desiredSpeed, int type);
+    std::vector<float> getAgentColor(float maxSpeed, float minSpeed, float desiredSpeed, int type);
+
+    std::vector<json> getAGVSrcDestCode(std::vector<float> juncData);
 
     std::vector<Point3f> getRouteAGV(int src, int turningDirection, float walkwayWidth, std::vector<float> juncData);
 
@@ -66,7 +68,7 @@ namespace Utility
 
     int getNumAGVCompleted(std::vector<AGV *> agvs);
 
-    int getNoAgents(int min, int max);
+    int getNumTotalAgents(int min, int max);
 
     int randomInt(int from, int to);
 };

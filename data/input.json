@@ -1,7 +1,7 @@
 {
-  "runMode": {
+  "statsMode": {
     "description": "Run mode (1 - Statistical calculation, 0 - Test)",
-    "value": 1
+    "value": 0
   },
   "noRunPerHallway": {
     "description": "Number of times the AGV runs for each hallway",
@@ -94,5 +94,13 @@
   "experimentalDeviation": {
     "description": "Experimental deviation (percent)",
     "value": 10
+  },
+  "srcCodeTestMode": {
+    "description": "If the way is an intersection (T-Junction, 0/1/2 (3) represents the starting point from left, bottom, right (top). If the way is hallway, 0/2 represents the starting point from left, right)",
+    "value": 2
+  },
+  "destCodeTestMode": {
+    "description": "0/1/2 represents the direction of left turn, go straight, turn right of AGV (Only valid for intersections, T-Junction)",
+    "value": 0
   }
 }

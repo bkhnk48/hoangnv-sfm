@@ -136,7 +136,7 @@ json Utility::readInputData(const char *fileName)
 void Utility::writeResult(const char *fileName, string name, int mode,
                           std::vector<AGV *> agvs,
                           std::vector<json> juncDataList,
-                          int agvRunConcurrently, int runMode,
+                          int agvRunConcurrently, int statsMode,
                           int numRunPerHallway, int totalRunningTime)
 {
     ofstream output(fileName, ios::app);
@@ -146,19 +146,23 @@ void Utility::writeResult(const char *fileName, string name, int mode,
     std::time_t now =
         std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 
-    if (runMode == 0)
+    if (statsMode == 0)
     {
-        output << "#" << name << " run completed on " << std::ctime(&now);
+        output << "\n\t*#* Completed on " << std::ctime(&now);
 
         for (AGV *agv : agvs)
         {
-            string array1[] = {"From Left", "From Bottom", "From Right", "From Top"};
-            string array2[] = {"Turn Right", "Go straight", "Turn Left"};
-            string direction = array1[(int)(agv->getDirection().x)] + "-" +
-                               array2[(int)(agv->getDirection().y)];
-            output << name << delimiter << mode << delimiter << direction << delimiter
-                   << convertTime(agv->getTravelingTime()) << delimiter
-                   << agv->getNumOfCollision() << endl;
+            if (agv->getNumOfCollision() == 0)
+            {
+                agv->setTotalStopTime(0);
+            }
+
+            string message = "AGV ID " + std::to_string(agv->getId()) + " - " + convertTime(agv->getTravelingTime()) + " - Collisions " + std::to_string(agv->getNumOfCollision()) + " - Total stop time " + convertTime(agv->getTotalStopTime());
+            if (name.length() > 1)
+            {
+                message = name + " - " + message;
+            }
+            output << message << endl;
         }
     }
     else
@@ -241,8 +245,8 @@ void Utility::writeResult(const char *fileName, string name, int mode,
 }
 
 // calculate number of people in each flow
-std::vector<int> Utility::getNumPedesInFlow(int junctionType,
-                                            int totalPedestrian)
+std::vector<int> Utility::getNumAgentsFlow(int junctionType,
+                                           int totalPedestrian)
 {
     int numFlow = 0;
     if (junctionType == 2)
@@ -274,22 +278,21 @@ std::vector<int> Utility::getNumPedesInFlow(int junctionType,
 
 // get list velocity of all pedestrians: type 0 - Discrete distribution, type 1
 // - T distribution
-std::vector<double> Utility::getPedesVelocity(int type, json inputData,
-                                              float deviationParam)
+std::vector<double> Utility::getAgentsSpeed(int type, json inputData, int noAgents,
+                                            float deviationParam)
 {
     if (type == 0)
     {
-        return getPedesVelocityBasedDDis(inputData, deviationParam);
+        return getAgentsSpeedBasedDDis(inputData, noAgents, deviationParam);
     }
     else
     {
-        return getPedesVelocityBasedTDis(int(inputData["numOfAgents"]["value"]),
-                                         inputData["TDDegree"]["value"]);
+        return getAgentsSpeedBasedTDis(noAgents, inputData["TDDegree"]["value"]);
     }
 }
 
-std::vector<double> Utility::getPedesVelocityBasedDDis(json inputData,
-                                                       float deviationParam)
+std::vector<double> Utility::getAgentsSpeedBasedDDis(json inputData, int noAgents,
+                                                     float deviationParam)
 {
     vector<double> v;
     float perNoDisabilityWithoutOvertaking =
@@ -306,9 +309,6 @@ std::vector<double> Utility::getPedesVelocityBasedDDis(json inputData,
                perWalkingWithCrutches + perWalkingWithSticks + perWheelchairs);
 
     const int nrolls = 10000; // number of experiments
-    const int numPedes =
-        int(int(inputData["numOfAgents"]["value"]) *
-            deviationParam); // maximum number of pedes to distribute
 
     std::default_random_engine generator;
     std::discrete_distribution<int> distribution{perNoDisabilityWithoutOvertaking,
@@ -336,16 +336,16 @@ std::vector<double> Utility::getPedesVelocityBasedDDis(json inputData,
 
     for (int i = 0; i < 6; ++i)
     {
-        // std::cout << i << ": " << p[i] * numPedes / nrolls << std::endl;
-        // std::cout << i << ": " << std::string(p[i] * numPedes / nrolls, '*') <<
+        // std::cout << i << ": " << p[i] * noAgents / nrolls << std::endl;
+        // std::cout << i << ": " << std::string(p[i] * noAgents / nrolls, '*') <<
         // std::endl;
-        for (int j = 0; j < p[i] * numPedes / nrolls; j++)
+        for (int j = 0; j < p[i] * noAgents / nrolls; j++)
         {
             v.push_back(map[i]);
         }
     }
     int curSize = v.size();
-    for (int i = 0; i < numPedes - curSize; i++)
+    for (int i = 0; i < noAgents - curSize; i++)
     {
         v.push_back(map[0]);
     }
@@ -353,8 +353,8 @@ std::vector<double> Utility::getPedesVelocityBasedDDis(json inputData,
     return v;
 }
 
-std::vector<double> Utility::getPedesVelocityBasedTDis(int numPedes,
-                                                       double n_dist)
+std::vector<double> Utility::getAgentsSpeedBasedTDis(int noAgents,
+                                                     double n_dist)
 {
     vector<double> v;
     double std = sqrt(n_dist / (n_dist + 2));
@@ -370,12 +370,12 @@ std::vector<double> Utility::getPedesVelocityBasedTDis(int numPedes,
 
     // generate the distribution as a histogram
     std::map<double, int> histogram;
-    for (int i = 0; i < numPedes; ++i)
+    for (int i = 0; i < noAgents; ++i)
     {
         ++histogram[distr(gen)];
     }
 
-    // std::cout << "Distribution for " << numPedes << " samples:" << std::endl;
+    // std::cout << "Distribution for " << noAgents << " samples:" << std::endl;
     // int counter = 0;
     for (const auto &elem : histogram)
     {
@@ -492,10 +492,10 @@ std::vector<float> Utility::getMapLimit(float walkwayWidth,
 
 // direction: 0 To Right, 1 To Left, 2 To Bottom, 3 To Top
 // side: 0 Left side, 1 Center, 2 Right side
-std::vector<float> Utility::getPedesDestination(int direction, int side,
-                                                float walkwayWidth,
-                                                std::vector<float> juncData,
-                                                bool stopAtCorridor)
+std::vector<float> Utility::getAgentDest(int direction, int side,
+                                         float walkwayWidth,
+                                         std::vector<float> juncData,
+                                         bool stopAtCorridor)
 {
     std::vector<float> v;
 
@@ -529,7 +529,7 @@ std::vector<float> Utility::getPedesDestination(int direction, int side,
         else
         {
             latitude =
-                Utility::randomFloat(rightWidthLimit + 1, rightWidthLimit + 2);
+                Utility::randomFloat(rightWidthLimit + 2, rightWidthLimit + 3);
         }
         switch (side)
         {
@@ -571,7 +571,7 @@ std::vector<float> Utility::getPedesDestination(int direction, int side,
         }
         else
         {
-            latitude = Utility::randomFloat(leftWidthLimit - 2, leftWidthLimit - 1);
+            latitude = Utility::randomFloat(leftWidthLimit - 3, leftWidthLimit - 2);
         }
         switch (side)
         {
@@ -695,10 +695,10 @@ std::vector<float> Utility::getPedesDestination(int direction, int side,
 }
 
 // direction: 0 From Left, 1 From Right, 2 From Top, 3 From Bottom
-std::vector<float> Utility::getPedesSource(int direction, float totalLength,
-                                           float subLength, float caravanWidth,
-                                           float walkwayWidth,
-                                           std::vector<float> juncData)
+std::vector<float> Utility::getAgentSrc(int direction, float totalLength,
+                                        float subLength, float caravanWidth,
+                                        float walkwayWidth,
+                                        std::vector<float> juncData)
 {
     std::vector<float> v;
     float totalArea = totalLength * caravanWidth;
@@ -857,7 +857,7 @@ std::vector<float> Utility::getPedesSource(int direction, float totalLength,
     return v;
 }
 
-std::vector<float> Utility::getPedesColor(float maxSpeed, float minSpeed,
+std::vector<float> Utility::getAgentColor(float maxSpeed, float minSpeed,
                                           float desiredSpeed, int type)
 {
     std::vector<float> v;
@@ -922,6 +922,45 @@ std::vector<float> Utility::getPedesColor(float maxSpeed, float minSpeed,
 float getCoor(float x, float verAsymtote, float horAsymtote)
 {
     return horAsymtote * x / (x - verAsymtote);
+}
+
+std::vector<json> Utility::getAGVSrcDestCode(std::vector<float> juncData)
+{
+    std::vector<json> v;
+    int juncType = juncData.size();
+    for (int i = 0; i < juncType; i++)
+    {
+        if (juncType == 4)
+        {
+            v.push_back({{"src", i}, {"dest", 0}});
+            v.push_back({{"src", i}, {"dest", 1}});
+            v.push_back({{"src", i}, {"dest", 2}});
+        }
+        else if (juncType == 3)
+        {
+            if (i == 0)
+            {
+                v.push_back({{"src", i}, {"dest", 1}});
+                v.push_back({{"src", i}, {"dest", 2}});
+            }
+            else if (i == 1)
+            {
+                v.push_back({{"src", i}, {"dest", 0}});
+                v.push_back({{"src", i}, {"dest", 2}});
+            }
+            else if (i == 2)
+            {
+                v.push_back({{"src", i}, {"dest", 0}});
+                v.push_back({{"src", i}, {"dest", 1}});
+            }
+        }
+        else if (juncType == 2)
+        {
+            v.push_back({{"src", i}, {"dest", 1}});
+        }
+    }
+
+    return v;
 }
 
 std::vector<Point3f> Utility::getRouteAGV(int src, int turningDirection,
@@ -1458,7 +1497,7 @@ int Utility::getNumAGVCompleted(std::vector<AGV *> agvs)
     return count;
 }
 
-int Utility::getNoAgents(int min, int max)
+int Utility::getNumTotalAgents(int min, int max)
 {
     int initValue = randomInt(min, max);
     // std::cout << "initValue: " << initValue << std::endl;

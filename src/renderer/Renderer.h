@@ -24,7 +24,7 @@ namespace Renderer
         SocialForce *socialForce,
         std::vector<float> juncData,
         int agvRunConcurrently,
-        int runMode);
+        int statsMode);
 
     void drawCylinder(
         float x, float y, float radius = 0.2, int slices = 15,

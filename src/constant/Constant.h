@@ -9,7 +9,7 @@ namespace Constant
 {
     static constexpr const float MEAN = 1.2;
     static constexpr const double UPPER_SPEED_LIMIT = 1.8;
-    static constexpr const double LOWER_SPEED_LIMIT = 0.6;
+    static constexpr const double LOWER_SPEED_LIMIT = 0.3;
     static constexpr const float PI = 3.14159265359F;
 
     // Speed - color
