@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 
     createAGVs();
     startTiming = chrono::high_resolution_clock::now();
-    std::cout << "Total number of AGVs: " << listOfAGVs.size() << std::endl;
+    std::cout << "Number of scenarios: " << listOfAGVs.size() << std::endl;
 
 #if RUN_IN_PARALLEL
 #pragma omp parallel for
@@ -159,7 +159,7 @@ int main(int argc, char **argv)
         int agvStartTime = static_cast<int>(elapsedTime.count());
         agv->setTravelingTime(agvStartTime);
         agv->setPrevTime(agvStartTime);
-        string message = "AGV ID " + std::to_string(agv->getId()) + " is running on hallway with length " + std::to_string(agv->getHallwayCharcs()[0] * 2) + " with " + std::to_string(agvToNoAgents[agv->getId()]) + " agents " + " at " + Utility::convertTime(agvStartTime);
+        string message = "AGV ID " + std::to_string(agv->getId()) + " is running on hallway with length " + std::to_string(agv->getHallwayCharcs()[0] * 2) + " with " + std::to_string(agvToNoAgents[agv->getId()]) + " pedestrians at " + Utility::convertTime(agvStartTime);
         cout << message << endl;
       }
 

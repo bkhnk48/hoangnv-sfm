@@ -238,10 +238,10 @@ Vector3f Agent::getAgvInteractForce(vector<AGV *> agvs)
     {
         if (agv->getIsMoving())
         {
-            // Compute Distance Between Agent j and i
+            // Compute Distance Between current agent and agv
             distance_ij = agv->getNearestPoint(position) - position;
 
-            // Skip Computation if Agents i and j are Too Far Away
+            // Skip Computation if current agent and agv are Too Far Away
             if (distance_ij.lengthSquared() > (2.0 * 2.0))
                 continue;
 

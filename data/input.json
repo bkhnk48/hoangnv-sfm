@@ -97,7 +97,7 @@
   },
   "srcCodeTestMode": {
     "description": "If the way is an intersection (T-Junction, 0/1/2 (3) represents the starting point from left, bottom, right (top). If the way is hallway, 0/2 represents the starting point from left, right)",
-    "value": 2
+    "value": 0
   },
   "destCodeTestMode": {
     "description": "0/1/2 represents the direction of left turn, go straight, turn right of AGV (Only valid for intersections, T-Junction)",

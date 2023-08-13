@@ -12,6 +12,7 @@
 #include <random>
 #include <string>
 #include <vector>
+#include <regex>
 
 #include "src/constant/Constant.h"
 
@@ -123,11 +124,148 @@ bool Utility::hallwaySameCharExists(float hallwayLength,
     return false;
 }
 
+bool is_integer_and_positive(float x)
+{
+    // Check if x is an integer by comparing it with its floor value
+    // Check if x is positive by comparing it with 0
+    return std::floor(x) == x && x > 0;
+}
+
 // read input file
 json Utility::readInputData(const char *fileName)
 {
     std::ifstream f(fileName);
     json data = json::parse(f);
+
+    for (auto it = data.begin(); it != data.end(); ++it)
+    {
+        try
+        {
+            float value = (float)it.value()["value"];
+        }
+        catch (const std::exception &e)
+        {
+            cout << "Invalid value for " << it.key() << ". Please setting value to number." << endl;
+            exit(0);
+        }
+    }
+
+    if ((int)data["statsMode"]["value"] != 0 && (int)data["statsMode"]["value"] != 1)
+    {
+        cout << "Invalid stats mode. Please setting stats mode to 0 or 1." << endl;
+        exit(0);
+    }
+    if (!is_integer_and_positive((float)data["noRunPerHallway"]["value"]))
+    {
+        cout << "Invalid number of run per hallway. Please setting number of run per hallway to positive integer." << endl;
+        exit(0);
+    }
+    if ((int)data["graphicsMode"]["value"] != 0 && (int)data["graphicsMode"]["value"] != 1)
+    {
+        cout << "Invalid graphics mode. Please setting graphics mode to 0 or 1." << endl;
+        exit(0);
+    }
+    if (!is_integer_and_positive((float)data["minNoAgents"]["value"]))
+    {
+        cout << "Invalid minimum number of pedestrians. Please setting minimum number of pedestrians to positive integer." << endl;
+        exit(0);
+    }
+    if (!is_integer_and_positive((float)data["maxNoAgents"]["value"]))
+    {
+        cout << "Invalid maximum number of pedestrians. Please setting maximum number of pedestrians to positive integer." << endl;
+        exit(0);
+    }
+    if ((int)data["minNoAgents"]["value"] >= (int)data["maxNoAgents"]["value"])
+    {
+        cout << "Invalid minimum number of pedestrians and maximum number of pedestrians. Please setting minimum number of pedestrians to less than maximum number of pedestrians." << endl;
+        exit(0);
+    }
+    if ((float)data["totalCrowdLength"]["value"] <= 0)
+    {
+        cout << "Invalid total crowd length. Please setting total crowd length to positive number." << endl;
+        exit(0);
+    }
+    if ((float)data["crowdWidth"]["value"] <= 0)
+    {
+        cout << "Invalid total crowd width. Please setting crowd width to positive number." << endl;
+        exit(0);
+    }
+    if ((float)data["headCrowdLength"]["value"] <= 0)
+    {
+        cout << "Invalid head crowd length. Please setting head crowd length to positive number." << endl;
+        exit(0);
+    }
+    if ((float)data["acceleration"]["value"] <= 0)
+    {
+        cout << "Invalid acceleration. Please setting acceleration to positive number." << endl;
+        exit(0);
+    }
+    if ((float)data["agvDesiredSpeed"]["value"] <= 0)
+    {
+        cout << "Invalid AGV desired speed. Please setting AGV desired speed to positive number." << endl;
+        exit(0);
+    }
+    if ((float)data["thresDistance"]["value"] <= 0)
+    {
+        cout << "Invalid threshold distance. Please setting threshold distance to positive number." << endl;
+        exit(0);
+    }
+    if ((float)data["stopAtHallway"]["value"] < 0)
+    {
+        cout << "Invalid stop at hallway. Please setting stop at hallway to positive number." << endl;
+        exit(0);
+    }
+    float p1 = (float)data["p1"]["value"];
+    float p2 = (float)data["p2"]["value"];
+    float p3 = (float)data["p3"]["value"];
+    float p4 = (float)data["p4"]["value"];
+    float p5 = (float)data["p5"]["value"];
+    float p6 = (float)data["p6"]["value"];
+    if (p1 < 0 || p2 < 0 || p3 < 0 || p4 < 0 || p5 < 0 || p6 < 0)
+    {
+        cout << "Invalid probability (p1, p2, p3, p4, p5, p6). Please setting probability to positive number." << endl;
+        exit(0);
+    }
+    if (p1 + p2 + p3 + p4 + p5 + p6 != 100)
+    {
+        cout << "Invalid probability (p1, p2, p3, p4, p5, p6). Please setting probability to sum up to 100." << endl;
+        exit(0);
+    }
+    if ((float)data["hallwayLength"]["value"] <= 0)
+    {
+        cout << "Invalid hallway length. Please setting hallway length to positive number." << endl;
+        exit(0);
+    }
+    if ((float)data["hallwayWidth"]["value"] <= 0)
+    {
+        cout << "Invalid hallway width. Please setting hallway width to positive number." << endl;
+        exit(0);
+    }
+    if ((int)data["runConcurrently"]["value"] != 0 && (int)data["runConcurrently"]["value"] != 1)
+    {
+        cout << "Invalid run concurrently. Please setting run concurrently to 0 or 1." << endl;
+        exit(0);
+    }
+    if ((int)data["runConcurrently"]["value"] == 1 && (int)data["statsMode"]["value"] == 1)
+    {
+        cout << "Invalid run concurrently and stats mode. Please setting run concurrently to 0 or stats mode to 0." << endl;
+        exit(0);
+    }
+    if ((float)data["experimentalDeviation"]["value"] <= 0)
+    {
+        cout << "Invalid experimental deviation. Please setting experimental deviation to positive number." << endl;
+        exit(0);
+    }
+    if ((int)data["srcCodeTestMode"]["value"] != 0 && (int)data["srcCodeTestMode"]["value"] != 1 && (int)data["srcCodeTestMode"]["value"] != 2 && (int)data["srcCodeTestMode"]["value"] != 3)
+    {
+        cout << "Invalid source code test mode. Please setting source code test mode to 0, 1, 2 or 3." << endl;
+        exit(0);
+    }
+    if ((int)data["destCodeTestMode"]["value"] != 0 && (int)data["destCodeTestMode"]["value"] != 1 && (int)data["destCodeTestMode"]["value"] != 2)
+    {
+        cout << "Invalid destination code test mode. Please setting destination code test mode to 0, 1 or 2." << endl;
+        exit(0);
+    }
 
     return data;
 }
